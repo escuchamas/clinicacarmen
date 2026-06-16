@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ReservaForm from "./_components/ReservaForm";
+import {
+  Zap, Target, CalendarCheck,
+  Activity, Brain, Dumbbell, HeartPulse,
+  Fingerprint, MessageCircle, BadgeEuro,
+} from "lucide-react";
 
 const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
@@ -75,12 +80,12 @@ export default async function HomePage() {
       <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
           {[
-            ["⚡", "Resultados desde las primeras sesiones", "La mayoría de pacientes nota mejoría en 2-3 sesiones."],
-            ["🎯", "Sin protocolos genéricos", "Cada tratamiento es distinto porque cada dolor es distinto."],
-            ["📅", "Cita en menos de 48h", "Sin listas de espera. Reserva hoy, empieza esta semana."],
-          ].map(([icon, title, desc]) => (
+            { icon: <Zap size={22} color={AQUA} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
+            { icon: <Target size={22} color={AQUA} strokeWidth={2} />, title: "Sin protocolos genéricos", desc: "Cada tratamiento es distinto porque cada dolor es distinto." },
+            { icon: <CalendarCheck size={22} color={AQUA} strokeWidth={2} />, title: "Cita en menos de 48h", desc: "Sin listas de espera. Reserva hoy, empieza esta semana." },
+          ].map(({ icon, title, desc }) => (
             <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
-              <span style={{ fontSize: "1.5rem", flexShrink: 0, marginTop: 2 }}>{icon}</span>
+              <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
               <div>
                 <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.25rem" }}>{title}</p>
                 <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.5 }}>{desc}</p>
@@ -103,7 +108,7 @@ export default async function HomePage() {
           <div style={{ display: "grid", gap: "2rem" }}>
             {[
               {
-                icon: "🔥",
+                icon: <Activity size={28} color={AQUA} strokeWidth={1.75} />,
                 tag: "Dolor de espalda y lumbalgia",
                 title: "Llevas semanas con el mismo dolor de espalda y ya no sabes qué hacer",
                 body: "La lumbalgia no se resuelve sola con reposo. Con fisioterapia manual específica — movilizaciones, técnicas miofasciales y ejercicio terapéutico — podemos reducir el dolor desde las primeras sesiones y evitar que vuelva.",
@@ -111,7 +116,7 @@ export default async function HomePage() {
                 bg: "#F0FDFA",
               },
               {
-                icon: "😣",
+                icon: <Brain size={28} color={AQUA} strokeWidth={1.75} />,
                 tag: "Cervicales y cefaleas",
                 title: "Tu cuello está tan tenso que te provoca dolor de cabeza todos los días",
                 body: "Las cervicalgias mal tratadas se convierten en cefaleas tensionales crónicas. Un trabajo preciso sobre la columna cervical y la musculatura de la nuca puede cambiar radicalmente tu calidad de vida.",
@@ -119,7 +124,7 @@ export default async function HomePage() {
                 bg: "white",
               },
               {
-                icon: "⚡",
+                icon: <Dumbbell size={28} color={AQUA} strokeWidth={1.75} />,
                 tag: "Lesiones deportivas",
                 title: "Te lesionaste y llevas semanas parado sin saber cuándo podrás volver",
                 body: "Esguinces, tendinitis, roturas musculares, sobrecargas... Sin un tratamiento correcto se vuelven a lesionar. Trabajamos para que te recuperes bien desde el principio, no solo para que dejes de doler.",
@@ -127,7 +132,7 @@ export default async function HomePage() {
                 bg: "#F0FDFA",
               },
               {
-                icon: "🏥",
+                icon: <HeartPulse size={28} color={AQUA} strokeWidth={1.75} />,
                 tag: "Postoperatorio y rehabilitación",
                 title: "Te han operado y no sabes si tu recuperación está yendo bien",
                 body: "La rehabilitación postquirúrgica bien hecha marca la diferencia en el resultado final de la operación. Diseñamos un plan progresivo y controlado, adaptado a tu intervención y tu evolución real.",
@@ -140,7 +145,7 @@ export default async function HomePage() {
                 border: "1px solid #e5e7eb",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
-                  <span style={{ fontSize: "2rem" }}>{icon}</span>
+                  <div style={{ flexShrink: 0 }}>{icon}</div>
                   <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: AQUA }}>{tag}</span>
                 </div>
                 <h3 style={{ fontSize: "1.25rem", fontWeight: 800, lineHeight: 1.3, marginBottom: "0.875rem" }}>{title}</h3>
@@ -219,12 +224,12 @@ export default async function HomePage() {
               </p>
               <div style={{ display: "grid", gap: "1rem" }}>
                 {[
-                  ["🙅", "Sin protocolo genérico", "Cada paciente tiene un tratamiento diseñado específicamente para su caso."],
-                  ["📱", "Seguimiento entre sesiones", "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio."],
-                  ["💶", "Precio claro, sin sorpresas", "Sabes exactamente lo que cuesta antes de venir. Sin tarifas ocultas."],
-                ].map(([icon, title, desc]) => (
+                  { icon: <Fingerprint size={20} color={AQUA} strokeWidth={1.75} />, title: "Sin protocolo genérico", desc: "Cada paciente tiene un tratamiento diseñado específicamente para su caso." },
+                  { icon: <MessageCircle size={20} color={AQUA} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
+                  { icon: <BadgeEuro size={20} color={AQUA} strokeWidth={1.75} />, title: "Precio claro, sin sorpresas", desc: "Sabes exactamente lo que cuesta antes de venir. Sin tarifas ocultas." },
+                ].map(({ icon, title, desc }) => (
                   <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
-                    <span style={{ fontSize: "1.375rem", flexShrink: 0, marginTop: 2 }}>{icon}</span>
+                    <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
                     <div>
                       <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.125rem" }}>{title}</p>
                       <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.5 }}>{desc}</p>

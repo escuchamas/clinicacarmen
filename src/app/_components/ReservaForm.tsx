@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
@@ -43,7 +44,9 @@ export default function ReservaForm() {
   if (done) {
     return (
       <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
-        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>✅</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+          <CheckCircle2 size={52} color="#0891B2" strokeWidth={1.5} />
+        </div>
         <h3 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1a1a1a", marginBottom: "0.75rem" }}>
           ¡Solicitud recibida!
         </h3>
