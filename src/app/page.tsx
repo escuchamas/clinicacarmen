@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ReservaForm from "./_components/ReservaForm";
+import QuizProblemas from "./_components/QuizProblemas";
 import {
   Zap, Target, CalendarCheck,
-  Activity, Brain, Dumbbell, HeartPulse,
   Fingerprint, MessageCircle, BadgeEuro,
 } from "lucide-react";
 
@@ -48,14 +48,14 @@ export default async function HomePage() {
             fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
             padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
           }}>
-            Fisioterapia · Millennialfisio
+            Fisioterapia en Campillos · Comarca de Guadalteba
           </span>
           <h1 style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: "1.25rem", letterSpacing: "-0.02em" }}>
             Deja de aguantar el dolor.<br />
             <span style={{ color: AQUA }}>Vuelve a moverte como antes.</span>
           </h1>
           <p style={{ fontSize: "1.1875rem", color: "#4b5563", lineHeight: 1.65, marginBottom: "2.5rem", maxWidth: 560, margin: "0 auto 2.5rem" }}>
-            Tratamiento manual personalizado para cada paciente. Sin protocolos genéricos, sin listas de espera. Primera cita disponible esta semana.
+            Fisioterapia manual personalizada en Campillos para pacientes de Teba, Ardales, Cañete la Real, Almargen y toda la comarca. Sin protocolos genéricos, sin listas de espera.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <a href="#reservar" style={{
@@ -95,86 +95,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── PROBLEMAS ───────────────────────────────────── */}
-      <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "white" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-            <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
-              ¿Qué te está impidiendo vivir con normalidad?
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "1.0625rem" }}>Reconócete en alguno de estos problemas.</p>
-          </div>
-
-          <div style={{ display: "grid", gap: "2rem" }}>
-            {[
-              {
-                icon: <Activity size={28} color={AQUA} strokeWidth={1.75} />,
-                tag: "Dolor de espalda y lumbalgia",
-                title: "Llevas semanas con el mismo dolor de espalda y ya no sabes qué hacer",
-                body: "La lumbalgia no se resuelve sola con reposo. Con fisioterapia manual específica — movilizaciones, técnicas miofasciales y ejercicio terapéutico — podemos reducir el dolor desde las primeras sesiones y evitar que vuelva.",
-                chips: ["Lumbalgia", "Hernia discal", "Ciática", "Tensión lumbar"],
-                bg: "#F0FDFA",
-              },
-              {
-                icon: <Brain size={28} color={AQUA} strokeWidth={1.75} />,
-                tag: "Cervicales y cefaleas",
-                title: "Tu cuello está tan tenso que te provoca dolor de cabeza todos los días",
-                body: "Las cervicalgias mal tratadas se convierten en cefaleas tensionales crónicas. Un trabajo preciso sobre la columna cervical y la musculatura de la nuca puede cambiar radicalmente tu calidad de vida.",
-                chips: ["Cervicales", "Cefalea tensional", "Contracturas", "Tortícolis"],
-                bg: "white",
-              },
-              {
-                icon: <Dumbbell size={28} color={AQUA} strokeWidth={1.75} />,
-                tag: "Lesiones deportivas",
-                title: "Te lesionaste y llevas semanas parado sin saber cuándo podrás volver",
-                body: "Esguinces, tendinitis, roturas musculares, sobrecargas... Sin un tratamiento correcto se vuelven a lesionar. Trabajamos para que te recuperes bien desde el principio, no solo para que dejes de doler.",
-                chips: ["Esguince de tobillo", "Tendinitis", "Rotura fibrilar", "Pubalgia"],
-                bg: "#F0FDFA",
-              },
-              {
-                icon: <HeartPulse size={28} color={AQUA} strokeWidth={1.75} />,
-                tag: "Postoperatorio y rehabilitación",
-                title: "Te han operado y no sabes si tu recuperación está yendo bien",
-                body: "La rehabilitación postquirúrgica bien hecha marca la diferencia en el resultado final de la operación. Diseñamos un plan progresivo y controlado, adaptado a tu intervención y tu evolución real.",
-                chips: ["Cirugía de rodilla", "Cirugía de hombro", "Prótesis de cadera", "Cirugía de columna"],
-                bg: "white",
-              },
-            ].map(({ icon, tag, title, body, chips, bg }) => (
-              <div key={tag} style={{
-                backgroundColor: bg, borderRadius: "1rem", padding: "2rem",
-                border: "1px solid #e5e7eb",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
-                  <div style={{ flexShrink: 0 }}>{icon}</div>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: AQUA }}>{tag}</span>
-                </div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, lineHeight: 1.3, marginBottom: "0.875rem" }}>{title}</h3>
-                <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "1rem" }}>{body}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.25rem" }}>
-                  {chips.map(c => (
-                    <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#CFFAFE", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>{c}</span>
-                  ))}
-                </div>
-                <a href="#reservar" style={{ color: AQUA, fontWeight: 700, fontSize: "0.9375rem", textDecoration: "none" }}>
-                  Esto me está pasando, quiero cita →
-                </a>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: "3rem", textAlign: "center", padding: "2.5rem", backgroundColor: AQUA, borderRadius: "1.25rem" }}>
-            <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.9375rem", marginBottom: "0.5rem" }}>
-              Si te has reconocido en cualquiera de estos casos —
-            </p>
-            <p style={{ color: "white", fontWeight: 800, fontSize: "1.25rem", marginBottom: "1.5rem" }}>
-              la fisioterapia tiene solución. No tienes que seguir aguantando.
-            </p>
-            <a href="#reservar" style={{ backgroundColor: "white", color: AQUA, fontWeight: 800, fontSize: "1rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none" }}>
-              Reservar mi primera cita →
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* ── QUIZ PROBLEMAS ──────────────────────────────── */}
+      <QuizProblemas />
 
       {/* ── CÓMO FUNCIONA ───────────────────────────────── */}
       <section id="como-funciona" style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
@@ -220,7 +142,7 @@ export default async function HomePage() {
                 No eres un número de expediente
               </h2>
               <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "2rem", fontSize: "1rem" }}>
-                Soy Carmen, fisioterapeuta especializada en terapia manual. En Millennialfisio eres mi único paciente en cada sesión. No hay asistentes, no hay protocolos genéricos, no hay prisas.
+                Soy Carmen, fisioterapeuta en Campillos especializada en terapia manual. Atiendo a pacientes de toda la Comarca de Guadalteba — Teba, Ardales, Cañete la Real, Almargen, Carratraca. En Millennialfisio eres mi único paciente en cada sesión: sin asistentes, sin protocolos genéricos, sin prisas.
               </p>
               <div style={{ display: "grid", gap: "1rem" }}>
                 {[
@@ -289,7 +211,7 @@ export default async function HomePage() {
             <a href="/login" style={{ color: "#4b5563", fontSize: "0.75rem", textDecoration: "none" }}>· acceso interno ·</a>
           </div>
           <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>
-            © {new Date().getFullYear()} Millennialfisio
+            © {new Date().getFullYear()} Millennialfisio · Campillos, Málaga
           </p>
         </div>
       </footer>
