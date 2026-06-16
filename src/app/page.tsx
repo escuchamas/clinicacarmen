@@ -1,65 +1,294 @@
-import Image from "next/image";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import ReservaForm from "./_components/ReservaForm";
 
-export default function Home() {
+const AQUA = "#0891B2";
+const AQUA_DARK = "#0E7490";
+const CREAM = "#F2EDE3";
+const DARK = "#111827";
+
+export default async function HomePage() {
+  const session = await auth();
+  if (session) redirect("/pacientes");
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", color: DARK }}>
+
+      {/* ── STICKY HEADER ───────────────────────────────── */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 50,
+        backgroundColor: "white",
+        borderBottom: "1px solid #e5e7eb",
+        padding: "0 1.5rem",
+      }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: "1rem" }}>M</div>
+            <span style={{ fontWeight: 700, fontSize: "1rem", color: DARK }}>Millennialfisio</span>
+          </div>
+          <a href="#reservar" style={{
+            backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem",
+            padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none",
+          }}>
+            Reservar cita →
+          </a>
+        </div>
+      </header>
+
+      {/* ── HERO ────────────────────────────────────────── */}
+      <section style={{ backgroundColor: "white", padding: "5rem 1.5rem 4rem" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
+          <span style={{
+            display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK,
+            fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+            padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
+          }}>
+            Fisioterapia · Millennialfisio
+          </span>
+          <h1 style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: "1.25rem", letterSpacing: "-0.02em" }}>
+            Deja de aguantar el dolor.<br />
+            <span style={{ color: AQUA }}>Vuelve a moverte como antes.</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p style={{ fontSize: "1.1875rem", color: "#4b5563", lineHeight: 1.65, marginBottom: "2.5rem", maxWidth: 560, margin: "0 auto 2.5rem" }}>
+            Tratamiento manual personalizado para cada paciente. Sin protocolos genéricos, sin listas de espera. Primera cita disponible esta semana.
+          </p>
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="#reservar" style={{
+              backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1.0625rem",
+              padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none",
+              boxShadow: "0 4px 14px rgba(8,145,178,0.35)",
+            }}>
+              Pedir cita ahora →
+            </a>
+            <a href="#como-funciona" style={{
+              backgroundColor: "white", color: DARK, fontWeight: 600, fontSize: "1rem",
+              padding: "0.875rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none",
+              border: "1.5px solid #e5e7eb",
+            }}>
+              ¿Cómo funciona?
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRUST BAR ───────────────────────────────────── */}
+      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
+          {[
+            ["⚡", "Resultados desde las primeras sesiones", "La mayoría de pacientes nota mejoría en 2-3 sesiones."],
+            ["🎯", "Sin protocolos genéricos", "Cada tratamiento es distinto porque cada dolor es distinto."],
+            ["📅", "Cita en menos de 48h", "Sin listas de espera. Reserva hoy, empieza esta semana."],
+          ].map(([icon, title, desc]) => (
+            <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
+              <span style={{ fontSize: "1.5rem", flexShrink: 0, marginTop: 2 }}>{icon}</span>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.25rem" }}>{title}</p>
+                <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.5 }}>{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── PROBLEMAS ───────────────────────────────────── */}
+      <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "white" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+            <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+              ¿Qué te está impidiendo vivir con normalidad?
+            </h2>
+            <p style={{ color: "#6b7280", fontSize: "1.0625rem" }}>Reconócete en alguno de estos problemas.</p>
+          </div>
+
+          <div style={{ display: "grid", gap: "2rem" }}>
+            {[
+              {
+                icon: "🔥",
+                tag: "Dolor de espalda y lumbalgia",
+                title: "Llevas semanas con el mismo dolor de espalda y ya no sabes qué hacer",
+                body: "La lumbalgia no se resuelve sola con reposo. Con fisioterapia manual específica — movilizaciones, técnicas miofasciales y ejercicio terapéutico — podemos reducir el dolor desde las primeras sesiones y evitar que vuelva.",
+                chips: ["Lumbalgia", "Hernia discal", "Ciática", "Tensión lumbar"],
+                bg: "#F0FDFA",
+              },
+              {
+                icon: "😣",
+                tag: "Cervicales y cefaleas",
+                title: "Tu cuello está tan tenso que te provoca dolor de cabeza todos los días",
+                body: "Las cervicalgias mal tratadas se convierten en cefaleas tensionales crónicas. Un trabajo preciso sobre la columna cervical y la musculatura de la nuca puede cambiar radicalmente tu calidad de vida.",
+                chips: ["Cervicales", "Cefalea tensional", "Contracturas", "Tortícolis"],
+                bg: "white",
+              },
+              {
+                icon: "⚡",
+                tag: "Lesiones deportivas",
+                title: "Te lesionaste y llevas semanas parado sin saber cuándo podrás volver",
+                body: "Esguinces, tendinitis, roturas musculares, sobrecargas... Sin un tratamiento correcto se vuelven a lesionar. Trabajamos para que te recuperes bien desde el principio, no solo para que dejes de doler.",
+                chips: ["Esguince de tobillo", "Tendinitis", "Rotura fibrilar", "Pubalgia"],
+                bg: "#F0FDFA",
+              },
+              {
+                icon: "🏥",
+                tag: "Postoperatorio y rehabilitación",
+                title: "Te han operado y no sabes si tu recuperación está yendo bien",
+                body: "La rehabilitación postquirúrgica bien hecha marca la diferencia en el resultado final de la operación. Diseñamos un plan progresivo y controlado, adaptado a tu intervención y tu evolución real.",
+                chips: ["Cirugía de rodilla", "Cirugía de hombro", "Prótesis de cadera", "Cirugía de columna"],
+                bg: "white",
+              },
+            ].map(({ icon, tag, title, body, chips, bg }) => (
+              <div key={tag} style={{
+                backgroundColor: bg, borderRadius: "1rem", padding: "2rem",
+                border: "1px solid #e5e7eb",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
+                  <span style={{ fontSize: "2rem" }}>{icon}</span>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: AQUA }}>{tag}</span>
+                </div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, lineHeight: 1.3, marginBottom: "0.875rem" }}>{title}</h3>
+                <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "1rem" }}>{body}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.25rem" }}>
+                  {chips.map(c => (
+                    <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#CFFAFE", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>{c}</span>
+                  ))}
+                </div>
+                <a href="#reservar" style={{ color: AQUA, fontWeight: 700, fontSize: "0.9375rem", textDecoration: "none" }}>
+                  Esto me está pasando, quiero cita →
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "3rem", textAlign: "center", padding: "2.5rem", backgroundColor: AQUA, borderRadius: "1.25rem" }}>
+            <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "0.9375rem", marginBottom: "0.5rem" }}>
+              Si te has reconocido en cualquiera de estos casos —
+            </p>
+            <p style={{ color: "white", fontWeight: 800, fontSize: "1.25rem", marginBottom: "1.5rem" }}>
+              la fisioterapia tiene solución. No tienes que seguir aguantando.
+            </p>
+            <a href="#reservar" style={{ backgroundColor: "white", color: AQUA, fontWeight: 800, fontSize: "1rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+              Reservar mi primera cita →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CÓMO FUNCIONA ───────────────────────────────── */}
+      <section id="como-funciona" style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
+        <div style={{ maxWidth: 820, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+              Tres pasos para dejar de tener dolor
+            </h2>
+            <p style={{ color: "#6b7280", fontSize: "1.0625rem" }}>Sin esperas, sin burocracia.</p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem" }}>
+            {[
+              { num: "01", title: "Pides tu cita online", body: "Dos minutos. Rellenas el formulario aquí abajo y Carmen te confirma en menos de 2 horas." },
+              { num: "02", title: "Primera evaluación a fondo", body: "Analizamos tu caso en detalle. El dolor tiene un origen y hay que encontrarlo antes de tratar." },
+              { num: "03", title: "Tu plan de tratamiento", body: "Sesiones de 45-60 min de terapia manual + pauta de ejercicio personalizada para casa." },
+            ].map(({ num, title, body }) => (
+              <div key={num} style={{ backgroundColor: "white", borderRadius: "1rem", padding: "2rem", border: "1px solid #e5e7eb" }}>
+                <p style={{ fontSize: "2.5rem", fontWeight: 900, color: AQUA, opacity: 0.2, lineHeight: 1, marginBottom: "1rem" }}>{num}</p>
+                <h3 style={{ fontSize: "1.125rem", fontWeight: 800, marginBottom: "0.625rem" }}>{title}</h3>
+                <p style={{ color: "#6b7280", lineHeight: 1.6, fontSize: "0.9375rem" }}>{body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+            <a href="#reservar" style={{ backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1.0625rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none", display: "inline-block" }}>
+              Empezar ahora →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── POR QUÉ CARMEN ──────────────────────────────── */}
+      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
+        <div style={{ maxWidth: 820, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "center" }}>
+            <div>
+              <span style={{ display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.3rem 0.875rem", borderRadius: 999, marginBottom: "1.25rem" }}>
+                Por qué Millennialfisio
+              </span>
+              <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "1rem", lineHeight: 1.2 }}>
+                No eres un número de expediente
+              </h2>
+              <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "2rem", fontSize: "1rem" }}>
+                Soy Carmen, fisioterapeuta especializada en terapia manual. En Millennialfisio eres mi único paciente en cada sesión. No hay asistentes, no hay protocolos genéricos, no hay prisas.
+              </p>
+              <div style={{ display: "grid", gap: "1rem" }}>
+                {[
+                  ["🙅", "Sin protocolo genérico", "Cada paciente tiene un tratamiento diseñado específicamente para su caso."],
+                  ["📱", "Seguimiento entre sesiones", "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio."],
+                  ["💶", "Precio claro, sin sorpresas", "Sabes exactamente lo que cuesta antes de venir. Sin tarifas ocultas."],
+                ].map(([icon, title, desc]) => (
+                  <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
+                    <span style={{ fontSize: "1.375rem", flexShrink: 0, marginTop: 2 }}>{icon}</span>
+                    <div>
+                      <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.125rem" }}>{title}</p>
+                      <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.5 }}>{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center" }}>
+              <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 900, fontSize: "2rem", margin: "0 auto 1.5rem" }}>C</div>
+              <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.25rem" }}>Carmen</p>
+              <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.75rem" }}>Fisioterapeuta · Millennialfisio</p>
+              <blockquote style={{ fontStyle: "italic", color: "#374151", lineHeight: 1.65, fontSize: "0.9375rem", borderLeft: `3px solid ${AQUA}`, paddingLeft: "1rem", textAlign: "left" }}>
+                &ldquo;Cuando un paciente me dice que puede volver a dormir bien, a practicar deporte o a jugar con sus hijos sin dolor, es el mejor resultado que puedo obtener.&rdquo;
+              </blockquote>
+              <a href="#reservar" style={{ display: "block", marginTop: "1.5rem", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", textDecoration: "none" }}>
+                Reservar con Carmen →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── RESERVAR ────────────────────────────────────── */}
+      <section id="reservar" style={{ backgroundColor: CREAM, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+              Pide tu cita ahora
+            </h2>
+            <p style={{ color: "#6b7280", fontSize: "1.0625rem", lineHeight: 1.6 }}>
+              Rellena el formulario y Carmen te llamará en menos de 2 horas para confirmar.<br />
+              Sin compromiso. Sin listas de espera.
+            </p>
+          </div>
+
+          <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2.5rem", border: "1px solid #e5e7eb", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
+            <ReservaForm />
+          </div>
+
+          <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.8125rem", color: "#9ca3af" }}>
+            Tus datos están protegidos y solo se utilizan para gestionar tu cita (LOPD/RGPD).
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* ── FOOTER ──────────────────────────────────────── */}
+      <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+            <div style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: "0.875rem" }}>M</div>
+            <span style={{ fontWeight: 700, color: "white" }}>Millennialfisio</span>
+          </div>
+          <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+            <a href="#reservar" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Reservar cita</a>
+            <a href="/login" style={{ color: "#4b5563", fontSize: "0.75rem", textDecoration: "none" }}>· acceso interno ·</a>
+          </div>
+          <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>
+            © {new Date().getFullYear()} Millennialfisio
+          </p>
         </div>
-      </main>
+      </footer>
+
     </div>
   );
 }
