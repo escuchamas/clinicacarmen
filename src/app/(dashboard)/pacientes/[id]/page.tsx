@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Paciente, HistoriaClinica, TratamientoEvolucion, Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, BANDERAS_ROJAS_LISTA } from "@/lib/types";
+import { Paciente, HistoriaClinica, TratamientoEvolucion, Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, PagoEstado, PAGO_LABELS, PAGO_COLORS, BANDERAS_ROJAS_LISTA } from "@/lib/types";
 
 interface PacienteDetalle {
   paciente: Paciente;
@@ -122,6 +122,15 @@ export default function PacienteDetailPage() {
       body: JSON.stringify({ action: "estado", id: citaId, estado }),
     });
     setCitas(prev => prev.map(c => c.id === citaId ? { ...c, estado } : c));
+  }
+
+  async function cambiarPagoCita(citaId: string, pagoEstado: PagoEstado) {
+    await fetch("/api/citas", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "pago", id: citaId, pagoEstado }),
+    });
+    setCitas(prev => prev.map(c => c.id === citaId ? { ...c, pagoEstado } : c));
   }
 
   async function uploadImagen(file: File) {
@@ -602,8 +611,8 @@ export default function PacienteDetailPage() {
               {citas.map(cita => (
                 <div key={cita.id} className="card p-4">
                   <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-sm font-bold" style={{ color: "#1a1a1a" }}>
                           {new Date(cita.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                         </span>
@@ -612,11 +621,13 @@ export default function PacienteDetailPage() {
                       {cita.motivo && <p className="text-sm" style={{ color: "#374151" }}>{cita.motivo}</p>}
                       {cita.notas && <p className="text-xs mt-1" style={{ color: "#9ca3af" }}>{cita.notas}</p>}
                     </div>
-                    <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0"
+                    <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0 ml-2"
                       style={{ backgroundColor: ESTADO_CITA_COLORS[cita.estado] + "20", color: ESTADO_CITA_COLORS[cita.estado] }}>
                       {ESTADO_CITA_LABELS[cita.estado]}
                     </span>
                   </div>
+
+                  {/* Estado */}
                   <div className="flex gap-1 mt-3 flex-wrap">
                     {(["agendada", "vino", "no_vino", "cancelada"] as EstadoCita[]).map(e => (
                       <button key={e} onClick={() => cambiarEstadoCita(cita.id, e)}
@@ -630,6 +641,25 @@ export default function PacienteDetailPage() {
                       </button>
                     ))}
                   </div>
+
+                  {/* Cobro — visible en citas pasadas o que vinieron, salvo cancelada/no_vino */}
+                  {(cita.fecha < new Date().toISOString().split("T")[0] || cita.estado === "vino") &&
+                    cita.estado !== "cancelada" && cita.estado !== "no_vino" && (
+                    <div className="flex gap-1 mt-2 flex-wrap items-center" style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.5rem" }}>
+                      <span className="text-xs font-semibold mr-1" style={{ color: "#9ca3af" }}>Cobro:</span>
+                      {(["sin_pagar", "parcial", "pagado"] as PagoEstado[]).map(p => (
+                        <button key={p} onClick={() => cambiarPagoCita(cita.id, p)}
+                          className="text-xs px-2.5 py-1 rounded-full transition-all"
+                          style={{
+                            backgroundColor: cita.pagoEstado === p ? PAGO_COLORS[p] : "#f3f4f6",
+                            color: cita.pagoEstado === p ? "white" : "#6b7280",
+                            border: "none", cursor: "pointer", fontWeight: cita.pagoEstado === p ? 600 : 400,
+                          }}>
+                          {PAGO_LABELS[p]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
