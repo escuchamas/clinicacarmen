@@ -242,17 +242,67 @@ export default function CalendarioPage() {
       )}
 
       {/* Cabecera */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: "#1a1a1a" }}>Calendario</h1>
+          <h1 className="text-xl font-bold" style={{ color: "#1a1a1a" }}>Calendario</h1>
           <p className="text-sm mt-0.5" style={{ color: "#6b7280" }}>
-            {citas.length} citas · {clases.filter(c => c.estado === "activa").length} clases de pilates
+            {citas.length} citas · {clases.filter(c => c.estado === "activa").length} clases
           </p>
         </div>
         <button className="btn-primary" onClick={() => { setForm(f => ({ ...f, fecha: dateStr(today.getDate()) })); setShowForm(true); }}>
           + Nueva cita
         </button>
       </div>
+
+      {/* Bottom sheet móvil — día seleccionado */}
+      {selectedDay && (
+        <>
+          <div
+            className="fixed inset-0 z-30 sm:hidden"
+            style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
+            onClick={() => setSelectedDay(null)}
+          />
+          <div
+            className="fixed inset-x-0 bottom-0 z-40 sm:hidden"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "1.25rem 1.25rem 0 0",
+              boxShadow: "0 -4px 32px rgba(0,0,0,0.15)",
+              maxHeight: "70vh",
+              display: "flex",
+              flexDirection: "column",
+              paddingBottom: "calc(env(safe-area-inset-bottom) + 4rem)",
+            }}
+          >
+            <div style={{ flexShrink: 0, padding: "0.75rem 1rem 0" }}>
+              <div style={{ width: "40px", height: "4px", backgroundColor: "#e5e7eb", borderRadius: "2px", margin: "0 auto 0.875rem" }} />
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-sm capitalize" style={{ color: "#1a1a1a" }}>
+                  {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
+                </h3>
+                <button
+                  className="btn-ghost text-xs py-1 px-2"
+                  onClick={() => { setForm(f => ({ ...f, fecha: selectedDay })); setShowForm(true); }}
+                >
+                  + Añadir
+                </button>
+              </div>
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", padding: "0 1rem 1rem" }}>
+              {eventosDia.length === 0 ? (
+                <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
+              ) : (
+                <div className="space-y-3">
+                  {eventosDia.map((ev, i) => ev.tipo === "fisio"
+                    ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
+                    : <PilatesCard key={i} clase={ev.clase} />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Calendario */}
@@ -326,8 +376,8 @@ export default function CalendarioPage() {
           </div>
         </div>
 
-        {/* Panel lateral */}
-        <div className="card p-4">
+        {/* Panel lateral — solo desktop */}
+        <div className="hidden lg:block card p-4">
           {selectedDay ? (
             <>
               <div className="flex items-center justify-between mb-4">

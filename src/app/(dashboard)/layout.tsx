@@ -1,5 +1,6 @@
 ﻿import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import BottomNav from "./_components/BottomNav";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -17,9 +18,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       >
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
                 style={{ backgroundColor: "#0891B2" }}
               >
                 C
@@ -53,7 +54,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">{children}</main>
+      <BottomNav />
     </div>
   );
 }
