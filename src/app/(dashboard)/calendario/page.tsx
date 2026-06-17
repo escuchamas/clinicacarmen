@@ -19,7 +19,8 @@ interface NuevaCitaForm {
   notas: string;
 }
 
-type EventoDia = { tipo: "fisio"; cita: Cita } | { tipo: "pilates"; clase: ClasePilates };
+type BloqueoItem = { id: string; fecha: string; horaInicio: string | null; horaFin: string | null; motivo: string };
+type EventoDia = { tipo: "fisio"; cita: Cita } | { tipo: "pilates"; clase: ClasePilates } | { tipo: "bloqueo"; bloqueo: BloqueoItem };
 
 export default function CalendarioPage() {
   const today = new Date();
@@ -128,8 +129,8 @@ export default function CalendarioPage() {
     citas.filter(c => c.fecha === ds).forEach(c => ev.push({ tipo: "fisio", cita: c }));
     clases.filter(c => c.fecha === ds && c.estado === "activa").forEach(c => ev.push({ tipo: "pilates", clase: c }));
     return ev.sort((a, b) => {
-      const horaA = a.tipo === "fisio" ? a.cita.hora : a.clase.horaInicio;
-      const horaB = b.tipo === "fisio" ? b.cita.hora : b.clase.horaInicio;
+      const horaA = a.tipo === "fisio" ? a.cita.hora : a.tipo === "pilates" ? a.clase.horaInicio : (a.bloqueo.horaInicio ?? "00:00");
+      const horaB = b.tipo === "fisio" ? b.cita.hora : b.tipo === "pilates" ? b.clase.horaInicio : (b.bloqueo.horaInicio ?? "00:00");
       return horaA.localeCompare(horaB);
     });
   }
@@ -171,9 +172,15 @@ export default function CalendarioPage() {
 
   const days = getDaysInMonth();
   const eventosDia: EventoDia[] = selectedDay
-    ? [...citas.filter(c => c.fecha === selectedDay).map(c => ({ tipo: "fisio" as const, cita: c })),
-       ...clases.filter(c => c.fecha === selectedDay && c.estado === "activa").map(c => ({ tipo: "pilates" as const, clase: c }))]
-       .sort((a, b) => (a.tipo === "fisio" ? a.cita.hora : a.clase.horaInicio).localeCompare(b.tipo === "fisio" ? b.cita.hora : b.clase.horaInicio))
+    ? [
+        ...diasBloqueados.filter(b => b.fecha === selectedDay).map(b => ({ tipo: "bloqueo" as const, bloqueo: b })),
+        ...citas.filter(c => c.fecha === selectedDay).map(c => ({ tipo: "fisio" as const, cita: c })),
+        ...clases.filter(c => c.fecha === selectedDay && c.estado === "activa").map(c => ({ tipo: "pilates" as const, clase: c })),
+      ].sort((a, b) => {
+        const horaA = a.tipo === "fisio" ? a.cita.hora : a.tipo === "pilates" ? a.clase.horaInicio : (a.bloqueo.horaInicio ?? "00:00");
+        const horaB = b.tipo === "fisio" ? b.cita.hora : b.tipo === "pilates" ? b.clase.horaInicio : (b.bloqueo.horaInicio ?? "00:00");
+        return horaA.localeCompare(horaB);
+      })
     : [];
 
   return (
@@ -423,17 +430,34 @@ export default function CalendarioPage() {
               ) : (
                 eventosDia.map((ev, i) => (
                   <div key={i} className="flex items-center gap-3" style={{ padding: "0.5rem 0", borderBottom: i < eventosDia.length - 1 ? "1px solid #f3f4f6" : "none" }}>
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }} />
-                    <span className="text-xs font-medium flex-shrink-0" style={{ color: "#9ca3af", minWidth: 36 }}>
-                      {ev.tipo === "fisio" ? ev.cita.hora : ev.clase.horaInicio}
-                    </span>
-                    <span className="text-sm font-semibold flex-1 truncate" style={{ color: ev.tipo === "fisio" ? AQUA : PURPLE }}>
-                      {ev.tipo === "fisio" ? ev.cita.pacienteNombre : ev.clase.titulo}
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 font-medium"
-                      style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] + "20" : "#EDE9FE", color: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }}>
-                      {ev.tipo === "fisio" ? ESTADO_CITA_LABELS[ev.cita.estado] : `${ev.clase.inscritosCount}/${ev.clase.capacidad}`}
-                    </span>
+                    {ev.tipo === "bloqueo" ? (
+                      <>
+                        <span style={{ fontSize: 12, flexShrink: 0 }}>{ev.bloqueo.horaInicio ? "⏰" : "🔒"}</span>
+                        <span className="text-xs font-medium flex-shrink-0" style={{ color: "#9ca3af", minWidth: 36 }}>{ev.bloqueo.horaInicio ?? ""}</span>
+                        <span className="text-sm font-semibold flex-1 truncate" style={{ color: ev.bloqueo.horaInicio ? "#d97706" : "#ef4444" }}>
+                          {ev.bloqueo.horaInicio ? `Bloqueado ${ev.bloqueo.horaInicio}–${ev.bloqueo.horaFin}` : "Día bloqueado"}
+                          {ev.bloqueo.motivo ? ` · ${ev.bloqueo.motivo}` : ""}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 font-medium"
+                          style={{ backgroundColor: ev.bloqueo.horaInicio ? "#fffbeb" : "#fef2f2", color: ev.bloqueo.horaInicio ? "#d97706" : "#ef4444" }}>
+                          No disponible
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }} />
+                        <span className="text-xs font-medium flex-shrink-0" style={{ color: "#9ca3af", minWidth: 36 }}>
+                          {ev.tipo === "fisio" ? ev.cita.hora : ev.clase.horaInicio}
+                        </span>
+                        <span className="text-sm font-semibold flex-1 truncate" style={{ color: ev.tipo === "fisio" ? AQUA : PURPLE }}>
+                          {ev.tipo === "fisio" ? ev.cita.pacienteNombre : ev.clase.titulo}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 font-medium"
+                          style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] + "20" : "#EDE9FE", color: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }}>
+                          {ev.tipo === "fisio" ? ESTADO_CITA_LABELS[ev.cita.estado] : `${ev.clase.inscritosCount}/${ev.clase.capacidad}`}
+                        </span>
+                      </>
+                    )}
                   </div>
                 ))
               )}
@@ -540,9 +564,12 @@ export default function CalendarioPage() {
                   <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
                 ) : (
                   <div className="space-y-3">
-                    {eventosDia.map((ev, i) => ev.tipo === "fisio"
-                      ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
-                      : <PilatesCard key={i} clase={ev.clase} />
+                    {eventosDia.map((ev, i) =>
+                      ev.tipo === "fisio"
+                        ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
+                        : ev.tipo === "pilates"
+                          ? <PilatesCard key={i} clase={ev.clase} />
+                          : <BloqueoCard key={i} bloqueo={ev.bloqueo} />
                     )}
                   </div>
                 )}
@@ -682,6 +709,26 @@ function PilatesCard({ clase }: { clase: ClasePilates }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function BloqueoCard({ bloqueo }: { bloqueo: BloqueoItem }) {
+  const esHoras = !!bloqueo.horaInicio;
+  return (
+    <div className="p-3 rounded-xl flex items-center gap-3"
+      style={{ backgroundColor: esHoras ? "#fffbeb" : "#fef2f2", border: `1px solid ${esHoras ? "#fed7aa" : "#fca5a5"}` }}>
+      <Lock size={14} color={esHoras ? "#d97706" : "#ef4444"} strokeWidth={2} style={{ flexShrink: 0 }} />
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-sm" style={{ color: esHoras ? "#92400e" : "#991b1b" }}>
+          {esHoras ? `${bloqueo.horaInicio} – ${bloqueo.horaFin}` : "Día completo bloqueado"}
+        </p>
+        {bloqueo.motivo && <p className="text-xs mt-0.5 truncate" style={{ color: "#9ca3af" }}>{bloqueo.motivo}</p>}
+      </div>
+      <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0"
+        style={{ backgroundColor: esHoras ? "#fed7aa" : "#fca5a5", color: esHoras ? "#92400e" : "#991b1b" }}>
+        {esHoras ? "Horas bloqueadas" : "No disponible"}
+      </span>
     </div>
   );
 }
