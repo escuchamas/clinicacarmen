@@ -1,5 +1,3 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import ReservaForm from "./_components/ReservaForm";
 import QuizProblemas from "./_components/QuizProblemas";
 import Link from "next/link";
@@ -18,9 +16,6 @@ const CREAM = "#F2EDE3";
 const DARK = "#111827";
 
 export default async function HomePage() {
-  const session = await auth();
-  if (session) redirect("/pacientes");
-
   return (
     <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", color: DARK }}>
 
