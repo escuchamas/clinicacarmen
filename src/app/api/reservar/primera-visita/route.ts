@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { sendLopdEmail } from "@/lib/email";
 
 function sql() {
   return neon(process.env.DATABASE_URL!);
@@ -67,6 +68,13 @@ export async function POST(req: NextRequest) {
       INSERT INTO citas (id, paciente_id, fecha, hora, duracion, motivo, estado, notas, fecha_creacion)
       VALUES (${citaId}, ${pacienteId}, ${fecha}, ${hora}, 30, 'Primera visita', 'agendada', ${notas}, NOW())
     `;
+
+    // Enviar email LOPD si el paciente facilitó correo
+    if (email?.trim()) {
+      sendLopdEmail(email.trim(), nombre.trim(), apellidos.trim()).catch((err) =>
+        console.error("[lopd-email]", err)
+      );
+    }
 
     return NextResponse.json({ pacienteId, citaId }, { status: 201 });
   } catch (e) {
