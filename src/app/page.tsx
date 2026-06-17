@@ -3,7 +3,7 @@ import QuizProblemas from "./_components/QuizProblemas";
 import Link from "next/link";
 import {
   Zap, Target, CalendarCheck,
-  Fingerprint, MessageCircle, BadgeEuro,
+  Fingerprint, MessageCircle, BadgeEuro, Phone,
 } from "lucide-react";
 
 const WA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría pedir información sobre una primera visita.")}`;
@@ -212,12 +212,18 @@ export default async function HomePage() {
               </span>
               <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Nuevo paciente</h3>
               <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-                La primera visita incluye evaluación completa. Escríbenos y te reservamos el primer hueco disponible.
+                La primera visita incluye evaluación completa. Escríbenos o llámanos y te reservamos el primer hueco disponible.
               </p>
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
-                <MessageCircle size={18} /> WhatsApp
-              </a>
+              <div style={{ display: "grid", gap: "0.625rem" }}>
+                <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                  <MessageCircle size={18} /> WhatsApp
+                </a>
+                <a href="tel:+34608622236"
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "white", color: DARK, fontWeight: 700, fontSize: "1rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none", border: "1.5px solid #e5e7eb" }}>
+                  <Phone size={18} /> 608 622 236
+                </a>
+              </div>
             </div>
           </div>
 
