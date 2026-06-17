@@ -40,6 +40,14 @@ export default function PacienteDetailPage() {
   const [editForm, setEditForm] = useState<EditForm>({ nombre: "", apellidos: "", dni: "", email: "", telefono: "", fechaNacimiento: "", poblacion: "" });
   const [savingEdit2, setSavingEdit2] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editingHistoria, setEditingHistoria] = useState(false);
+  const [historiaForm, setHistoriaForm] = useState<Omit<HistoriaClinica, "pacienteId" | "fechaCreacion" | "pruebaImagenUrl">>({
+    profesion: "", alergias: "", ejercicioFisico: "", motivoConsulta: "",
+    antecedentesPersonalesFamiliares: "", calidadSueno: "", patologias: "",
+    tabaquismo: "", medicacion: "", implantesMetalicos: "", embarazoLactancia: "",
+    semanasEmbarazo: "", banderasRojas: [], pruebaTipo: "", pruebaFecha: "", pruebaDiagnostico: "",
+  });
+  const [savingHistoria, setSavingHistoria] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -156,6 +164,42 @@ export default function PacienteDetailPage() {
     }
   }
 
+  function openEditHistoria(h: HistoriaClinica) {
+    setHistoriaForm({
+      profesion: h.profesion ?? "",
+      alergias: h.alergias ?? "",
+      ejercicioFisico: h.ejercicioFisico ?? "",
+      motivoConsulta: h.motivoConsulta ?? "",
+      antecedentesPersonalesFamiliares: h.antecedentesPersonalesFamiliares ?? "",
+      calidadSueno: h.calidadSueno ?? "",
+      patologias: h.patologias ?? "",
+      tabaquismo: h.tabaquismo ?? "",
+      medicacion: h.medicacion ?? "",
+      implantesMetalicos: h.implantesMetalicos ?? "",
+      embarazoLactancia: h.embarazoLactancia ?? "",
+      semanasEmbarazo: h.semanasEmbarazo ?? "",
+      banderasRojas: h.banderasRojas ?? [],
+      pruebaTipo: h.pruebaTipo ?? "",
+      pruebaFecha: h.pruebaFecha ?? "",
+      pruebaDiagnostico: h.pruebaDiagnostico ?? "",
+    });
+    setEditingHistoria(true);
+  }
+
+  async function saveHistoria() {
+    setSavingHistoria(true);
+    const res = await fetch(`/api/pacientes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ seccion: "historia", datos: historiaForm }),
+    });
+    if (res.ok) {
+      setData(prev => prev ? { ...prev, historia: prev.historia ? { ...prev.historia, ...historiaForm } : prev.historia } : prev);
+      setEditingHistoria(false);
+    }
+    setSavingHistoria(false);
+  }
+
   async function saveEditSesion() {
     if (!editingSesion) return;
     setSavingEdit(true);
@@ -241,7 +285,7 @@ export default function PacienteDetailPage() {
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-5 text-sm" style={{ color: "#9ca3af" }}>
-        <Link href="/" style={{ color: "#2D7D5E", textDecoration: "none" }}>Pacientes</Link>
+        <Link href="/pacientes" style={{ color: "#2D7D5E", textDecoration: "none" }}>Pacientes</Link>
         <span>/</span>
         <span>{paciente.nombre} {paciente.apellidos}</span>
       </div>
@@ -409,76 +453,198 @@ export default function PacienteDetailPage() {
       {tab === "historia" && (
         <div>
           {historia ? (
-            <div className="space-y-4">
-              <HistoriaSection title="Profesión / Nivel de estrés" value={historia.profesion} />
-              <HistoriaSection title="Alergias / Intolerancias" value={historia.alergias} />
-              <HistoriaSection title="Ejercicio físico y frecuencia" value={historia.ejercicioFisico} />
-              <HistoriaSection title="Motivo de consulta" value={historia.motivoConsulta} large />
-              <HistoriaSection title="Antecedentes personales y familiares" value={historia.antecedentesPersonalesFamiliares} large />
-              <HistoriaSection title="Calidad del sueño" value={historia.calidadSueno} />
-              <HistoriaSection title="Patologías / Enfermedades" value={historia.patologias} large />
-              <HistoriaSection title="Tabaquismo" value={historia.tabaquismo} />
-              <HistoriaSection title="Medicación" value={historia.medicacion} large />
-              <HistoriaSection title="Implantes metálicos" value={historia.implantesMetalicos} large />
-              <HistoriaSection title="Embarazo / Lactancia" value={historia.embarazoLactancia} />
-              {historia.banderasRojas?.length > 0 && (
-                <div className="card p-4" style={{ border: "1px solid #fca5a5" }}>
-                  <p className="section-title" style={{ color: "#ef4444" }}>🚩 Banderas rojas</p>
-                  <ul className="space-y-1">
-                    {historia.banderasRojas.map((b) => (
-                      <li key={b} className="text-sm flex items-start gap-2">
-                        <span style={{ color: "#ef4444" }}>▶</span>
-                        <span style={{ color: "#374151" }}>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
+            editingHistoria ? (
+              /* ── Modo edición ── */
+              <div className="space-y-4">
+                <div className="card p-5">
+                  <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>💼 Información personal</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="label">Profesión / Nivel de estrés</label>
+                      <textarea className="textarea-field" rows={3} value={historiaForm.profesion} onChange={e => setHistoriaForm(f => ({ ...f, profesion: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Alergias / Intolerancias</label>
+                      <textarea className="textarea-field" rows={2} value={historiaForm.alergias} onChange={e => setHistoriaForm(f => ({ ...f, alergias: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Ejercicio físico y frecuencia</label>
+                      <textarea className="textarea-field" rows={2} value={historiaForm.ejercicioFisico} onChange={e => setHistoriaForm(f => ({ ...f, ejercicioFisico: e.target.value }))} />
+                    </div>
+                  </div>
                 </div>
-              )}
-              <div className="card p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="section-title" style={{ marginBottom: 0 }}>Pruebas de imagen</p>
-                  <label
-                    className="btn-ghost text-xs py-1 px-3"
-                    style={{ cursor: uploadingImg ? "default" : "pointer", opacity: uploadingImg ? 0.6 : 1 }}
-                  >
-                    {uploadingImg ? "Subiendo..." : historia.pruebaImagenUrl ? "Reemplazar archivo" : "+ Subir archivo"}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
-                      style={{ display: "none" }}
-                      disabled={uploadingImg}
-                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImagen(f); e.target.value = ""; }}
-                    />
-                  </label>
+
+                <div className="card p-5">
+                  <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>🩺 Motivo de consulta</h3>
+                  <textarea className="textarea-field" rows={6} value={historiaForm.motivoConsulta} onChange={e => setHistoriaForm(f => ({ ...f, motivoConsulta: e.target.value }))} />
                 </div>
-                {uploadError && <p className="text-xs mb-2" style={{ color: "#ef4444" }}>{uploadError}</p>}
-                {historia.pruebaTipo && <p className="text-sm" style={{ color: "#6b7280" }}><strong>Tipo:</strong> {historia.pruebaTipo}</p>}
-                {historia.pruebaFecha && <p className="text-sm" style={{ color: "#6b7280" }}><strong>Fecha:</strong> {historia.pruebaFecha}</p>}
-                {historia.pruebaDiagnostico && <p className="text-sm mt-1" style={{ color: "#374151", whiteSpace: "pre-wrap" }}>{historia.pruebaDiagnostico}</p>}
-                {historia.pruebaImagenUrl && (
-                  <div className="mt-3">
-                    {historia.pruebaImagenUrl.endsWith(".pdf") ? (
-                      <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-sm font-medium"
-                        style={{ color: "#2D7D5E", textDecoration: "underline" }}>
-                        Ver PDF de la prueba
-                      </a>
-                    ) : (
-                      <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={historia.pruebaImagenUrl}
-                          alt="Prueba de imagen"
-                          style={{ maxWidth: "100%", maxHeight: 400, borderRadius: 8, border: "1px solid #e2ddd3", objectFit: "contain" }}
+
+                <div className="card p-5">
+                  <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>📋 Antecedentes</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="label">Antecedentes personales y familiares</label>
+                      <textarea className="textarea-field" rows={4} value={historiaForm.antecedentesPersonalesFamiliares} onChange={e => setHistoriaForm(f => ({ ...f, antecedentesPersonalesFamiliares: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Calidad del sueño</label>
+                      <textarea className="textarea-field" rows={2} value={historiaForm.calidadSueno} onChange={e => setHistoriaForm(f => ({ ...f, calidadSueno: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Patologías / Enfermedades</label>
+                      <textarea className="textarea-field" rows={4} value={historiaForm.patologias} onChange={e => setHistoriaForm(f => ({ ...f, patologias: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Tabaquismo</label>
+                      <input className="input-field" value={historiaForm.tabaquismo} onChange={e => setHistoriaForm(f => ({ ...f, tabaquismo: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Medicación</label>
+                      <textarea className="textarea-field" rows={3} value={historiaForm.medicacion} onChange={e => setHistoriaForm(f => ({ ...f, medicacion: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className="label">Implantes metálicos</label>
+                      <textarea className="textarea-field" rows={2} value={historiaForm.implantesMetalicos} onChange={e => setHistoriaForm(f => ({ ...f, implantesMetalicos: e.target.value }))} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="label">Embarazo / Lactancia</label>
+                        <input className="input-field" value={historiaForm.embarazoLactancia} onChange={e => setHistoriaForm(f => ({ ...f, embarazoLactancia: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label className="label">Semanas de embarazo</label>
+                        <input className="input-field" value={historiaForm.semanasEmbarazo} onChange={e => setHistoriaForm(f => ({ ...f, semanasEmbarazo: e.target.value }))} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card p-5">
+                  <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>🚩 Banderas rojas</h3>
+                  <div className="space-y-2">
+                    {BANDERAS_ROJAS_LISTA.map(b => (
+                      <label key={b} className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={historiaForm.banderasRojas.includes(b)}
+                          onChange={e => {
+                            const curr = historiaForm.banderasRojas;
+                            setHistoriaForm(f => ({ ...f, banderasRojas: e.target.checked ? [...curr, b] : curr.filter(x => x !== b) }));
+                          }}
+                          className="mt-0.5 h-4 w-4 flex-shrink-0"
+                          style={{ accentColor: "#0891B2" }}
                         />
-                      </a>
-                    )}
+                        <span className="text-sm" style={{ color: "#374151" }}>{b}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="card p-5">
+                  <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>Pruebas de imagen</h3>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="label">Tipo de prueba</label>
+                        <input className="input-field" value={historiaForm.pruebaTipo} onChange={e => setHistoriaForm(f => ({ ...f, pruebaTipo: e.target.value }))} placeholder="Radiografía, resonancia..." />
+                      </div>
+                      <div>
+                        <label className="label">Fecha de la prueba</label>
+                        <input className="input-field" type="date" value={historiaForm.pruebaFecha} onChange={e => setHistoriaForm(f => ({ ...f, pruebaFecha: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="label">Diagnóstico</label>
+                      <textarea className="textarea-field" rows={4} value={historiaForm.pruebaDiagnostico} onChange={e => setHistoriaForm(f => ({ ...f, pruebaDiagnostico: e.target.value }))} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 justify-end pb-4">
+                  <button className="btn-secondary" onClick={() => setEditingHistoria(false)}>Cancelar</button>
+                  <button className="btn-primary" onClick={saveHistoria} disabled={savingHistoria}>
+                    {savingHistoria ? "Guardando..." : "Guardar cambios"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* ── Modo lectura ── */
+              <div className="space-y-4">
+                <div className="flex justify-end">
+                  <button className="btn-ghost text-sm py-1.5 px-3" onClick={() => openEditHistoria(historia)}>
+                    Editar historia clínica
+                  </button>
+                </div>
+                <HistoriaSection title="Profesión / Nivel de estrés" value={historia.profesion} />
+                <HistoriaSection title="Alergias / Intolerancias" value={historia.alergias} />
+                <HistoriaSection title="Ejercicio físico y frecuencia" value={historia.ejercicioFisico} />
+                <HistoriaSection title="Motivo de consulta" value={historia.motivoConsulta} large />
+                <HistoriaSection title="Antecedentes personales y familiares" value={historia.antecedentesPersonalesFamiliares} large />
+                <HistoriaSection title="Calidad del sueño" value={historia.calidadSueno} />
+                <HistoriaSection title="Patologías / Enfermedades" value={historia.patologias} large />
+                <HistoriaSection title="Tabaquismo" value={historia.tabaquismo} />
+                <HistoriaSection title="Medicación" value={historia.medicacion} large />
+                <HistoriaSection title="Implantes metálicos" value={historia.implantesMetalicos} large />
+                <HistoriaSection title="Embarazo / Lactancia" value={historia.embarazoLactancia} />
+                {historia.banderasRojas?.length > 0 && (
+                  <div className="card p-4" style={{ border: "1px solid #fca5a5" }}>
+                    <p className="section-title" style={{ color: "#ef4444" }}>🚩 Banderas rojas</p>
+                    <ul className="space-y-1">
+                      {historia.banderasRojas.map((b) => (
+                        <li key={b} className="text-sm flex items-start gap-2">
+                          <span style={{ color: "#ef4444" }}>▶</span>
+                          <span style={{ color: "#374151" }}>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
-                {!historia.pruebaTipo && !historia.pruebaImagenUrl && (
-                  <p className="text-sm" style={{ color: "#9ca3af" }}>No hay pruebas de imagen registradas</p>
-                )}
+                <div className="card p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="section-title" style={{ marginBottom: 0 }}>Pruebas de imagen</p>
+                    <label
+                      className="btn-ghost text-xs py-1 px-3"
+                      style={{ cursor: uploadingImg ? "default" : "pointer", opacity: uploadingImg ? 0.6 : 1 }}
+                    >
+                      {uploadingImg ? "Subiendo..." : historia.pruebaImagenUrl ? "Reemplazar archivo" : "+ Subir archivo"}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
+                        style={{ display: "none" }}
+                        disabled={uploadingImg}
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImagen(f); e.target.value = ""; }}
+                      />
+                    </label>
+                  </div>
+                  {uploadError && <p className="text-xs mb-2" style={{ color: "#ef4444" }}>{uploadError}</p>}
+                  {historia.pruebaTipo && <p className="text-sm" style={{ color: "#6b7280" }}><strong>Tipo:</strong> {historia.pruebaTipo}</p>}
+                  {historia.pruebaFecha && <p className="text-sm" style={{ color: "#6b7280" }}><strong>Fecha:</strong> {historia.pruebaFecha}</p>}
+                  {historia.pruebaDiagnostico && <p className="text-sm mt-1" style={{ color: "#374151", whiteSpace: "pre-wrap" }}>{historia.pruebaDiagnostico}</p>}
+                  {historia.pruebaImagenUrl && (
+                    <div className="mt-3">
+                      {historia.pruebaImagenUrl.endsWith(".pdf") ? (
+                        <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer"
+                          className="text-sm font-medium"
+                          style={{ color: "#2D7D5E", textDecoration: "underline" }}>
+                          Ver PDF de la prueba
+                        </a>
+                      ) : (
+                        <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer">
+                          <img
+                            src={historia.pruebaImagenUrl}
+                            alt="Prueba de imagen"
+                            style={{ maxWidth: "100%", maxHeight: 400, borderRadius: 8, border: "1px solid #e2ddd3", objectFit: "contain" }}
+                          />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                  {!historia.pruebaTipo && !historia.pruebaImagenUrl && (
+                    <p className="text-sm" style={{ color: "#9ca3af" }}>No hay pruebas de imagen registradas</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )
           ) : (
             <div className="card p-10 text-center">
               <p className="text-sm" style={{ color: "#6b7280" }}>No hay historia clínica registrada</p>
