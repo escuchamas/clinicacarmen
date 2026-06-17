@@ -340,8 +340,14 @@ function CitaCard({ cita, warn24h, onEstado, onDelete }: {
   onEstado: (id: string, estado: EstadoCita) => void;
   onDelete: (id: string) => void;
 }) {
+  const esPrimeraVisita = cita.motivo === "Primera visita";
   return (
-    <div className="p-3 rounded-xl" style={{ backgroundColor: "#fafafa", border: warn24h ? "1px solid #fcd34d" : "1px solid #DDD8CE" }}>
+    <div className="p-3 rounded-xl" style={{ backgroundColor: esPrimeraVisita ? "#fff7ed" : "#fafafa", border: warn24h ? "1px solid #fcd34d" : esPrimeraVisita ? "1px solid #fed7aa" : "1px solid #DDD8CE" }}>
+      {esPrimeraVisita && (
+        <div className="flex items-center gap-1 text-xs mb-2 font-semibold" style={{ color: "#ea580c" }}>
+          ★ Primera visita — revisar cuestionario en notas
+        </div>
+      )}
       {warn24h && (
         <div className="flex items-center gap-1 text-xs mb-2" style={{ color: "#d97706" }}>
           <AlertCircle size={11} /> Menos de 24h para la cita — política de cancelación activa
