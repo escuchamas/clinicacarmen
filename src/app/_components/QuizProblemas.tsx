@@ -1,83 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, Bone, Brain, Dumbbell, Zap, Stethoscope, Baby, type LucideIcon } from "lucide-react";
+import { ChevronRight, Bone, Brain, Dumbbell, Zap, Stethoscope, Baby, X, type LucideIcon } from "lucide-react";
 
 const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
-const CREAM = "#F2EDE3";
 
 type ProblemId = "espalda" | "cervicales" | "deportiva" | "hombro" | "postop" | "embarazo";
-type Step = "select" | "questions" | "profile";
+type ModalStep = "questions" | "profile";
 
 interface Problem {
   id: ProblemId;
   icon: LucideIcon;
   title: string;
-  situaciones: string[];
 }
 
 const PROBLEMS: Problem[] = [
-  {
-    id: "espalda",
-    icon: Bone,
-    title: "Dolor de espalda",
-    situaciones: [
-      "Te duele al agacharte a coger algo del suelo",
-      "Llevas semanas sin dormir bien por el dolor",
-      "Por las mañanas tardas varios minutos en ponerte en marcha",
-    ],
-  },
-  {
-    id: "cervicales",
-    icon: Brain,
-    title: "Cervicales y cabeza",
-    situaciones: [
-      "Acabas el día con el cuello tan cargado que ya tienes dolor de cabeza por costumbre",
-      "Te cuesta girar la cabeza del todo cuando aparcan o conduces",
-      "El ibuprofeno ya es parte de tu rutina semanal",
-    ],
-  },
-  {
-    id: "deportiva",
-    icon: Dumbbell,
-    title: "Lesión deportiva",
-    situaciones: [
-      "Llevas meses sin poder salir a correr, jugar al fútbol o entrenar con normalidad",
-      "La lesión 'curó' pero nunca volviste al cien por cien",
-      "Te da miedo hacer el mismo gesto que te lesionó",
-    ],
-  },
-  {
-    id: "hombro",
-    icon: Zap,
-    title: "Hombro y brazo",
-    situaciones: [
-      "No puedes dormir del lado que te duele",
-      "Coger algo de un estante alto ya lo piensas dos veces",
-      "Llevas meses con el brazo limitado y ya lo das por normal",
-    ],
-  },
-  {
-    id: "postop",
-    icon: Stethoscope,
-    title: "Postoperatorio",
-    situaciones: [
-      "La operación fue hace meses y sigues sin estar al cien por cien",
-      "Sientes que la recuperación se ha estancado",
-      "No terminas de confiar en la zona operada para hacer vida normal",
-    ],
-  },
-  {
-    id: "embarazo",
-    icon: Baby,
-    title: "Embarazo y postparto",
-    situaciones: [
-      "Desde que tuviste al bebé, tu cuerpo ya no es el de antes",
-      "Notas pérdidas al toser, reír o saltar",
-      "Tienes dolor de espalda o caderas que no remite",
-    ],
-  },
+  { id: "espalda",    icon: Bone,        title: "Dolor de espalda" },
+  { id: "cervicales", icon: Brain,       title: "Cervicales y cabeza" },
+  { id: "deportiva",  icon: Dumbbell,    title: "Lesión deportiva" },
+  { id: "hombro",     icon: Zap,         title: "Hombro y brazo" },
+  { id: "postop",     icon: Stethoscope, title: "Postoperatorio" },
+  { id: "embarazo",   icon: Baby,        title: "Embarazo y postparto" },
 ];
 
 type QuestionOption = { id: string; label: string };
@@ -210,13 +154,7 @@ interface Profile { title: string; body: string; chips: string[] }
 
 function buildProfile(problem: ProblemId, answers: Record<string, string>): Profile {
   if (problem === "espalda") {
-    const dur = answers.duracion;
     const baja = answers.baja;
-    const apertura = dur === "reciente"
-      ? "El dolor acaba de aparecer, pero ya está condicionando tu día a día. Te levantas pensando en él y te acuestas sin que haya desaparecido del todo."
-      : dur === "meses"
-      ? "Llevas meses conviviendo con un dolor que mejora un poco y vuelve. Ya has perdido la cuenta de las veces que has pensado que por fin se iba."
-      : "Llevas más de medio año cargando con un dolor que ya sientes como parte de tu vida — tan normalizado que casi ni lo mencionas, pero que te limita para dormir, agacharte, coger a tus hijos o simplemente moverte con libertad.";
     const nervio = baja === "si"
       ? " El hecho de que baje por la pierna o notes hormigueos indica que hay una estructura comprimiendo el nervio ciático. Ningún antiinflamatorio ni reposo va a liberar esa compresión — necesita tratamiento manual sobre el origen."
       : baja === "aveces"
@@ -224,257 +162,257 @@ function buildProfile(problem: ProblemId, answers: Record<string, string>): Prof
       : " La zona lumbar acumula tensión postural, muscular y emocional. Sin tratamiento dirigido, el ciclo se repite: mejora, recae, mejora, recae.";
     return {
       title: "Así es tu situación con la espalda",
-      body: `${apertura}${nervio} Has probado el reposo, el calor, los antiinflamatorios... y el problema regresa. No es mala suerte: el origen nunca se ha tratado. Con fisioterapia manual específica podemos localizarlo y trabajar sobre él desde la primera sesión.`,
+      body: `Has probado el reposo, el calor, los antiinflamatorios... y el problema regresa. No es mala suerte: el origen nunca se ha tratado.${nervio} Con fisioterapia manual específica podemos localizarlo y trabajar sobre él desde la primera sesión.`,
       chips: baja !== "no" ? ["Lumbalgia", "Ciática", "Nervio ciático"] : ["Lumbalgia", "Tensión postural", "Musculatura lumbar"],
     };
   }
 
   if (problem === "cervicales") {
-    const cefalea = answers.cefalea;
-    const cuando = answers.cuando;
-    const apertura = cefalea === "diario"
-      ? "El dolor de cabeza se ha convertido en parte de tu rutina. Tanto que ya no sabes si es normal o no, si hay que hacerle caso o ignorarlo."
-      : cefalea === "frecuente"
-      ? "Varias veces a la semana aparece ese dolor de cabeza que te quita concentración, energía y ganas. Ya tienes el ibuprofeno cerca por costumbre."
+    const cefalea = answers.final_dia;
+    const patron = answers.cabeza;
+    const apertura = cefalea === "si"
+      ? "El cuello aguanta horas de tensión acumulada sin poder liberarla. El dolor de cabeza ya no te sorprende — forma parte del día."
       : "El cuello avisa: tensión, rigidez, molestia al girar. El dolor de cabeza aún no es constante, pero cuando aparece lo paraliza todo.";
-    const patron = cuando === "ordenador"
-      ? " Que empeore en el ordenador no es casualidad: mantener la cabeza adelantada durante horas sobrecarga las vértebras cervicales y la base del cráneo."
-      : cuando === "estres"
-      ? " Que empeore al final del día refleja una musculatura que ha aguantado horas de tensión acumulada sin poder liberarla."
-      : cuando === "manana"
-      ? " Despertar con el cuello cargado indica que la musculatura no descansa durante el sueño. La postura crónica y la tensión perpetúan el ciclo noche tras noche."
-      : " Sin un patrón claro, el origen puede ser postural, articular o muscular — o los tres a la vez. Por eso es imprescindible una evaluación que vaya más allá del síntoma.";
+    const patronText = patron === "si"
+      ? " Que empiece en la nuca y suba hacia la frente es la firma de la cefalea cervicogénica: el origen no está en la cabeza, sino en las vértebras cervicales y la musculatura de la nuca."
+      : " Un trabajo preciso sobre la columna cervical y la base del cráneo puede cambiar radicalmente cómo te sientes en el día a día.";
     return {
       title: "Así es tu situación con las cervicales",
-      body: `${apertura}${patron} Un trabajo preciso sobre la columna cervical, la base del cráneo y la musculatura de la nuca puede cambiar radicalmente cómo te sientes en el día a día — en pocas semanas.`,
+      body: `${apertura}${patronText} Sin tratamiento, el ciclo se perpetúa: tensión → dolor de cabeza → más tensión. En pocas semanas de trabajo específico se puede romper ese patrón.`,
       chips: ["Cervicalgia", "Cefalea tensional", "Contractura cervical"],
     };
   }
 
   if (problem === "deportiva") {
-    const tiempo = answers.tiempo;
-    const zona = answers.zona;
-    const tiempoText = tiempo === "aguda"
-      ? "La lesión acaba de ocurrir. Este es el momento más importante de toda la recuperación: lo que hagas en estas primeras semanas determina si te recuperas al cien por cien o si el problema se arrastra durante meses."
-      : tiempo === "subaguda"
-      ? "Han pasado uno a tres meses. Sientes que ha mejorado, pero no estás al cien por cien. Quizás tienes miedo de recaer, o algo no termina de funcionar como antes."
-      : "La lesión ya es crónica o vuelve una y otra vez. Eso no es mala suerte: significa que el origen nunca se resolvió del todo. Cada recaída deja la zona más vulnerable.";
-    const zonaText = zona === "tren_inferior"
-      ? " En tobillo, rodilla y cadera, una recuperación incompleta no solo limita el rendimiento — altera toda la cadena de movimiento."
-      : zona === "muscular"
-      ? " Las roturas o sobrecargas musculares necesitan una cicatrización dirigida. Sin estímulo adecuado, el tejido que queda es más rígido y propenso a romperse de nuevo."
-      : " Sea cual sea la zona, el cuerpo necesita cargas controladas y progresivas para sanar bien, no solo reposo y tiempo.";
+    const reposo = answers.reposo;
+    const tiempoText = reposo === "si"
+      ? "El hecho de que mejore con reposo pero vuelva con la actividad confirma que el origen nunca se resolvió del todo. Cada recaída deja la zona más vulnerable."
+      : reposo === "parcial"
+      ? "Que no desaparezca del todo ni con reposo indica que el tejido necesita un estímulo activo — no solo tiempo — para regenerarse correctamente."
+      : "Que el reposo lo resuelva no significa que el problema esté resuelto: puede volver con la próxima carga. Mejor evaluar el origen antes de que lo haga.";
     return {
       title: "Así es tu situación con la lesión deportiva",
-      body: `${tiempoText}${zonaText} El objetivo no es solo que deje de doler: es que vuelvas a tu nivel anterior con confianza, sin miedo a recaer.`,
+      body: `${tiempoText} El objetivo no es solo que deje de doler: es que vuelvas a tu nivel anterior con confianza, sin miedo a recaer y sin compensaciones que generen otros problemas más adelante.`,
       chips: ["Lesión deportiva", "Rehabilitación funcional", "Vuelta al deporte"],
     };
   }
 
   if (problem === "hombro") {
-    const cuando = answers.cuando;
-    const duracion = answers.duracion;
-    const apertura = cuando === "noche"
+    const noche = answers.noche;
+    const movimiento = answers.movimiento;
+    const apertura = noche === "si"
       ? "No poder dormir del lado que te duele es agotador. Llevas noches dando vueltas, buscando una postura que no duela, y por las mañanas el hombro está igual o peor."
-      : cuando === "elevacion"
-      ? "Levantar el brazo se ha convertido en algo que evitas. Coger cosas del estante, ponerte la chaqueta, peinarte — gestos que antes hacías sin pensar ahora los mides."
-      : "El dolor ya es constante. No hay postura cómoda ni momento del día en que el hombro descanse del todo.";
-    const tiempo = duracion === "semanas"
-      ? " Tratarlo ahora evita que se cronifique — cuanto antes se interviene, más rápida es la recuperación."
-      : duracion === "meses"
-      ? " Llevas meses aguantando. La articulación empieza a perder movilidad si no se trabaja a tiempo."
-      : " Más de seis meses con el hombro limitado significa que el tejido se ha adaptado a la restricción. Se puede recuperar, pero necesita trabajo específico y progresivo.";
+      : movimiento === "si"
+      ? "Levantar el brazo, ponerte la chaqueta, alcanzar el estante — gestos que antes hacías sin pensar ahora los calculas. Eso es una limitación funcional real, aunque el dolor no sea constante."
+      : "El hombro avisa: algo no funciona como debería. Sin tratamiento, la articulación pierde rango de movimiento progresivamente.";
     return {
       title: "Así es tu situación con el hombro",
-      body: `${apertura}${tiempo} Con terapia manual específica sobre la articulación glenohumeral y la musculatura periescapular podemos recuperar la movilidad y eliminar el dolor de forma progresiva.`,
+      body: `${apertura} Con terapia manual específica sobre la articulación glenohumeral y la musculatura periescapular podemos recuperar la movilidad y eliminar el dolor de forma progresiva — sin cirugía en la mayoría de los casos.`,
       chips: ["Hombro doloroso", "Manguito rotador", "Movilidad articular"],
     };
   }
 
   if (problem === "embarazo") {
-    const fase = answers.fase;
-    const molestia = answers.molestia;
-    const apertura = fase === "embarazo"
-      ? "El embarazo transforma el cuerpo en pocos meses. El centro de gravedad cambia, la pelvis se adapta, los ligamentos se aflojan — y todo eso tiene consecuencias que se pueden tratar sin esperar a que pasen solos."
-      : fase === "postparto_reciente"
-      ? "Los primeros meses tras el parto son los más importantes para tu recuperación. El cuerpo ha hecho un esfuerzo enorme y necesita ayuda para volver a funcionar bien — por dentro y por fuera."
-      : "Llevas más de seis meses en el postparto y todavía notas que algo no ha vuelto del todo. No es normal y no tienes que aceptarlo como parte de 'ser madre'.";
-    const molestiaText = molestia === "dolor"
-      ? " El dolor de espalda o pelvis durante o después del embarazo tiene un origen muy concreto y tratable — no es 'lo que toca pasar'."
-      : molestia === "suelo_pelvico"
-      ? " Las pérdidas, la presión o la sensación de pesadez son señales de que el suelo pélvico necesita atención. Se puede recuperar con trabajo específico."
-      : " Volver al deporte o a la actividad física tras el embarazo necesita una progresión adecuada. Sin ella, el riesgo de lesión o recaída es mucho mayor.";
+    const actividad = answers.actividad;
+    const antes = answers.antes;
+    const apertura = actividad === "si"
+      ? "Cuando el cuerpo empieza a compensar en las actividades del día a día, es una señal clara de que necesita ayuda para recuperar su función normal."
+      : "El cuerpo ha hecho un esfuerzo enorme durante el embarazo y el parto. A veces los síntomas tardan en aparecer — pero cuando lo hacen, tienen tratamiento.";
+    const antesText = antes === "nuevas"
+      ? " Que sean nuevas desde el embarazo o el parto confirma que el origen está en los cambios hormonales, posturales y biomecánicos de este proceso."
+      : antes === "peor"
+      ? " Que hayan empeorado con el embarazo o el parto indica que el cuerpo tenía una debilidad previa que ahora está al descubierto."
+      : " Aunque las tenías antes, el embarazo y el parto las han agravado. Hay mucho que hacer desde la fisioterapia especializada.";
     return {
       title: "Así es tu situación",
-      body: `${apertura}${molestiaText} Carmen trabaja con mujeres en todas las fases del embarazo y postparto con un enfoque personalizado y basado en evidencia.`,
+      body: `${apertura}${antesText} No tienes que aceptarlo como parte de 'ser madre'. Carmen trabaja con mujeres en todas las fases del embarazo y postparto con un enfoque personalizado y basado en evidencia.`,
       chips: ["Fisioterapia obstétrica", "Suelo pélvico", "Postparto"],
     };
   }
 
   // postop
-  const tiempo = answers.tiempo;
-  const estado = answers.estado;
-  const apertura = tiempo === "reciente"
-    ? "La operación es reciente y estás en la fase más determinante de toda la recuperación. Lo que hagas en estos primeros meses marca el resultado final — no el cirujano, sino la rehabilitación."
-    : tiempo === "meses"
-    ? "Ya han pasado unos meses. Es el momento de pedirle más al cuerpo: ganar fuerza real, recuperar el rango completo y empezar a confiar de nuevo en la zona operada."
-    : "La operación fue hace tiempo, pero algo no termina de ir como esperabas. Puede que te hayas estancado o que simplemente no hayas vuelto a tu nivel de antes.";
-  const estadoText = estado === "bien"
-    ? " Que vaya bien no significa que no pueda ir mejor. Muchos pacientes se quedan en un 80% sin saber que con el estímulo adecuado pueden llegar al 100%."
-    : estado === "lenta"
+  const avance = answers.avance;
+  const confianza = answers.confianza;
+  const apertura = confianza === "protejo"
+    ? "Proteger la zona operada sin darte cuenta es normal al principio — pero si sigue pasando meses después, es una señal de que la rehabilitación no ha llegado hasta el fondo."
+    : confianza === "aveces"
+    ? "Que a veces la protejas y a veces no indica que el sistema nervioso todavía no ha integrado esa zona como segura. El trabajo en fisioterapia puede acelerar ese proceso."
+    : "Confiar en la zona es una buena señal — pero confiar no es lo mismo que haber recuperado el 100% de la función.";
+  const avanceText = avance === "si"
+    ? " Llevar semanas sin avanzar es la señal más clara de que el proceso necesita un replanteamiento. No es normal estancarse, y tiene solución."
+    : avance === "lento"
     ? " Una recuperación lenta casi siempre indica que falta el estímulo adecuado. El tejido necesita cargas progresivas para regenerarse — el reposo solo no lo hace."
-    : " Llevar semanas sin avanzar es la señal más clara de que el proceso necesita un replanteamiento. No es normal estancarse, y tiene solución.";
+    : " Que sigas progresando es buena señal. Una evaluación puede confirmar que estás en el camino correcto y acelerar los últimos pasos.";
   return {
     title: "Así es tu situación en el postoperatorio",
-    body: `${apertura}${estadoText} Diseñamos un plan adaptado exactamente a tu intervención y al punto en el que estás — no un protocolo genérico, sino el tuyo.`,
+    body: `${apertura}${avanceText} Diseñamos un plan adaptado exactamente a tu intervención y al punto en el que estás — no un protocolo genérico, sino el tuyo.`,
     chips: ["Rehabilitación postquirúrgica", "Recuperación funcional", "Vuelta a la actividad"],
   };
 }
 
 export default function QuizProblemas() {
-  const [selectedProblem, setSelectedProblem] = useState<ProblemId | null>(null);
+  const [selected, setSelected] = useState<ProblemId | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [step, setStep] = useState<Step>("select");
+  const [modalStep, setModalStep] = useState<ModalStep>("questions");
 
-  const currentQuestions = selectedProblem ? QUESTIONS[selectedProblem] : [];
+  const currentQuestions = selected ? QUESTIONS[selected] : [];
   const allAnswered = currentQuestions.every(q => answers[q.id]);
-  const selectedData = PROBLEMS.find(p => p.id === selectedProblem);
-  const profile = step === "profile" && selectedProblem ? buildProfile(selectedProblem, answers) : null;
+  const selectedData = PROBLEMS.find(p => p.id === selected);
+  const profile = modalStep === "profile" && selected ? buildProfile(selected, answers) : null;
 
-  function selectProblem(id: ProblemId) {
-    setSelectedProblem(id);
+  function openModal(id: ProblemId) {
+    setSelected(id);
     setAnswers({});
-    setStep("questions");
+    setModalStep("questions");
+  }
+
+  function closeModal() {
+    setSelected(null);
+    setAnswers({});
+    setModalStep("questions");
   }
 
   function answer(questionId: string, optionId: string) {
     setAnswers(prev => ({ ...prev, [questionId]: optionId }));
   }
 
-  function reset() {
-    setSelectedProblem(null);
-    setAnswers({});
-    setStep("select");
-  }
-
   return (
     <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "white" }}>
-      <div style={{ maxWidth: 960, margin: "0 auto" }}>
+      <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
 
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
-            ¿Te suena alguna de estas situaciones?
-          </h2>
-          <p style={{ color: "#6b7280", fontSize: "1.0625rem" }}>
-            {step === "select" && "Selecciona lo que mejor te describe. Recibirás una valoración personalizada."}
-            {step === "questions" && "Dos preguntas rápidas para entender mejor tu caso."}
-            {step === "profile" && "Hemos entendido tu situación."}
-          </p>
+        <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+          ¿Qué zona te molesta?
+        </h2>
+        <p style={{ color: "#6b7280", fontSize: "1.0625rem", marginBottom: "2.5rem" }}>
+          Cuéntanos tu problema y te decimos si podemos ayudarte — en menos de un minuto.
+        </p>
+
+        {/* Chips */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem", justifyContent: "center" }}>
+          {PROBLEMS.map(({ id, icon: Icon, title }) => (
+            <button
+              key={id}
+              onClick={() => openModal(id)}
+              style={{
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                padding: "0.625rem 1.125rem",
+                backgroundColor: "white",
+                border: "1.5px solid #e5e7eb",
+                borderRadius: "999px",
+                cursor: "pointer",
+                fontSize: "0.9375rem",
+                fontWeight: 600,
+                color: "#374151",
+                transition: "border-color 0.15s, background-color 0.15s, color 0.15s",
+              }}
+              onMouseOver={e => { e.currentTarget.style.borderColor = AQUA; e.currentTarget.style.backgroundColor = "#F0FDFA"; e.currentTarget.style.color = AQUA_DARK; }}
+              onMouseOut={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.color = "#374151"; }}
+            >
+              <Icon size={17} color={AQUA} strokeWidth={2} />
+              {title}
+            </button>
+          ))}
         </div>
 
-        {/* PASO 1: TARJETAS */}
-        {step === "select" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
-            {PROBLEMS.map(({ id, icon: Icon, title, situaciones }) => (
-              <button key={id} onClick={() => selectProblem(id)}
-                style={{ textAlign: "left", padding: "1.5rem", backgroundColor: "white", border: "1.5px solid #e5e7eb", borderRadius: "1rem", cursor: "pointer", transition: "border-color 0.15s, box-shadow 0.15s" }}
-                onMouseOver={e => { e.currentTarget.style.borderColor = AQUA; e.currentTarget.style.boxShadow = "0 4px 16px rgba(8,145,178,0.12)"; }}
-                onMouseOut={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.boxShadow = "none"; }}
-              >
-                <div style={{ marginBottom: "0.875rem" }}><Icon size={28} color={AQUA} strokeWidth={1.75} /></div>
-                <p style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.875rem", color: "#111827" }}>{title}</p>
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1rem 0", display: "grid", gap: "0.5rem" }}>
-                  {situaciones.map(s => (
-                    <li key={s} style={{ fontSize: "0.8125rem", color: "#6b7280", lineHeight: 1.4, display: "flex", alignItems: "flex-start", gap: "0.375rem" }}>
-                      <span style={{ color: AQUA, flexShrink: 0, marginTop: "0.1rem" }}>›</span>{s}
-                    </li>
-                  ))}
-                </ul>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: AQUA, fontSize: "0.8125rem", fontWeight: 700 }}>
-                  Esto me describe <ChevronRight size={14} />
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* PASO 2: PREGUNTAS */}
-        {step === "questions" && selectedData && (
-          <div style={{ maxWidth: 580, margin: "0 auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem", padding: "0.875rem 1.25rem", backgroundColor: "#F0FDFA", borderRadius: "0.75rem", border: `1.5px solid ${AQUA}` }}>
-              <selectedData.icon size={22} color={AQUA} strokeWidth={1.75} />
-              <span style={{ fontWeight: 700, color: AQUA_DARK, fontSize: "0.9375rem" }}>{selectedData.title}</span>
-              <button onClick={reset} style={{ marginLeft: "auto", fontSize: "0.8125rem", color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>
-                Cambiar →
-              </button>
-            </div>
-
-            <div style={{ display: "grid", gap: "2rem" }}>
-              {currentQuestions.map((q, qi) => (
-                <div key={q.id}>
-                  <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.875rem", color: "#111827" }}>
-                    <span style={{ color: AQUA, marginRight: "0.5rem" }}>{qi + 1}.</span>{q.text}
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                    {q.options.map(opt => {
-                      const selected = answers[q.id] === opt.id;
-                      return (
-                        <button key={opt.id} onClick={() => answer(q.id, opt.id)}
-                          style={{ padding: "0.625rem 1.125rem", borderRadius: "2rem", border: `1.5px solid ${selected ? AQUA : "#e5e7eb"}`, backgroundColor: selected ? "#CFFAFE" : "white", color: selected ? AQUA_DARK : "#374151", fontWeight: selected ? 700 : 500, fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s" }}>
-                          {opt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: "2.5rem" }}>
-              <button onClick={() => setStep("profile")} disabled={!allAnswered}
-                style={{ width: "100%", padding: "1rem", backgroundColor: allAnswered ? AQUA : "#e5e7eb", color: allAnswered ? "white" : "#9ca3af", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "0.625rem", cursor: allAnswered ? "pointer" : "not-allowed", transition: "background-color 0.2s" }}>
-                Ver mi situación →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* PASO 3: PERFIL */}
-        {step === "profile" && profile && selectedData && (
-          <div style={{ maxWidth: 580, margin: "0 auto" }}>
-            <div style={{ backgroundColor: "#F0FDFA", borderRadius: "1.25rem", padding: "2rem", border: `1.5px solid ${AQUA}`, marginBottom: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-                <selectedData.icon size={26} color={AQUA} strokeWidth={1.75} />
-                <span style={{ fontWeight: 800, fontSize: "1.0625rem", color: "#111827" }}>{profile.title}</span>
-              </div>
-              <p style={{ color: "#374151", lineHeight: 1.8, fontSize: "0.9375rem", marginBottom: "1.25rem" }}>
-                {profile.body}
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                {profile.chips.map(c => (
-                  <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#CFFAFE", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>
-                    {c}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ backgroundColor: AQUA, borderRadius: "1rem", padding: "2rem", textAlign: "center", marginBottom: "1rem" }}>
-              <p style={{ color: "rgba(255,255,255,0.9)", marginBottom: "1.25rem", fontSize: "1rem", lineHeight: 1.6 }}>
-                Esto tiene solución. Carmen puede evaluarte esta semana.
-              </p>
-              <a href="#reservar" style={{ display: "inline-block", backgroundColor: "white", color: AQUA, fontWeight: 800, fontSize: "1rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none" }}>
-                Reservar mi primera cita →
-              </a>
-            </div>
-
-            <button onClick={reset} style={{ width: "100%", padding: "0.75rem", background: "none", border: "1.5px solid #e5e7eb", borderRadius: "0.625rem", color: "#6b7280", fontSize: "0.875rem", cursor: "pointer" }}>
-              ← Ver otros problemas
-            </button>
-          </div>
-        )}
-
       </div>
+
+      {/* Modal */}
+      {selected && selectedData && (
+        <div
+          style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem", backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={closeModal}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              borderRadius: "1.25rem",
+              width: "100%",
+              maxWidth: "520px",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "1.25rem 1.5rem", borderBottom: "1px solid #f3f4f6", position: "sticky", top: 0, backgroundColor: "white", zIndex: 1 }}>
+              <selectedData.icon size={20} color={AQUA} strokeWidth={1.75} />
+              <span style={{ fontWeight: 700, fontSize: "1rem", color: "#111827", flex: 1 }}>{selectedData.title}</span>
+              <button onClick={closeModal} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "0.25rem", lineHeight: 1 }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ padding: "1.5rem" }}>
+
+              {/* PREGUNTAS */}
+              {modalStep === "questions" && (
+                <>
+                  <div style={{ display: "grid", gap: "1.75rem" }}>
+                    {currentQuestions.map((q, qi) => (
+                      <div key={q.id}>
+                        <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.875rem", color: "#111827", lineHeight: 1.6 }}>
+                          <span style={{ color: AQUA, marginRight: "0.375rem" }}>{qi + 1}.</span>{q.text}
+                        </p>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                          {q.options.map(opt => {
+                            const sel = answers[q.id] === opt.id;
+                            return (
+                              <button key={opt.id} onClick={() => answer(q.id, opt.id)}
+                                style={{ padding: "0.5625rem 1.125rem", borderRadius: "999px", border: `1.5px solid ${sel ? AQUA : "#e5e7eb"}`, backgroundColor: sel ? "#CFFAFE" : "white", color: sel ? AQUA_DARK : "#374151", fontWeight: sel ? 700 : 500, fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s" }}>
+                                {opt.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setModalStep("profile")}
+                    disabled={!allAnswered}
+                    style={{ width: "100%", marginTop: "2rem", padding: "0.9375rem", backgroundColor: allAnswered ? AQUA : "#e5e7eb", color: allAnswered ? "white" : "#9ca3af", fontWeight: 700, fontSize: "1rem", border: "none", borderRadius: "0.75rem", cursor: allAnswered ? "pointer" : "not-allowed", transition: "background-color 0.2s" }}
+                  >
+                    Ver mi situación →
+                  </button>
+                </>
+              )}
+
+              {/* PERFIL */}
+              {modalStep === "profile" && profile && (
+                <>
+                  <div style={{ backgroundColor: "#F0FDFA", borderRadius: "1rem", padding: "1.5rem", border: `1.5px solid ${AQUA}`, marginBottom: "1.25rem" }}>
+                    <p style={{ fontWeight: 800, fontSize: "1rem", color: "#111827", marginBottom: "0.875rem" }}>{profile.title}</p>
+                    <p style={{ color: "#374151", lineHeight: 1.8, fontSize: "0.9375rem", marginBottom: "1rem" }}>{profile.body}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+                      {profile.chips.map(c => (
+                        <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#CFFAFE", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>{c}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ backgroundColor: AQUA, borderRadius: "0.875rem", padding: "1.5rem", textAlign: "center", marginBottom: "0.75rem" }}>
+                    <p style={{ color: "rgba(255,255,255,0.9)", marginBottom: "1rem", fontSize: "0.9375rem", lineHeight: 1.6 }}>
+                      Esto tiene solución. Carmen puede evaluarte esta semana.
+                    </p>
+                    <a href="#reservar" onClick={closeModal}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", backgroundColor: "white", color: AQUA, fontWeight: 800, fontSize: "0.9375rem", padding: "0.75rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                      Reservar mi primera cita <ChevronRight size={16} />
+                    </a>
+                  </div>
+
+                  <button onClick={() => setModalStep("questions")}
+                    style={{ width: "100%", padding: "0.625rem", background: "none", border: "1.5px solid #e5e7eb", borderRadius: "0.625rem", color: "#6b7280", fontSize: "0.875rem", cursor: "pointer" }}>
+                    ← Volver a las preguntas
+                  </button>
+                </>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
