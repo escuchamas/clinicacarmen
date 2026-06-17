@@ -26,7 +26,21 @@ export async function POST(req: NextRequest) {
     }
 
     const p = rows[0];
-    return NextResponse.json({ id: p.id, nombre: p.nombre, apellidos: p.apellidos });
+
+    const hoy = new Date().toISOString().split("T")[0];
+    const citas = await db`
+      SELECT id, fecha, hora FROM citas
+      WHERE paciente_id = ${p.id}
+        AND fecha >= ${hoy}
+        AND estado NOT IN ('cancelada', 'completada')
+      ORDER BY fecha ASC, hora ASC
+      LIMIT 1
+    `;
+    const citaActiva = citas.length > 0
+      ? { citaId: citas[0].id, fecha: citas[0].fecha, hora: (citas[0].hora as string).slice(0, 5) }
+      : null;
+
+    return NextResponse.json({ id: p.id, nombre: p.nombre, apellidos: p.apellidos, citaActiva });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Error al buscar paciente" }, { status: 500 });
