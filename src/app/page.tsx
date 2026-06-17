@@ -110,7 +110,7 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem" }}>
             {[
-              { num: "01", title: "Pides tu cita online", body: "Dos minutos. Si ya eres paciente, tu cita queda confirmada al instante. Si es tu primera visita, Carmen te contacta en breve." },
+              { num: "01", title: "Pides tu cita online", body: "Dos minutos, con tu DNI y teléfono. Si ya eres paciente, la cita queda confirmada al instante. Si es tu primera vez, el sistema te guía paso a paso." },
               { num: "02", title: "Primera evaluación a fondo", body: "Analizamos tu caso en detalle. El dolor tiene un origen y hay que encontrarlo antes de tratar." },
               { num: "03", title: "Tu plan de tratamiento", body: "Sesiones de 45-60 min de terapia manual + pauta de ejercicio personalizada para casa." },
             ].map(({ num, title, body }) => (
@@ -184,8 +184,8 @@ export default async function HomePage() {
               Pide tu cita ahora
             </h2>
             <p style={{ color: "#6b7280", fontSize: "1.0625rem", lineHeight: 1.6 }}>
-              ¿Ya eres paciente? Reserva tu cita en 2 minutos.<br />
-              ¿Primera vez? Escríbenos y te explicamos todo.
+              Seas paciente nuevo o de siempre, reservas tu cita online en 2 minutos.<br />
+              Solo necesitas tu DNI y teléfono.
             </p>
           </div>
 
@@ -212,16 +212,16 @@ export default async function HomePage() {
               </span>
               <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Nuevo paciente</h3>
               <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-                La primera visita incluye evaluación completa. Escríbenos o llámanos y te reservamos el primer hueco disponible.
+                Introduce tu DNI y teléfono. Si no te encontramos, te guiamos en un breve cuestionario para que Carmen llegue preparada a tu primera sesión.
               </p>
               <div style={{ display: "grid", gap: "0.625rem" }}>
+                <Link href="/pedir-cita"
+                  style={{ display: "block", textAlign: "center", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                  Reservar primera cita →
+                </Link>
                 <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none" }}>
-                  <MessageCircle size={18} /> WhatsApp
-                </a>
-                <a href="tel:+34608622236"
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "white", color: DARK, fontWeight: 700, fontSize: "1rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none", border: "1.5px solid #e5e7eb" }}>
-                  <Phone size={18} /> 608 622 236
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "white", color: "#16a34a", fontWeight: 600, fontSize: "0.9375rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none", border: "1.5px solid #dcfce7" }}>
+                  <MessageCircle size={16} /> ¿Tienes dudas? Escríbenos por WhatsApp
                 </a>
               </div>
             </div>
