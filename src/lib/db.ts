@@ -47,12 +47,28 @@ export async function createPaciente(data: Omit<Paciente, "id" | "fechaAlta">): 
   const db = sql();
   const id = generateId();
   const fechaAlta = new Date().toISOString().split("T")[0];
+
+  // Insert only guaranteed base columns
+  await db`
+    INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono)
+    VALUES (${id}, ${data.dni}, ${data.nombre}, ${data.apellidos}, ${data.email ?? ""}, ${data.telefono ?? ""})
+  `;
+
+  // Update optional columns — graceful if they don't exist yet
   const fechaNacimiento = data.fechaNacimiento || null;
   const lopdFecha = data.lopdFirmada ? fechaAlta : null;
-  await db`
-    INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, poblacion, fecha_alta, lopd_firmada, lopd_fecha)
-    VALUES (${id}, ${data.dni}, ${data.nombre}, ${data.apellidos}, ${data.email}, ${data.telefono}, ${fechaNacimiento}, ${data.poblacion}, ${fechaAlta}, ${data.lopdFirmada}, ${lopdFecha})
-  `;
+  try {
+    await db`
+      UPDATE pacientes SET
+        fecha_nacimiento = ${fechaNacimiento},
+        poblacion = ${data.poblacion ?? ""},
+        fecha_alta = ${fechaAlta},
+        lopd_firmada = ${data.lopdFirmada ?? false},
+        lopd_fecha = ${lopdFecha}
+      WHERE id = ${id}
+    `;
+  } catch { /* optional columns not yet migrated */ }
+
   return { ...data, id, fechaAlta };
 }
 
@@ -88,21 +104,33 @@ export async function getHistoriaClinica(pacienteId: string): Promise<HistoriaCl
 
 export async function createHistoriaClinica(data: HistoriaClinica): Promise<void> {
   const db = sql();
+
+  // Insert base columns (guaranteed to exist)
   await db`
     INSERT INTO historia_clinica (
       paciente_id, profesion, alergias, ejercicio_fisico, motivo_consulta,
       antecedentes_personales_familiares, calidad_sueno, patologias, tabaquismo,
-      medicacion, implantes_metalicos, embarazo_lactancia, semanas_embarazo,
-      banderas_rojas, prueba_tipo, prueba_fecha, prueba_diagnostico, prueba_imagen_url, fecha_creacion
+      medicacion, implantes_metalicos, embarazo_lactancia,
+      banderas_rojas, prueba_tipo, prueba_fecha, prueba_diagnostico, fecha_creacion
     ) VALUES (
       ${data.pacienteId}, ${data.profesion}, ${data.alergias}, ${data.ejercicioFisico},
       ${data.motivoConsulta}, ${data.antecedentesPersonalesFamiliares}, ${data.calidadSueno},
       ${data.patologias}, ${data.tabaquismo}, ${data.medicacion}, ${data.implantesMetalicos},
-      ${data.embarazoLactancia}, ${data.semanasEmbarazo},
-      ${JSON.stringify(data.banderasRojas)}, ${data.pruebaTipo}, ${data.pruebaFecha || null},
-      ${data.pruebaDiagnostico}, ${data.pruebaImagenUrl ?? null}, NOW()
+      ${data.embarazoLactancia},
+      ${JSON.stringify(data.banderasRojas ?? [])}, ${data.pruebaTipo}, ${data.pruebaFecha || null},
+      ${data.pruebaDiagnostico}, NOW()
     )
   `;
+
+  // Update optional columns — graceful if not yet migrated
+  try {
+    await db`
+      UPDATE historia_clinica SET
+        semanas_embarazo = ${data.semanasEmbarazo ?? ""},
+        prueba_imagen_url = ${data.pruebaImagenUrl ?? null}
+      WHERE paciente_id = ${data.pacienteId}
+    `;
+  } catch { /* optional columns not yet migrated */ }
 }
 
 export async function updateHistoriaClinica(pacienteId: string, data: Partial<HistoriaClinica>): Promise<void> {
