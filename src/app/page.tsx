@@ -142,7 +142,7 @@ export default async function HomePage() {
                 No eres un número de expediente
               </h2>
               <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "2rem", fontSize: "1rem" }}>
-                Soy Carmen, fisioterapeuta en Campillos especializada en terapia manual. Atiendo a pacientes de toda la Comarca de Guadalteba — Teba, Ardales, Cañete la Real, Almargen, Carratraca. En Millennialfisio eres mi único paciente en cada sesión: sin asistentes, sin protocolos genéricos, sin prisas.
+                Soy Carmen Gómez, fisioterapeuta en Campillos especializada en terapia manual. Atiendo a pacientes de toda la Comarca de Guadalteba — Teba, Ardales, Cañete la Real, Almargen, Carratraca. En Millennialfisio eres mi único paciente en cada sesión: sin asistentes, sin protocolos genéricos, sin prisas.
               </p>
               <div style={{ display: "grid", gap: "1rem" }}>
                 {[
@@ -163,7 +163,7 @@ export default async function HomePage() {
 
             <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center" }}>
               <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 900, fontSize: "2rem", margin: "0 auto 1.5rem" }}>C</div>
-              <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.25rem" }}>Carmen</p>
+              <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.25rem" }}>Carmen Gómez</p>
               <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.75rem" }}>Fisioterapeuta · Millennialfisio</p>
               <blockquote style={{ fontStyle: "italic", color: "#374151", lineHeight: 1.65, fontSize: "0.9375rem", borderLeft: `3px solid ${AQUA}`, paddingLeft: "1rem", textAlign: "left" }}>
                 &ldquo;Cuando un paciente me dice que puede volver a dormir bien, a practicar deporte o a jugar con sus hijos sin dolor, es el mejor resultado que puedo obtener.&rdquo;
