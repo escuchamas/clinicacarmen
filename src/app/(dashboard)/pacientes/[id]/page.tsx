@@ -40,6 +40,8 @@ export default function PacienteDetailPage() {
   const [editForm, setEditForm] = useState<EditForm>({ nombre: "", apellidos: "", dni: "", email: "", telefono: "", fechaNacimiento: "", poblacion: "" });
   const [savingEdit2, setSavingEdit2] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [sendingConsent, setSendingConsent] = useState(false);
+  const [consentSent, setConsentSent] = useState(false);
   const [editingHistoria, setEditingHistoria] = useState(false);
   const [historiaForm, setHistoriaForm] = useState<Omit<HistoriaClinica, "pacienteId" | "fechaCreacion" | "pruebaImagenUrl">>({
     profesion: "", alergias: "", ejercicioFisico: "", motivoConsulta: "",
@@ -184,6 +186,23 @@ export default function PacienteDetailPage() {
       pruebaDiagnostico: h.pruebaDiagnostico ?? "",
     });
     setEditingHistoria(true);
+  }
+
+  async function enviarConsentimiento() {
+    setSendingConsent(true);
+    const res = await fetch(`/api/pacientes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ seccion: "consentimiento" }),
+    });
+    setSendingConsent(false);
+    if (res.ok) {
+      setConsentSent(true);
+      setTimeout(() => setConsentSent(false), 4000);
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error ?? "Error al enviar el consentimiento");
+    }
   }
 
   async function saveHistoria() {
@@ -338,7 +357,23 @@ export default function PacienteDetailPage() {
               )}
             </div>
           </div>
-          <div className="flex gap-2 flex-shrink-0">
+          <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+            {paciente.email && (
+              <button
+                onClick={enviarConsentimiento}
+                disabled={sendingConsent}
+                className="text-sm py-1.5 px-3 rounded-lg font-medium transition-colors"
+                style={{
+                  backgroundColor: consentSent ? "#f0fdf4" : "#f0fdf4",
+                  color: consentSent ? "#16a34a" : "#2D7D5E",
+                  border: `1px solid ${consentSent ? "#86efac" : "#6ee7b7"}`,
+                  cursor: sendingConsent ? "not-allowed" : "pointer",
+                  opacity: sendingConsent ? 0.7 : 1,
+                }}
+              >
+                {sendingConsent ? "Enviando..." : consentSent ? "✓ Enviado" : "Consentimiento"}
+              </button>
+            )}
             <button
               className="btn-ghost text-sm py-1.5 px-3"
               onClick={() => openEditModal(paciente)}

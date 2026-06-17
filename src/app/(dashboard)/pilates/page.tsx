@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { ClasePilates, InscripcionPilates } from "@/lib/types";
-import { Users, Clock, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { ClasePilates, InscripcionPilates, Paciente } from "@/lib/types";
+import { Users, Clock, Plus, Trash2, ChevronDown, ChevronUp, UserPlus, X } from "lucide-react";
 
 const AQUA = "#0891B2";
 const PURPLE = "#7C3AED";
@@ -51,10 +51,17 @@ export default function PilatesPage() {
 
   async function loadInscritos(claseId: string) {
     if (expandedId === claseId) { setExpandedId(null); return; }
+    await refreshInscritos(claseId);
+    setExpandedId(claseId);
+  }
+
+  async function refreshInscritos(claseId: string) {
     const res = await fetch(`/api/clases/${claseId}`);
     const data = await res.json();
-    setClases(prev => prev.map(c => c.id === claseId ? { ...c, inscritos: data.inscritos ?? [] } : c));
-    setExpandedId(claseId);
+    setClases(prev => prev.map(c => c.id === claseId
+      ? { ...c, inscritos: data.inscritos ?? [], inscritosCount: (data.inscritos ?? []).filter((i: InscripcionPilates) => i.estado === "inscrita").length }
+      : c
+    ));
   }
 
   async function saveClase() {
@@ -187,6 +194,7 @@ export default function PilatesPage() {
                   onToggle={() => loadInscritos(clase.id)}
                   onCancelar={() => cancelarClase(clase.id)}
                   onEliminar={() => eliminarClase(clase.id)}
+                  onRefresh={refreshInscritos}
                 />
               ))}
             </div>
@@ -222,30 +230,77 @@ export default function PilatesPage() {
   );
 }
 
-function ClaseCard({ clase, expanded, onToggle, onCancelar, onEliminar }: {
+function ClaseCard({ clase, expanded, onToggle, onCancelar, onEliminar, onRefresh }: {
   clase: ClaseConInscritos;
   expanded: boolean;
   onToggle: () => void;
   onCancelar: () => void;
   onEliminar: () => void;
+  onRefresh: (claseId: string) => void;
 }) {
   const plazasLibres = clase.capacidad - clase.inscritosCount;
   const porcentaje = (clase.inscritosCount / clase.capacidad) * 100;
+
+  const [busqueda, setBusqueda] = useState("");
+  const [resultados, setResultados] = useState<Paciente[]>([]);
+  const [buscando, setBuscando] = useState(false);
+  const [añadiendo, setAñadiendo] = useState(false);
+  const [quitando, setQuitando] = useState<string | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function onBusqueda(q: string) {
+    setBusqueda(q);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!q.trim()) { setResultados([]); return; }
+    debounceRef.current = setTimeout(async () => {
+      setBuscando(true);
+      const res = await fetch(`/api/pacientes?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setResultados(Array.isArray(data) ? data.slice(0, 6) : []);
+      setBuscando(false);
+    }, 300);
+  }
+
+  async function añadirPaciente(pacienteId: string) {
+    setAñadiendo(true);
+    const res = await fetch(`/api/clases/${clase.id}/inscribirse`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pacienteId }),
+    });
+    if (res.ok) {
+      setBusqueda("");
+      setResultados([]);
+      onRefresh(clase.id);
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error ?? "Error al inscribir");
+    }
+    setAñadiendo(false);
+  }
+
+  async function quitarPaciente(pacienteId: string) {
+    setQuitando(pacienteId);
+    await fetch(`/api/clases/${clase.id}/inscribirse`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pacienteId }),
+    });
+    onRefresh(clase.id);
+    setQuitando(null);
+  }
 
   return (
     <div className="card overflow-hidden" style={{ borderLeft: `3px solid ${PURPLE}` }}>
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="font-bold text-sm" style={{ color: "#1a1a1a" }}>{clase.titulo}</p>
-            </div>
+            <p className="font-bold text-sm mb-1" style={{ color: "#1a1a1a" }}>{clase.titulo}</p>
             <p className="text-xs mb-2" style={{ color: "#6b7280" }}>
               {new Date(clase.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
               {" · "}
               <Clock size={11} style={{ display: "inline", marginBottom: 1 }} /> {clase.horaInicio} – {clase.horaFin}
             </p>
-            {/* Barra de ocupación */}
             <div className="flex items-center gap-2">
               <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: "#e5e7eb" }}>
                 <div className="h-1.5 rounded-full transition-all" style={{ width: `${porcentaje}%`, backgroundColor: porcentaje >= 100 ? "#ef4444" : PURPLE }} />
@@ -276,18 +331,74 @@ function ClaseCard({ clase, expanded, onToggle, onCancelar, onEliminar }: {
 
       {expanded && (
         <div style={{ borderTop: "1px solid #f3f4f6", backgroundColor: "#fafafa" }}>
+          {/* Buscador para añadir */}
+          <div className="px-4 py-3" style={{ borderBottom: "1px solid #f3f4f6" }}>
+            <div className="relative">
+              <div className="flex items-center gap-2">
+                <UserPlus size={14} style={{ color: PURPLE, flexShrink: 0 }} />
+                <input
+                  className="input-field flex-1"
+                  style={{ fontSize: "0.8125rem", padding: "0.375rem 0.625rem" }}
+                  placeholder="Buscar paciente para añadir..."
+                  value={busqueda}
+                  onChange={e => onBusqueda(e.target.value)}
+                />
+                {busqueda && (
+                  <button onClick={() => { setBusqueda(""); setResultados([]); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}>
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {(resultados.length > 0 || buscando) && (
+                <div className="absolute left-0 right-0 mt-1 rounded-lg shadow-lg z-10 overflow-hidden" style={{ backgroundColor: "white", border: "1px solid #e2ddd3", top: "100%" }}>
+                  {buscando ? (
+                    <p className="px-3 py-2 text-xs" style={{ color: "#9ca3af" }}>Buscando...</p>
+                  ) : resultados.map(p => {
+                    const yaInscrito = clase.inscritos?.some(i => i.pacienteId === p.id && i.estado === "inscrita");
+                    return (
+                      <button
+                        key={p.id}
+                        disabled={yaInscrito || añadiendo}
+                        onClick={() => añadirPaciente(p.id)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors"
+                        style={{ border: "none", cursor: yaInscrito ? "default" : "pointer", backgroundColor: "transparent" }}
+                        onMouseEnter={e => { if (!yaInscrito) (e.currentTarget as HTMLElement).style.backgroundColor = "#f9fafb"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+                      >
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: PURPLE }}>
+                          {p.nombre.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" style={{ color: "#1a1a1a" }}>{p.nombre} {p.apellidos}</p>
+                          {p.telefono && <p className="text-xs truncate" style={{ color: "#9ca3af" }}>{p.telefono}</p>}
+                        </div>
+                        {yaInscrito ? (
+                          <span className="text-xs flex-shrink-0" style={{ color: "#9ca3af" }}>Ya inscrito</span>
+                        ) : (
+                          <span className="text-xs font-medium flex-shrink-0" style={{ color: PURPLE }}>+ Añadir</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Lista de inscritos */}
           {!clase.inscritos || clase.inscritos.length === 0 ? (
             <p className="text-sm text-center py-4" style={{ color: "#9ca3af" }}>Sin inscritos todavía</p>
           ) : (
-            <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
+            <div>
               {clase.inscritos.map(i => (
-                <div key={i.id} className="px-4 py-2.5 flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: i.estado === "penalizada" ? "#ef4444" : PURPLE }}>
+                <div key={i.id} className="px-4 py-2.5 flex items-center gap-3" style={{ borderBottom: "1px solid #f9fafb" }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                    style={{ backgroundColor: i.estado === "penalizada" ? "#ef4444" : i.estado === "cancelada" ? "#9ca3af" : PURPLE }}>
                     {(i.pacienteNombre ?? "?")[0].toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate" style={{ color: "#1a1a1a" }}>{i.pacienteNombre}</p>
-                    <p className="text-xs" style={{ color: "#9ca3af" }}>{i.pacienteEmail}</p>
+                    {i.pacienteEmail && <p className="text-xs truncate" style={{ color: "#9ca3af" }}>{i.pacienteEmail}</p>}
                   </div>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0" style={{
                     backgroundColor: i.estado === "inscrita" ? PURPLE_LIGHT : i.estado === "penalizada" ? "#fef2f2" : "#f3f4f6",
@@ -295,6 +406,15 @@ function ClaseCard({ clase, expanded, onToggle, onCancelar, onEliminar }: {
                   }}>
                     {i.estado === "inscrita" ? "Inscrita" : i.estado === "penalizada" ? "Penalizada" : "Cancelada"}
                   </span>
+                  {i.estado === "inscrita" && (
+                    <button
+                      onClick={() => quitarPaciente(i.pacienteId)}
+                      disabled={quitando === i.pacienteId}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#d1d5db", flexShrink: 0 }}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

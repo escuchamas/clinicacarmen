@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { auth } from "@/lib/auth";
 import { getClasePilatesById, getInscripcionByPacienteAndClase, inscribirPaciente, cancelarInscripcion } from "@/lib/db";
 
 function sql() {
@@ -20,6 +21,20 @@ async function verificarPaciente(dni: string, telefono: string): Promise<string 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: claseId } = await params;
   const body = await req.json();
+  const session = await auth();
+
+  // Admin: inscribir directamente por pacienteId
+  if (session && body.pacienteId) {
+    const clase = await getClasePilatesById(claseId);
+    if (!clase || clase.estado === "cancelada") return NextResponse.json({ error: "Clase no disponible" }, { status: 404 });
+    if (clase.inscritosCount >= clase.capacidad) return NextResponse.json({ error: "Clase completa" }, { status: 409 });
+    const existing = await getInscripcionByPacienteAndClase(body.pacienteId, claseId);
+    if (existing?.estado === "inscrita") return NextResponse.json({ error: "Ya está inscrito" }, { status: 409 });
+    const inscripcion = await inscribirPaciente(body.pacienteId, claseId);
+    return NextResponse.json(inscripcion, { status: 201 });
+  }
+
+  // Público: verificar por DNI + teléfono
   const { dni, telefono } = body ?? {};
   if (!dni || !telefono) return NextResponse.json({ error: "DNI y teléfono requeridos" }, { status: 400 });
 
@@ -40,6 +55,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: claseId } = await params;
   const body = await req.json();
+  const session = await auth();
+
+  // Admin: eliminar directamente por pacienteId, sin penalización
+  if (session && body.pacienteId) {
+    await cancelarInscripcion(body.pacienteId, claseId, false);
+    return NextResponse.json({ ok: true });
+  }
+
+  // Público: verificar por DNI + teléfono
   const { dni, telefono } = body ?? {};
   if (!dni || !telefono) return NextResponse.json({ error: "DNI y teléfono requeridos" }, { status: 400 });
 
