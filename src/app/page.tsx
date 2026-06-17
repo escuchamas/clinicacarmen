@@ -110,7 +110,7 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "2rem" }}>
             {[
-              { num: "01", title: "Pides tu cita online", body: "Dos minutos. Rellenas el formulario aquí abajo y Carmen te confirma en menos de 2 horas." },
+              { num: "01", title: "Pides tu cita online", body: "Dos minutos. Si ya eres paciente, tu cita queda confirmada al instante. Si es tu primera visita, Carmen te contacta en breve." },
               { num: "02", title: "Primera evaluación a fondo", body: "Analizamos tu caso en detalle. El dolor tiene un origen y hay que encontrarlo antes de tratar." },
               { num: "03", title: "Tu plan de tratamiento", body: "Sesiones de 45-60 min de terapia manual + pauta de ejercicio personalizada para casa." },
             ].map(({ num, title, body }) => (
@@ -230,7 +230,7 @@ export default async function HomePage() {
           {/* Formulario clásico (fallback) */}
           <details style={{ backgroundColor: "white", borderRadius: "1.25rem", border: "1px solid #e5e7eb" }}>
             <summary style={{ padding: "1.25rem 1.75rem", cursor: "pointer", fontWeight: 600, fontSize: "0.9375rem", color: "#6b7280", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span>O solicita cita por formulario (Carmen te confirma en &lt;2h)</span>
+              <span>O solicita tu primera visita y Carmen te confirma en breve</span>
               <span style={{ fontSize: "0.75rem" }}>▼</span>
             </summary>
             <div style={{ padding: "0 1.75rem 1.75rem" }}>
