@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Users, CalendarDays, Activity, BarChart3 } from "lucide-react";
 
 const AQUA = "#0891B2";
@@ -15,6 +16,14 @@ const TABS = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [impagos, setImpagos] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/impagos")
+      .then((r) => r.json())
+      .then((d) => setImpagos(d.total ?? 0))
+      .catch(() => {});
+  }, [pathname]);
 
   return (
     <nav
@@ -24,14 +33,40 @@ export default function BottomNav() {
       <div className="flex">
         {TABS.map(({ href, icon: Icon, label }) => {
           const active = pathname.startsWith(href);
+          const hasbadge = href === "/finanzas" && impagos > 0;
           return (
             <Link
               key={href}
               href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2"
+              className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 relative"
               style={{ textDecoration: "none", color: active ? AQUA : "#9ca3af" }}
             >
-              <Icon size={22} strokeWidth={active ? 2.25 : 1.75} />
+              <div className="relative">
+                <Icon size={22} strokeWidth={active ? 2.25 : 1.75} />
+                {hasbadge && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      right: "-6px",
+                      minWidth: "15px",
+                      height: "15px",
+                      borderRadius: "9999px",
+                      backgroundColor: "#ef4444",
+                      color: "white",
+                      fontSize: "0.6rem",
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0 3px",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {impagos > 99 ? "99+" : impagos}
+                  </span>
+                )}
+              </div>
               <span style={{ fontSize: "0.6875rem", fontWeight: active ? 700 : 500 }}>{label}</span>
             </Link>
           );
