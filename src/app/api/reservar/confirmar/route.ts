@@ -20,6 +20,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Paciente no encontrado" }, { status: 404 });
     }
 
+    // Comprobar si ya tiene una cita activa futura
+    const hoy = new Date().toISOString().split("T")[0];
+    const citasActivas = await db`
+      SELECT id, fecha, hora FROM citas
+      WHERE paciente_id = ${pacienteId}
+        AND fecha >= ${hoy}
+        AND estado NOT IN ('cancelada', 'completada')
+      LIMIT 1
+    `;
+    if (citasActivas.length > 0) {
+      const c = citasActivas[0];
+      return NextResponse.json(
+        { error: "ya_tiene_cita", fecha: c.fecha, hora: c.hora.slice(0, 5) },
+        { status: 409 }
+      );
+    }
+
     const cita = await createCita({
       pacienteId,
       fecha,

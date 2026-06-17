@@ -52,6 +52,7 @@ export default function PedirCitaPage() {
   const [motivo, setMotivo] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const [errorConfirmar, setErrorConfirmar] = useState("");
+  const [citaExistente, setCitaExistente] = useState<{ fecha: string; hora: string } | null>(null);
 
   async function handleIdentificar(e: React.FormEvent) {
     e.preventDefault();
@@ -100,6 +101,10 @@ export default function PedirCitaPage() {
     setConfirmando(false);
     if (!res.ok) {
       const data = await res.json();
+      if (data.error === "ya_tiene_cita") {
+        setCitaExistente({ fecha: data.fecha, hora: data.hora });
+        return;
+      }
       setErrorConfirmar(data.error ?? "Error al confirmar la cita. Inténtalo de nuevo.");
       return;
     }
@@ -382,12 +387,29 @@ export default function PedirCitaPage() {
                 <span style={{ fontWeight: 700 }}>Total</span>
                 <span style={{ fontWeight: 900, fontSize: "1.375rem", color: AQUA }}>45,00 €</span>
               </div>
+              {citaExistente && (
+                <div style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "0.75rem", padding: "1.25rem", marginBottom: "1rem" }}>
+                  <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1e40af", marginBottom: "0.375rem" }}>
+                    Ya tienes una cita reservada
+                  </p>
+                  <p style={{ fontSize: "0.875rem", color: "#3b82f6", marginBottom: "1rem", textTransform: "capitalize" }}>
+                    {new Date(citaExistente.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })} a las {citaExistente.hora}
+                  </p>
+                  <p style={{ fontSize: "0.875rem", color: "#374151", marginBottom: "1rem", lineHeight: 1.5 }}>
+                    Si necesitas cambiarla o cancelarla, escríbele a Carmen directamente.
+                  </p>
+                  <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
+                    <MessageCircle size={16} /> Gestionar con Carmen
+                  </a>
+                </div>
+              )}
               {errorConfirmar && (
                 <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "0.625rem", padding: "0.875rem", fontSize: "0.875rem", color: "#991b1b", marginBottom: "1rem" }}>
                   {errorConfirmar}
                 </div>
               )}
-              <button onClick={handleConfirmar} disabled={confirmando} style={btnAqua(confirmando)}>
+              <button onClick={handleConfirmar} disabled={confirmando || !!citaExistente} style={btnAqua(confirmando || !!citaExistente)}>
                 {confirmando ? "Enviando..." : "Confirmar cita →"}
               </button>
               <p style={{ textAlign: "center", fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.875rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.375rem" }}>
