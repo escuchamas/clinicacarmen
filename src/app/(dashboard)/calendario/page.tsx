@@ -182,11 +182,15 @@ export default function CalendarioPage() {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
           <div className="card p-6 w-full max-w-md">
-            <h3 className="font-bold text-base mb-1" style={{ color: "#1a1a1a" }}>Nueva cita · {form.fecha}</h3>
+            <h3 className="font-bold text-base mb-1" style={{ color: "#1a1a1a" }}>Nueva cita</h3>
             <p className="text-xs mb-4 flex items-center gap-1" style={{ color: "#f59e0b" }}>
               <AlertCircle size={12} /> Política: cancelación con 24h de antelación mínima
             </p>
             <div className="space-y-3">
+              <div>
+                <label className="label">Fecha *</label>
+                <input className="input-field" type="date" value={form.fecha} onChange={e => setForm(f => ({ ...f, fecha: e.target.value }))} />
+              </div>
               <div>
                 <label className="label">Paciente *</label>
                 <select className="input-field" value={form.pacienteId} onChange={e => setForm(f => ({ ...f, pacienteId: e.target.value }))}>
@@ -219,7 +223,7 @@ export default function CalendarioPage() {
               </div>
             </div>
             <div className="flex gap-3 mt-5">
-              <button className="btn-primary flex-1 justify-center" onClick={saveCita} disabled={saving || !form.pacienteId}>
+              <button className="btn-primary flex-1 justify-center" onClick={saveCita} disabled={saving || !form.pacienteId || !form.fecha}>
                 {saving ? "Guardando..." : "Guardar cita"}
               </button>
               <button className="btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
