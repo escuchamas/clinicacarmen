@@ -15,7 +15,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const result = await signIn("credentials", {
+    const result = await signIn("admin", {
       username,
       password,
       redirect: false,
@@ -24,7 +24,7 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Usuario o contraseña incorrectos");
     } else {
-      router.push("/");
+      router.push("/pacientes");
       router.refresh();
     }
   }
