@@ -228,6 +228,7 @@ export async function updateCitaEstado(id: string, estado: EstadoCita): Promise<
   await db`UPDATE citas SET estado = ${estado} WHERE id = ${id}`;
 }
 
+
 export async function updateCitaPago(id: string, pagoEstado: import("./types").PagoEstado): Promise<void> {
   const db = sql();
   await db`UPDATE citas SET pago_estado = ${pagoEstado} WHERE id = ${id}`;

@@ -64,7 +64,8 @@ export default function CalendarioPage() {
 
   useEffect(() => {
     fetch("/api/citas?impagadas=1").then(r => r.ok ? r.json() : []).then(d => setImpagadas(Array.isArray(d) ? d : []));
-  }, [citas]); // recarga cuando cambian citas (ej. después de marcar pago)
+  }, [citas]);
+
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); } else setMonth(m => m - 1);
@@ -198,11 +199,7 @@ export default function CalendarioPage() {
       {/* Panel cobros pendientes */}
       {impagadas.length > 0 && (
         <div className="mb-5 rounded-xl overflow-hidden" style={{ border: "1.5px solid #fca5a5" }}>
-          <button
-            onClick={() => setShowImpagadas(v => !v)}
-            className="w-full flex items-center justify-between px-4 py-3"
-            style={{ backgroundColor: "#fef2f2", border: "none", cursor: "pointer" }}
-          >
+          <button onClick={() => setShowImpagadas(v => !v)} className="w-full flex items-center justify-between px-4 py-3" style={{ backgroundColor: "#fef2f2", border: "none", cursor: "pointer" }}>
             <div className="flex items-center gap-2">
               <Banknote size={16} color="#991b1b" strokeWidth={1.75} />
               <span className="font-bold text-sm" style={{ color: "#991b1b" }}>
@@ -220,16 +217,13 @@ export default function CalendarioPage() {
                     <span className="text-xs ml-2" style={{ color: "#6b7280" }}>
                       {new Date(c.fecha + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })} · {c.hora}
                     </span>
-                    {c.pagoEstado === "parcial" && <span className="text-xs ml-2 font-semibold" style={{ color: "#d97706" }}>Parcial</span>}
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
-                    <button onClick={() => cambiarPago(c.id, "parcial")}
-                      className="text-xs px-2 py-1 rounded-full font-semibold"
+                    <button onClick={() => cambiarPago(c.id, "parcial")} className="text-xs px-2 py-1 rounded-full font-semibold"
                       style={{ backgroundColor: c.pagoEstado === "parcial" ? "#fef3c7" : "#f3f4f6", color: c.pagoEstado === "parcial" ? "#d97706" : "#6b7280", border: "none", cursor: "pointer" }}>
                       Parcial
                     </button>
-                    <button onClick={() => cambiarPago(c.id, "pagado")}
-                      className="text-xs px-2 py-1 rounded-full font-semibold"
+                    <button onClick={() => cambiarPago(c.id, "pagado")} className="text-xs px-2 py-1 rounded-full font-semibold"
                       style={{ backgroundColor: "#d1fae5", color: "#065f46", border: "none", cursor: "pointer" }}>
                       ✓ Cobrado
                     </button>

@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
     // Crear paciente básico
     const pacienteId = generateId();
     await db`
-      INSERT INTO pacientes (id, nombre, apellidos, dni, telefono, email, fecha_creacion)
-      VALUES (${pacienteId}, ${nombre.trim()}, ${apellidos.trim()}, ${dni.trim()}, ${telefono.trim()}, ${email?.trim() ?? null}, NOW())
+      INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, poblacion, fecha_alta, lopd_firmada, lopd_fecha)
+      VALUES (${pacienteId}, ${dni.trim()}, ${nombre.trim()}, ${apellidos.trim()}, ${email?.trim() ?? ""}, ${telefono.trim()}, NULL, "", NOW(), false, NULL)
     `;
 
     // Construir notas con el cuestionario
