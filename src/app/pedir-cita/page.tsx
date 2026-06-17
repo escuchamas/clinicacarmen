@@ -51,6 +51,7 @@ export default function PedirCitaPage() {
 
   const [motivo, setMotivo] = useState("");
   const [confirmando, setConfirmando] = useState(false);
+  const [errorConfirmar, setErrorConfirmar] = useState("");
 
   async function handleIdentificar(e: React.FormEvent) {
     e.preventDefault();
@@ -83,7 +84,8 @@ export default function PedirCitaPage() {
   async function handleConfirmar() {
     if (!paciente || !fechaSeleccionada || !horaSeleccionada) return;
     setConfirmando(true);
-    await fetch("/api/citas", {
+    setErrorConfirmar("");
+    const res = await fetch("/api/reservar/confirmar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -96,6 +98,11 @@ export default function PedirCitaPage() {
       }),
     });
     setConfirmando(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setErrorConfirmar(data.error ?? "Error al confirmar la cita. Inténtalo de nuevo.");
+      return;
+    }
     setStep("exito");
   }
 
@@ -375,6 +382,11 @@ export default function PedirCitaPage() {
                 <span style={{ fontWeight: 700 }}>Total</span>
                 <span style={{ fontWeight: 900, fontSize: "1.375rem", color: AQUA }}>45,00 €</span>
               </div>
+              {errorConfirmar && (
+                <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "0.625rem", padding: "0.875rem", fontSize: "0.875rem", color: "#991b1b", marginBottom: "1rem" }}>
+                  {errorConfirmar}
+                </div>
+              )}
               <button onClick={handleConfirmar} disabled={confirmando} style={btnAqua(confirmando)}>
                 {confirmando ? "Enviando..." : "Confirmar cita →"}
               </button>
