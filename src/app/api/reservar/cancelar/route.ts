@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       SELECT id, fecha, hora FROM citas
       WHERE id = ${citaId}
         AND paciente_id = ${pacienteId}
-        AND estado NOT IN ('cancelada', 'completada')
+        AND estado NOT IN ('cancelada', 'no_vino', 'vino')
       LIMIT 1
     `;
     if (rows.length === 0) {

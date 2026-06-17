@@ -20,14 +20,38 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ disponibles: [] });
     }
 
+    // Bloquear sábados (6) y domingos (0) por defecto
+    const diaSemana = new Date(fecha + "T12:00:00").getDay();
+    if (diaSemana === 0 || diaSemana === 6) {
+      return NextResponse.json({ disponibles: [], bloqueado: true, motivo: "Fin de semana" });
+    }
+
     const db = sql();
+
+    // Comprobar si el día está bloqueado manualmente
+    let bloqueado = false;
+    let motivoBloqueado = "";
+    try {
+      const bloqueos = await db`
+        SELECT motivo FROM dias_bloqueados WHERE fecha = ${fecha} LIMIT 1
+      `;
+      if (bloqueos.length > 0) {
+        bloqueado = true;
+        motivoBloqueado = bloqueos[0].motivo ? String(bloqueos[0].motivo) : "Día no disponible";
+      }
+    } catch { /* tabla no existe todavía */ }
+
+    if (bloqueado) {
+      return NextResponse.json({ disponibles: [], bloqueado: true, motivo: motivoBloqueado });
+    }
+
+    // Horas ya ocupadas
     const rows = await db`
       SELECT hora FROM citas
       WHERE fecha = ${fecha}
         AND estado != 'cancelada'
     `;
-
-    const ocupados = new Set(rows.map((r) => r.hora.slice(0, 5)));
+    const ocupados = new Set(rows.map((r) => String(r.hora).slice(0, 5)));
 
     // Si es hoy, filtrar horas ya pasadas
     let slots = ALL_SLOTS;

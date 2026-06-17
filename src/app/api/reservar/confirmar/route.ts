@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       SELECT id, fecha, hora FROM citas
       WHERE paciente_id = ${pacienteId}
         AND fecha >= ${hoy}
-        AND estado NOT IN ('cancelada', 'completada')
+        AND estado NOT IN ('cancelada', 'no_vino')
       LIMIT 1
     `;
     if (citasActivas.length > 0) {
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       hora,
       duracion: duracion ?? 60,
       motivo: motivo || "Reserva online",
-      estado: "confirmada",
+      estado: "agendada",
       notas: notas || "Reserva online",
       pagoEstado: "sin_pagar",
     });

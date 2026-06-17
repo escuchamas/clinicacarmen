@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     const citaId = generateId();
     await db`
       INSERT INTO citas (id, paciente_id, fecha, hora, duracion, motivo, estado, notas, fecha_creacion)
-      VALUES (${citaId}, ${pacienteId}, ${fecha}, ${hora}, 30, 'Primera visita', 'pendiente', ${notas}, NOW())
+      VALUES (${citaId}, ${pacienteId}, ${fecha}, ${hora}, 30, 'Primera visita', 'agendada', ${notas}, NOW())
     `;
 
     return NextResponse.json({ pacienteId, citaId }, { status: 201 });

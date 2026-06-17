@@ -244,7 +244,7 @@ export async function getCitasImpagadas(): Promise<Cita[]> {
     FROM citas c
     JOIN pacientes p ON p.id = c.paciente_id
     WHERE c.fecha <= ${ayerStr}
-      AND c.estado NOT IN ('cancelada')
+      AND c.estado NOT IN ('cancelada', 'no_vino')
       AND (c.pago_estado IS NULL OR c.pago_estado = 'sin_pagar' OR c.pago_estado = 'parcial')
     ORDER BY c.fecha DESC, c.hora ASC
   `;
@@ -291,7 +291,7 @@ export async function getIngresosPorCitas(year: number, month: number): Promise<
     SELECT COALESCE(SUM(duracion), 0) AS total_minutos, COUNT(*) AS total_sesiones
     FROM citas
     WHERE fecha BETWEEN ${desde} AND ${hasta}
-    AND estado IN ('confirmada', 'completada')
+    AND estado IN ('vino')
   `;
   const minutos = Number(rows[0]?.total_minutos ?? 0);
   const sesiones = Number(rows[0]?.total_sesiones ?? 0);
@@ -486,7 +486,7 @@ function rowToCita(r: Record<string, unknown>): Cita {
     hora: r.hora ? String(r.hora).slice(0, 5) : "",
     duracion: Number(r.duracion ?? 60),
     motivo: String(r.motivo ?? ""),
-    estado: (r.estado as EstadoCita) ?? "pendiente",
+    estado: (r.estado as EstadoCita) ?? "agendada",
     notas: String(r.notas ?? ""),
     fechaCreacion: toDateStr(r.fecha_creacion),
     pagoEstado: (r.pago_estado as import("./types").PagoEstado) ?? "sin_pagar",

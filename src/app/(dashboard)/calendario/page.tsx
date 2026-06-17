@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
-import { AlertCircle, Banknote, CalendarDays } from "lucide-react";
+import { AlertCircle, Banknote, CalendarDays, Lock, LockOpen, X } from "lucide-react";
 
 const AQUA = "#0891B2";
 const PURPLE = "#7C3AED";
@@ -36,6 +36,9 @@ export default function CalendarioPage() {
   const [impagadas, setImpagadas] = useState<Cita[]>([]);
   const [showImpagadas, setShowImpagadas] = useState(false);
   const [showAgenda, setShowAgenda] = useState(false);
+  const [diasBloqueados, setDiasBloqueados] = useState<{ id: string; fecha: string; motivo: string }[]>([]);
+  const [showBloqueos, setShowBloqueos] = useState(false);
+  const [motivoBloqueo, setMotivoBloqueo] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -67,6 +70,24 @@ export default function CalendarioPage() {
     fetch("/api/citas?impagadas=1").then(r => r.ok ? r.json() : []).then(d => setImpagadas(Array.isArray(d) ? d : []));
   }, [citas]);
 
+  useEffect(() => {
+    fetch("/api/dias-bloqueados").then(r => r.ok ? r.json() : []).then(d => setDiasBloqueados(Array.isArray(d) ? d : []));
+  }, []);
+
+
+  async function bloquearDia(fecha: string) {
+    const res = await fetch("/api/dias-bloqueados", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fecha, motivo: motivoBloqueo.trim() }) });
+    if (res.ok) {
+      const d = await res.json();
+      setDiasBloqueados(prev => [...prev.filter(b => b.fecha !== fecha), { id: d.id, fecha, motivo: motivoBloqueo.trim() }]);
+      setMotivoBloqueo("");
+    }
+  }
+
+  async function desbloquearDia(fecha: string) {
+    await fetch("/api/dias-bloqueados", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fecha }) });
+    setDiasBloqueados(prev => prev.filter(b => b.fecha !== fecha));
+  }
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); } else setMonth(m => m - 1);
@@ -110,7 +131,7 @@ export default function CalendarioPage() {
   function is24hWarning(cita: Cita): boolean {
     const citaDate = new Date(`${cita.fecha}T${cita.hora}:00`);
     const horasRestantes = (citaDate.getTime() - Date.now()) / (1000 * 60 * 60);
-    return horasRestantes < 24 && horasRestantes > 0 && cita.estado === "confirmada";
+    return horasRestantes < 24 && horasRestantes > 0 && cita.estado === "agendada";
   }
 
   async function saveCita() {
@@ -244,10 +265,84 @@ export default function CalendarioPage() {
             {citas.length} citas · {clases.filter(c => c.estado === "activa").length} clases
           </p>
         </div>
-        <button className="btn-primary" onClick={() => { setForm(f => ({ ...f, fecha: dateStr(today.getDate()) })); setShowForm(true); }}>
-          + Nueva cita
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowBloqueos(v => !v)} className="btn-ghost flex items-center gap-1.5 text-sm" title="Gestionar días bloqueados">
+            <Lock size={15} />
+            <span className="hidden sm:inline">Disponibilidad</span>
+          </button>
+          <button className="btn-primary" onClick={() => { setForm(f => ({ ...f, fecha: dateStr(today.getDate()) })); setShowForm(true); }}>
+            + Nueva cita
+          </button>
+        </div>
       </div>
+
+      {/* Panel gestión de disponibilidad */}
+      {showBloqueos && (
+        <div className="card p-5 mb-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-sm flex items-center gap-2" style={{ color: "#1a1a1a" }}>
+              <Lock size={14} color="#0891B2" /> Gestionar disponibilidad
+            </h3>
+            <button onClick={() => setShowBloqueos(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}>
+              <X size={16} />
+            </button>
+          </div>
+
+          <p className="text-xs mb-4" style={{ color: "#6b7280" }}>
+            Los sábados y domingos están bloqueados por defecto. Añade fechas concretas en las que no estarás disponible.
+          </p>
+
+          {/* Bloquear día seleccionado o cualquier fecha */}
+          <div className="flex gap-2 mb-4">
+            <div className="flex-1">
+              <input
+                type="date"
+                className="input-field text-sm"
+                value={selectedDay ?? ""}
+                onChange={e => setSelectedDay(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
+              />
+            </div>
+            <input
+              className="input-field text-sm flex-1"
+              placeholder="Motivo (opcional)"
+              value={motivoBloqueo}
+              onChange={e => setMotivoBloqueo(e.target.value)}
+            />
+            <button
+              onClick={() => selectedDay && bloquearDia(selectedDay)}
+              disabled={!selectedDay}
+              className="btn-primary text-sm px-3"
+              style={{ whiteSpace: "nowrap" }}
+            >
+              <Lock size={13} style={{ display: "inline", marginRight: 4 }} />
+              Bloquear
+            </button>
+          </div>
+
+          {/* Lista de días bloqueados manualmente */}
+          {diasBloqueados.length === 0 ? (
+            <p className="text-xs text-center py-3" style={{ color: "#9ca3af" }}>No hay días bloqueados manualmente</p>
+          ) : (
+            <div className="space-y-1">
+              {diasBloqueados.map(b => (
+                <div key={b.id} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5" }}>
+                  <div className="flex items-center gap-2">
+                    <Lock size={12} color="#ef4444" />
+                    <span className="text-sm font-medium" style={{ color: "#111827" }}>
+                      {new Date(b.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                    {b.motivo && <span className="text-xs" style={{ color: "#9ca3af" }}>· {b.motivo}</span>}
+                  </div>
+                  <button onClick={() => desbloquearDia(b.fecha)} className="text-xs flex items-center gap-1" style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}>
+                    <LockOpen size={12} /> Desbloquear
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Bottom sheet móvil — día seleccionado */}
       {selectedDay && (
@@ -332,25 +427,31 @@ export default function CalendarioPage() {
                 const hoy = isToday(day);
                 const tieneFisio = eventos.some(e => e.tipo === "fisio");
                 const tienePilates = eventos.some(e => e.tipo === "pilates");
+                const diaSemana = new Date(ds + "T12:00:00").getDay();
+                const esFinde = diaSemana === 0 || diaSemana === 6;
+                const estaBloqueado = diasBloqueados.some(b => b.fecha === ds);
+                const noDisponible = esFinde || estaBloqueado;
                 return (
                   <button
                     key={i}
                     onClick={() => setSelectedDay(selected ? null : ds)}
                     className="rounded-lg p-1 min-h-[52px] flex flex-col items-center transition-all"
                     style={{
-                      backgroundColor: selected ? AQUA : hoy ? "#ECFEFF" : "transparent",
-                      border: selected ? `2px solid ${AQUA}` : hoy ? "2px solid #A5F3FC" : "2px solid transparent",
+                      backgroundColor: selected ? AQUA : noDisponible ? "#f9fafb" : hoy ? "#ECFEFF" : "transparent",
+                      border: selected ? `2px solid ${AQUA}` : estaBloqueado ? "2px solid #fca5a5" : hoy ? "2px solid #A5F3FC" : "2px solid transparent",
                       cursor: "pointer",
+                      opacity: noDisponible ? 0.5 : 1,
                     }}
                   >
-                    <span className="text-xs font-medium mb-1" style={{ color: selected ? "white" : hoy ? AQUA : "#374151" }}>
+                    <span className="text-xs font-medium mb-1" style={{ color: selected ? "white" : noDisponible ? "#9ca3af" : hoy ? AQUA : "#374151" }}>
                       {day}
                     </span>
                     <div className="flex gap-0.5 justify-center flex-wrap">
-                      {tieneFisio && eventos.filter(e => e.tipo === "fisio").slice(0, 2).map((e, ei) => (
+                      {estaBloqueado && !selected && <Lock size={8} color="#ef4444" />}
+                      {!estaBloqueado && tieneFisio && eventos.filter(e => e.tipo === "fisio").slice(0, 2).map((e, ei) => (
                         <span key={`f${ei}`} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selected ? "white" : ESTADO_CITA_COLORS[(e as { tipo: "fisio"; cita: Cita }).cita.estado] }} />
                       ))}
-                      {tienePilates && (
+                      {!estaBloqueado && tienePilates && (
                         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selected ? "white" : PURPLE }} />
                       )}
                     </div>
@@ -431,7 +532,7 @@ export default function CalendarioPage() {
                 ...clases.filter(c => c.estado === "activa").map(c => ({ fecha: c.fecha, hora: c.horaInicio, tipo: "pilates" as const, data: c })),
               ].sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora)).map((ev, i) => (
                 <div key={i} className="flex items-center gap-3 py-2" style={{ borderBottom: "1px solid #f9fafb" }}>
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "pilates" ? PURPLE : ESTADO_CITA_COLORS[(ev.data as Cita).estado ?? "pendiente"] }} />
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "pilates" ? PURPLE : ESTADO_CITA_COLORS[(ev.data as Cita).estado ?? "agendada"] }} />
                   <button
                     onClick={() => setSelectedDay(ev.fecha)}
                     className="text-sm font-medium w-20 flex-shrink-0 text-left"
@@ -489,7 +590,7 @@ function CitaCard({ cita, warn24h, onEstado, onPago, onDelete }: {
 
       {/* Estado de la cita */}
       <div className="flex gap-1 mt-2 flex-wrap">
-        {(["pendiente","confirmada","completada","cancelada"] as EstadoCita[]).map(e => (
+        {(["agendada","vino","no_vino","cancelada"] as EstadoCita[]).map(e => (
           <button key={e} onClick={() => onEstado(cita.id, e)} className="text-xs px-2 py-0.5 rounded-full transition-all"
             style={{ backgroundColor: cita.estado === e ? ESTADO_CITA_COLORS[e] : "#f3f4f6", color: cita.estado === e ? "white" : "#6b7280", border: "none", cursor: "pointer", fontWeight: cita.estado === e ? 600 : 400 }}>
             {ESTADO_CITA_LABELS[e]}
@@ -498,7 +599,7 @@ function CitaCard({ cita, warn24h, onEstado, onPago, onDelete }: {
       </div>
 
       {/* Control de cobro — solo visible en citas pasadas o completadas */}
-      {(esPasada || cita.estado === "completada") && cita.estado !== "cancelada" && (
+      {(esPasada || cita.estado === "vino") && cita.estado !== "cancelada" && cita.estado !== "no_vino" && (
         <div className="flex gap-1 mt-2 flex-wrap items-center" style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.5rem" }}>
           <span className="text-xs font-semibold mr-1" style={{ color: "#9ca3af" }}>Cobro:</span>
           {(["sin_pagar","parcial","pagado"] as PagoEstado[]).map(p => (

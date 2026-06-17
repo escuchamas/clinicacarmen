@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       SELECT id, fecha, hora FROM citas
       WHERE paciente_id = ${p.id}
         AND fecha >= ${hoy}
-        AND estado NOT IN ('cancelada', 'completada')
+        AND estado NOT IN ('cancelada', 'no_vino', 'vino')
       ORDER BY fecha ASC, hora ASC
       LIMIT 1
     `;

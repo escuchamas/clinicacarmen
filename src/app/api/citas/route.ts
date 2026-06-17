@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       hora: body.hora,
       duracion: body.duracion ?? 60,
       motivo: body.motivo ?? "",
-      estado: body.estado ?? "pendiente",
+      estado: body.estado ?? "agendada",
       notas: body.notas ?? "",
       pagoEstado: "sin_pagar",
     });

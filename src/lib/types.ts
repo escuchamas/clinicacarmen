@@ -95,7 +95,7 @@ export interface WizardData {
   };
 }
 
-export type EstadoCita = "pendiente" | "confirmada" | "cancelada" | "completada";
+export type EstadoCita = "agendada" | "vino" | "no_vino" | "cancelada";
 export type PagoEstado = "sin_pagar" | "pagado" | "parcial";
 
 export interface Cita {
@@ -125,17 +125,17 @@ export const PAGO_COLORS: Record<PagoEstado, string> = {
 };
 
 export const ESTADO_CITA_LABELS: Record<EstadoCita, string> = {
-  pendiente: "Pendiente",
-  confirmada: "Confirmada",
+  agendada: "Agendada",
+  vino: "Vino",
+  no_vino: "No vino",
   cancelada: "Cancelada",
-  completada: "Completada",
 };
 
 export const ESTADO_CITA_COLORS: Record<EstadoCita, string> = {
-  pendiente: "#f59e0b",
-  confirmada: "#10b981",
+  agendada: "#0891B2",
+  vino: "#10b981",
+  no_vino: "#f59e0b",
   cancelada: "#ef4444",
-  completada: "#6b7280",
 };
 
 export type CategoriaCoste = "alquiler" | "material" | "suministros" | "formacion" | "marketing" | "otro";

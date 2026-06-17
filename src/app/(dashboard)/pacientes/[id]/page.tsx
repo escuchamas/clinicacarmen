@@ -91,7 +91,7 @@ export default function PacienteDetailPage() {
     setDeleting(true);
     const res = await fetch(`/api/pacientes/${id}`, { method: "DELETE" });
     if (res.ok) {
-      router.push("/");
+      router.push("/pacientes");
     } else {
       alert("Error al eliminar el paciente.");
       setDeleting(false);
@@ -618,7 +618,7 @@ export default function PacienteDetailPage() {
                     </span>
                   </div>
                   <div className="flex gap-1 mt-3 flex-wrap">
-                    {(["pendiente", "confirmada", "completada", "cancelada"] as EstadoCita[]).map(e => (
+                    {(["agendada", "vino", "no_vino", "cancelada"] as EstadoCita[]).map(e => (
                       <button key={e} onClick={() => cambiarEstadoCita(cita.id, e)}
                         className="text-xs px-2.5 py-1 rounded-full transition-all"
                         style={{
