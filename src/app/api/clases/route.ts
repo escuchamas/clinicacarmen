@@ -3,15 +3,20 @@ import { auth } from "@/lib/auth";
 import { getClasesPilates, getClasesPilatesByMes, createClasePilates } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
-  const year = searchParams.get("year");
-  const month = searchParams.get("month");
-  if (year && month) {
-    const clases = await getClasesPilatesByMes(Number(year), Number(month));
+  try {
+    const { searchParams } = req.nextUrl;
+    const year = searchParams.get("year");
+    const month = searchParams.get("month");
+    if (year && month) {
+      const clases = await getClasesPilatesByMes(Number(year), Number(month));
+      return NextResponse.json(clases);
+    }
+    const clases = await getClasesPilates();
     return NextResponse.json(clases);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json([], { status: 200 });
   }
-  const clases = await getClasesPilates();
-  return NextResponse.json(clases);
 }
 
 export async function POST(req: NextRequest) {

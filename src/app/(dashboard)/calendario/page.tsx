@@ -36,14 +36,22 @@ export default function CalendarioPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const [resCitas, resClases] = await Promise.all([
-      fetch(`/api/citas?year=${year}&month=${month}`),
-      fetch(`/api/clases?year=${year}&month=${month}`),
-    ]);
-    const [dataCitas, dataClases] = await Promise.all([resCitas.json(), resClases.json()]);
-    setCitas(Array.isArray(dataCitas) ? dataCitas : []);
-    setClases(Array.isArray(dataClases) ? dataClases : []);
-    setLoading(false);
+    try {
+      const [resCitas, resClases] = await Promise.all([
+        fetch(`/api/citas?year=${year}&month=${month}`),
+        fetch(`/api/clases?year=${year}&month=${month}`),
+      ]);
+      const [dataCitas, dataClases] = await Promise.all([
+        resCitas.ok ? resCitas.json() : [],
+        resClases.ok ? resClases.json() : [],
+      ]);
+      setCitas(Array.isArray(dataCitas) ? dataCitas : []);
+      setClases(Array.isArray(dataClases) ? dataClases : []);
+    } catch (e) {
+      console.error("Error cargando calendario:", e);
+    } finally {
+      setLoading(false);
+    }
   }, [year, month]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
