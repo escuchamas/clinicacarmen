@@ -56,6 +56,11 @@ export async function createPaciente(data: Omit<Paciente, "id" | "fechaAlta">): 
   return { ...data, id, fechaAlta };
 }
 
+export async function deletePaciente(id: string): Promise<void> {
+  const db = sql();
+  await db`DELETE FROM pacientes WHERE id = ${id}`;
+}
+
 export async function updatePaciente(id: string, data: Partial<Omit<Paciente, "id" | "fechaAlta">>): Promise<void> {
   const db = sql();
   await db`

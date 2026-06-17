@@ -10,6 +10,16 @@ interface PacienteDetalle {
   historia: HistoriaClinica | null;
 }
 
+interface EditForm {
+  nombre: string;
+  apellidos: string;
+  dni: string;
+  email: string;
+  telefono: string;
+  fechaNacimiento: string;
+  poblacion: string;
+}
+
 export default function PacienteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -26,6 +36,10 @@ export default function PacienteDetailPage() {
   const [savingCita, setSavingCita] = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState<EditForm>({ nombre: "", apellidos: "", dni: "", email: "", telefono: "", fechaNacimiento: "", poblacion: "" });
+  const [savingEdit2, setSavingEdit2] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -44,6 +58,45 @@ export default function PacienteDetailPage() {
     }
     load();
   }, [id]);
+
+  function openEditModal(paciente: Paciente) {
+    setEditForm({
+      nombre: paciente.nombre,
+      apellidos: paciente.apellidos,
+      dni: paciente.dni,
+      email: paciente.email ?? "",
+      telefono: paciente.telefono ?? "",
+      fechaNacimiento: paciente.fechaNacimiento ?? "",
+      poblacion: paciente.poblacion ?? "",
+    });
+    setShowEditModal(true);
+  }
+
+  async function saveEditPaciente() {
+    setSavingEdit2(true);
+    const res = await fetch(`/api/pacientes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ seccion: "datos", datos: editForm }),
+    });
+    if (res.ok) {
+      setData(prev => prev ? { ...prev, paciente: { ...prev.paciente, ...editForm } } : prev);
+      setShowEditModal(false);
+    }
+    setSavingEdit2(false);
+  }
+
+  async function handleEliminar() {
+    if (!confirm("¿Seguro que quieres eliminar este paciente? Se borrarán todos sus datos, historia clínica y sesiones. Esta acción no se puede deshacer.")) return;
+    setDeleting(true);
+    const res = await fetch(`/api/pacientes/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/");
+    } else {
+      alert("Error al eliminar el paciente.");
+      setDeleting(false);
+    }
+  }
 
   async function saveCita() {
     if (!citaForm.fecha || !citaForm.hora) return;
@@ -126,6 +179,57 @@ export default function PacienteDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Modal de edición */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+          <div className="card p-6 w-full max-w-lg">
+            <h3 className="font-bold text-base mb-4" style={{ color: "#1a1a1a" }}>Editar datos del paciente</h3>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Nombre *</label>
+                  <input className="input-field" value={editForm.nombre} onChange={e => setEditForm(f => ({ ...f, nombre: e.target.value }))} required />
+                </div>
+                <div>
+                  <label className="label">Apellidos *</label>
+                  <input className="input-field" value={editForm.apellidos} onChange={e => setEditForm(f => ({ ...f, apellidos: e.target.value }))} required />
+                </div>
+              </div>
+              <div>
+                <label className="label">DNI / NIE</label>
+                <input className="input-field" value={editForm.dni} onChange={e => setEditForm(f => ({ ...f, dni: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Email</label>
+                  <input className="input-field" type="email" value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="label">Teléfono</label>
+                  <input className="input-field" value={editForm.telefono} onChange={e => setEditForm(f => ({ ...f, telefono: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Fecha de nacimiento</label>
+                  <input className="input-field" type="date" value={editForm.fechaNacimiento} onChange={e => setEditForm(f => ({ ...f, fechaNacimiento: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="label">Población</label>
+                  <input className="input-field" value={editForm.poblacion} onChange={e => setEditForm(f => ({ ...f, poblacion: e.target.value }))} />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <button className="btn-primary flex-1 justify-center" onClick={saveEditPaciente} disabled={savingEdit2 || !editForm.nombre || !editForm.apellidos}>
+                {savingEdit2 ? "Guardando..." : "Guardar cambios"}
+              </button>
+              <button className="btn-secondary" onClick={() => setShowEditModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-5 text-sm" style={{ color: "#9ca3af" }}>
         <Link href="/" style={{ color: "#2D7D5E", textDecoration: "none" }}>Pacientes</Link>
@@ -180,6 +284,22 @@ export default function PacienteDetailPage() {
                 </div>
               )}
             </div>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <button
+              className="btn-ghost text-sm py-1.5 px-3"
+              onClick={() => openEditModal(paciente)}
+            >
+              Editar
+            </button>
+            <button
+              onClick={handleEliminar}
+              disabled={deleting}
+              className="text-sm py-1.5 px-3 rounded-lg font-medium"
+              style={{ backgroundColor: "#fef2f2", color: "#ef4444", border: "1px solid #fca5a5", cursor: deleting ? "not-allowed" : "pointer" }}
+            >
+              {deleting ? "Eliminando..." : "Eliminar"}
+            </button>
           </div>
         </div>
       </div>
