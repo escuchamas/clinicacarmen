@@ -503,50 +503,68 @@ export default function PacienteDetailPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {sesiones.map((s) => (
-                <div key={s.id} className="card p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="text-xs font-bold px-2.5 py-1 rounded-full text-white"
-                        style={{ backgroundColor: "#2D7D5E" }}
-                      >
-                        Sesión {s.nSesion}
-                      </span>
-                      <span className="text-sm font-medium" style={{ color: "#6b7280" }}>{s.fecha}</span>
+              {sesiones.map((s) => {
+                const citaDelDia = citas.find(c => c.fecha === s.fecha);
+                const mostrarCobro = citaDelDia &&
+                  (citaDelDia.fecha < new Date().toISOString().split("T")[0] || citaDelDia.estado === "vino") &&
+                  citaDelDia.estado !== "cancelada" && citaDelDia.estado !== "no_vino";
+                return (
+                  <div key={s.id} className="card p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ backgroundColor: "#2D7D5E" }}>
+                          Sesión {s.nSesion}
+                        </span>
+                        <span className="text-sm font-medium" style={{ color: "#6b7280" }}>{s.fecha}</span>
+                        {citaDelDia && (
+                          <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                            style={{ backgroundColor: PAGO_COLORS[citaDelDia.pagoEstado ?? "sin_pagar"] + "20", color: PAGO_COLORS[citaDelDia.pagoEstado ?? "sin_pagar"] }}>
+                            {PAGO_LABELS[citaDelDia.pagoEstado ?? "sin_pagar"]}
+                          </span>
+                        )}
+                      </div>
+                      {editingSesion !== s.id && (
+                        <button className="btn-ghost text-xs py-1 px-3" onClick={() => { setEditingSesion(s.id); setEditContent(s.contenido); }}>
+                          Editar
+                        </button>
+                      )}
                     </div>
-                    {editingSesion !== s.id && (
-                      <button
-                        className="btn-ghost text-xs py-1 px-3"
-                        onClick={() => { setEditingSesion(s.id); setEditContent(s.contenido); }}
-                      >
-                        Editar
-                      </button>
+
+                    {editingSesion === s.id ? (
+                      <div>
+                        <textarea className="textarea-field" rows={6} value={editContent} onChange={(e) => setEditContent(e.target.value)} />
+                        <div className="flex gap-2 mt-2 justify-end">
+                          <button className="btn-secondary text-sm" onClick={() => setEditingSesion(null)}>Cancelar</button>
+                          <button className="btn-primary text-sm" onClick={saveEditSesion} disabled={savingEdit}>
+                            {savingEdit ? "Guardando..." : "Guardar"}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm" style={{ color: "#374151", whiteSpace: "pre-wrap" }}>
+                        {s.contenido || <span style={{ color: "#9ca3af" }}>Sin contenido</span>}
+                      </p>
+                    )}
+
+                    {mostrarCobro && citaDelDia && (
+                      <div className="flex gap-1 mt-3 flex-wrap items-center" style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.5rem" }}>
+                        <span className="text-xs font-semibold mr-1" style={{ color: "#9ca3af" }}>Cobro:</span>
+                        {(["sin_pagar", "parcial", "pagado"] as PagoEstado[]).map(p => (
+                          <button key={p} onClick={() => cambiarPagoCita(citaDelDia.id, p)}
+                            className="text-xs px-2.5 py-1 rounded-full transition-all"
+                            style={{
+                              backgroundColor: citaDelDia.pagoEstado === p ? PAGO_COLORS[p] : "#f3f4f6",
+                              color: citaDelDia.pagoEstado === p ? "white" : "#6b7280",
+                              border: "none", cursor: "pointer", fontWeight: citaDelDia.pagoEstado === p ? 600 : 400,
+                            }}>
+                            {PAGO_LABELS[p]}
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  {editingSesion === s.id ? (
-                    <div>
-                      <textarea
-                        className="textarea-field"
-                        rows={6}
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                      />
-                      <div className="flex gap-2 mt-2 justify-end">
-                        <button className="btn-secondary text-sm" onClick={() => setEditingSesion(null)}>Cancelar</button>
-                        <button className="btn-primary text-sm" onClick={saveEditSesion} disabled={savingEdit}>
-                          {savingEdit ? "Guardando..." : "Guardar"}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-sm" style={{ color: "#374151", whiteSpace: "pre-wrap" }}>
-                      {s.contenido || <span style={{ color: "#9ca3af" }}>Sin contenido</span>}
-                    </p>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
