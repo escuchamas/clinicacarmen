@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Bone, Brain, Dumbbell, Zap, Stethoscope, Baby, type LucideIcon } from "lucide-react";
 
 const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
@@ -12,7 +12,7 @@ type Step = "select" | "questions" | "profile";
 
 interface Problem {
   id: ProblemId;
-  emoji: string;
+  icon: LucideIcon;
   title: string;
   situaciones: string[];
 }
@@ -20,7 +20,7 @@ interface Problem {
 const PROBLEMS: Problem[] = [
   {
     id: "espalda",
-    emoji: "🔻",
+    icon: Bone,
     title: "Dolor de espalda",
     situaciones: [
       "Te duele al agacharte a coger algo del suelo",
@@ -30,7 +30,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     id: "cervicales",
-    emoji: "🔁",
+    icon: Brain,
     title: "Cervicales y cabeza",
     situaciones: [
       "Acabas el día con el cuello tan cargado que ya tienes dolor de cabeza por costumbre",
@@ -40,7 +40,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     id: "deportiva",
-    emoji: "🏃",
+    icon: Dumbbell,
     title: "Lesión deportiva",
     situaciones: [
       "Llevas meses sin poder salir a correr, jugar al fútbol o entrenar con normalidad",
@@ -50,7 +50,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     id: "hombro",
-    emoji: "💪",
+    icon: Zap,
     title: "Hombro y brazo",
     situaciones: [
       "No puedes dormir del lado que te duele",
@@ -60,7 +60,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     id: "postop",
-    emoji: "🩹",
+    icon: Stethoscope,
     title: "Postoperatorio",
     situaciones: [
       "La operación fue hace meses y sigues sin estar al cien por cien",
@@ -70,7 +70,7 @@ const PROBLEMS: Problem[] = [
   },
   {
     id: "embarazo",
-    emoji: "🤱",
+    icon: Baby,
     title: "Embarazo y postparto",
     situaciones: [
       "Desde que tuviste al bebé, tu cuerpo ya no es el de antes",
@@ -375,13 +375,13 @@ export default function QuizProblemas() {
         {/* PASO 1: TARJETAS */}
         {step === "select" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
-            {PROBLEMS.map(({ id, emoji, title, situaciones }) => (
+            {PROBLEMS.map(({ id, icon: Icon, title, situaciones }) => (
               <button key={id} onClick={() => selectProblem(id)}
                 style={{ textAlign: "left", padding: "1.5rem", backgroundColor: "white", border: "1.5px solid #e5e7eb", borderRadius: "1rem", cursor: "pointer", transition: "border-color 0.15s, box-shadow 0.15s" }}
                 onMouseOver={e => { e.currentTarget.style.borderColor = AQUA; e.currentTarget.style.boxShadow = "0 4px 16px rgba(8,145,178,0.12)"; }}
                 onMouseOut={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.boxShadow = "none"; }}
               >
-                <div style={{ fontSize: "1.75rem", marginBottom: "0.75rem" }}>{emoji}</div>
+                <div style={{ marginBottom: "0.875rem" }}><Icon size={28} color={AQUA} strokeWidth={1.75} /></div>
                 <p style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.875rem", color: "#111827" }}>{title}</p>
                 <ul style={{ listStyle: "none", padding: 0, margin: "0 0 1rem 0", display: "grid", gap: "0.5rem" }}>
                   {situaciones.map(s => (
@@ -402,7 +402,7 @@ export default function QuizProblemas() {
         {step === "questions" && selectedData && (
           <div style={{ maxWidth: 580, margin: "0 auto" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem", padding: "0.875rem 1.25rem", backgroundColor: "#F0FDFA", borderRadius: "0.75rem", border: `1.5px solid ${AQUA}` }}>
-              <span style={{ fontSize: "1.25rem" }}>{selectedData.emoji}</span>
+              <selectedData.icon size={22} color={AQUA} strokeWidth={1.75} />
               <span style={{ fontWeight: 700, color: AQUA_DARK, fontSize: "0.9375rem" }}>{selectedData.title}</span>
               <button onClick={reset} style={{ marginLeft: "auto", fontSize: "0.8125rem", color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>
                 Cambiar →
@@ -444,7 +444,7 @@ export default function QuizProblemas() {
           <div style={{ maxWidth: 580, margin: "0 auto" }}>
             <div style={{ backgroundColor: "#F0FDFA", borderRadius: "1.25rem", padding: "2rem", border: `1.5px solid ${AQUA}`, marginBottom: "1.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-                <span style={{ fontSize: "1.5rem" }}>{selectedData.emoji}</span>
+                <selectedData.icon size={26} color={AQUA} strokeWidth={1.75} />
                 <span style={{ fontWeight: 800, fontSize: "1.0625rem", color: "#111827" }}>{profile.title}</span>
               </div>
               <p style={{ color: "#374151", lineHeight: 1.8, fontSize: "0.9375rem", marginBottom: "1.25rem" }}>

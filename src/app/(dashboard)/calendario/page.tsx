@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Banknote, CalendarDays } from "lucide-react";
 
 const AQUA = "#0891B2";
 const PURPLE = "#7C3AED";
@@ -204,7 +204,7 @@ export default function CalendarioPage() {
             style={{ backgroundColor: "#fef2f2", border: "none", cursor: "pointer" }}
           >
             <div className="flex items-center gap-2">
-              <span style={{ fontSize: "1rem" }}>💸</span>
+              <Banknote size={16} color="#991b1b" strokeWidth={1.75} />
               <span className="font-bold text-sm" style={{ color: "#991b1b" }}>
                 {impagadas.length} sesión{impagadas.length > 1 ? "es" : ""} sin cobrar (más de 24h)
               </span>
@@ -351,7 +351,7 @@ export default function CalendarioPage() {
             </>
           ) : (
             <div className="text-center py-8">
-              <p className="text-2xl mb-2">📅</p>
+              <CalendarDays size={36} color="#d1d5db" strokeWidth={1.5} style={{ marginBottom: "0.5rem" }} />
               <p className="text-sm font-medium" style={{ color: "#1a1a1a" }}>Selecciona un día</p>
               <p className="text-xs mt-1" style={{ color: "#9ca3af" }}>para ver o añadir eventos</p>
             </div>
