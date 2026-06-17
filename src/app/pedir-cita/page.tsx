@@ -297,18 +297,10 @@ export default function PedirCitaPage() {
               </form>
             </div>
 
-            {/* CTA nuevo paciente */}
-            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "1.5rem", border: "1px solid #e5e7eb", textAlign: "center" }}>
-              <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.375rem" }}>¿Eres nuevo paciente?</p>
-              <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.25rem", lineHeight: 1.5 }}>
-                La primera visita incluye una evaluación completa. Escríbenos por WhatsApp y te reservamos hueco.
-              </p>
-              <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.75rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none" }}>
-                <MessageCircle size={18} />
-                Contactar por WhatsApp
-              </a>
-            </div>
+            {/* Nota primera visita */}
+            <p style={{ textAlign: "center", fontSize: "0.8125rem", color: "#9ca3af", lineHeight: 1.5 }}>
+              ¿Primera vez? Introduce tu DNI igualmente — si no te encontramos, te guiamos para reservar tu primera cita.
+            </p>
           </div>
         )}
 
