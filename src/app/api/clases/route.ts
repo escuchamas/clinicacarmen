@@ -21,8 +21,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const user = session?.user as { role?: string } | undefined;
-  if (user?.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const body = await req.json();
   const { titulo, fecha, horaInicio, horaFin, capacidad, notas } = body;

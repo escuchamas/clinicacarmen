@@ -27,6 +27,7 @@ export default function PilatesPage() {
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [errorForm, setErrorForm] = useState("");
   const [form, setForm] = useState<NuevaClaseForm>({
     titulo: "Pilates",
     fecha: "",
@@ -59,17 +60,21 @@ export default function PilatesPage() {
   async function saveClase() {
     if (!form.fecha || !form.horaInicio || !form.horaFin) return;
     setSaving(true);
+    setErrorForm("");
     const res = await fetch("/api/clases", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+    setSaving(false);
     if (res.ok) {
       await fetchClases();
       setShowForm(false);
       setForm({ titulo: "Pilates", fecha: "", horaInicio: "10:00", horaFin: "11:00", capacidad: 8, notas: "" });
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setErrorForm(d.error ?? "Error al crear la clase. Inténtalo de nuevo.");
     }
-    setSaving(false);
   }
 
   async function cancelarClase(id: string) {
@@ -138,6 +143,9 @@ export default function PilatesPage() {
               </button>
               <button className="btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
             </div>
+            {errorForm && (
+              <p className="text-sm mt-2" style={{ color: "#dc2626" }}>⚠ {errorForm}</p>
+            )}
           </div>
         </div>
       )}
