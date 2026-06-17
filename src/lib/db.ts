@@ -228,6 +228,28 @@ export async function updateCitaEstado(id: string, estado: EstadoCita): Promise<
   await db`UPDATE citas SET estado = ${estado} WHERE id = ${id}`;
 }
 
+export async function updateCitaPago(id: string, pagoEstado: import("./types").PagoEstado): Promise<void> {
+  const db = sql();
+  await db`UPDATE citas SET pago_estado = ${pagoEstado} WHERE id = ${id}`;
+}
+
+export async function getCitasImpagadas(): Promise<Cita[]> {
+  const db = sql();
+  const ayer = new Date();
+  ayer.setDate(ayer.getDate() - 1);
+  const ayerStr = ayer.toISOString().split("T")[0];
+  const rows = await db`
+    SELECT c.*, p.nombre || ' ' || p.apellidos AS paciente_nombre
+    FROM citas c
+    JOIN pacientes p ON p.id = c.paciente_id
+    WHERE c.fecha <= ${ayerStr}
+      AND c.estado NOT IN ('cancelada')
+      AND (c.pago_estado IS NULL OR c.pago_estado = 'sin_pagar' OR c.pago_estado = 'parcial')
+    ORDER BY c.fecha DESC, c.hora ASC
+  `;
+  return rows.map(rowToCita);
+}
+
 export async function deleteCita(id: string): Promise<void> {
   const db = sql();
   await db`DELETE FROM citas WHERE id = ${id}`;
@@ -466,6 +488,7 @@ function rowToCita(r: Record<string, unknown>): Cita {
     estado: (r.estado as EstadoCita) ?? "pendiente",
     notas: String(r.notas ?? ""),
     fechaCreacion: toDateStr(r.fecha_creacion),
+    pagoEstado: (r.pago_estado as import("./types").PagoEstado) ?? "sin_pagar",
   };
 }
 

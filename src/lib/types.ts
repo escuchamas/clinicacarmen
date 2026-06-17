@@ -96,6 +96,7 @@ export interface WizardData {
 }
 
 export type EstadoCita = "pendiente" | "confirmada" | "cancelada" | "completada";
+export type PagoEstado = "sin_pagar" | "pagado" | "parcial";
 
 export interface Cita {
   id: string;
@@ -108,7 +109,20 @@ export interface Cita {
   estado: EstadoCita;
   notas: string;
   fechaCreacion: string;
+  pagoEstado: PagoEstado;
 }
+
+export const PAGO_LABELS: Record<PagoEstado, string> = {
+  sin_pagar: "Sin cobrar",
+  pagado: "Cobrado",
+  parcial: "Parcial",
+};
+
+export const PAGO_COLORS: Record<PagoEstado, string> = {
+  sin_pagar: "#ef4444",
+  pagado: "#10b981",
+  parcial: "#f59e0b",
+};
 
 export const ESTADO_CITA_LABELS: Record<EstadoCita, string> = {
   pendiente: "Pendiente",

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates } from "@/lib/types";
+import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
 import { AlertCircle } from "lucide-react";
 
 const AQUA = "#0891B2";
@@ -33,6 +33,8 @@ export default function CalendarioPage() {
   const [pacientes, setPacientes] = useState<{ id: string; nombre: string; apellidos: string }[]>([]);
   const [form, setForm] = useState<NuevaCitaForm>({ pacienteId: "", fecha: "", hora: "10:00", duracion: 60, motivo: "", notas: "" });
   const [saving, setSaving] = useState(false);
+  const [impagadas, setImpagadas] = useState<Cita[]>([]);
+  const [showImpagadas, setShowImpagadas] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -59,6 +61,10 @@ export default function CalendarioPage() {
   useEffect(() => {
     fetch("/api/pacientes").then(r => r.json()).then(d => setPacientes(Array.isArray(d) ? d : []));
   }, []);
+
+  useEffect(() => {
+    fetch("/api/citas?impagadas=1").then(r => r.ok ? r.json() : []).then(d => setImpagadas(Array.isArray(d) ? d : []));
+  }, [citas]); // recarga cuando cambian citas (ej. después de marcar pago)
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); } else setMonth(m => m - 1);
@@ -116,6 +122,11 @@ export default function CalendarioPage() {
   async function cambiarEstado(id: string, estado: EstadoCita) {
     await fetch("/api/citas", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "estado", id, estado }) });
     setCitas(prev => prev.map(c => c.id === id ? { ...c, estado } : c));
+  }
+
+  async function cambiarPago(id: string, pagoEstado: PagoEstado) {
+    await fetch("/api/citas", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "pago", id, pagoEstado }) });
+    setCitas(prev => prev.map(c => c.id === id ? { ...c, pagoEstado } : c));
   }
 
   async function eliminarCita(id: string) {
@@ -181,6 +192,52 @@ export default function CalendarioPage() {
               <button className="btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Panel cobros pendientes */}
+      {impagadas.length > 0 && (
+        <div className="mb-5 rounded-xl overflow-hidden" style={{ border: "1.5px solid #fca5a5" }}>
+          <button
+            onClick={() => setShowImpagadas(v => !v)}
+            className="w-full flex items-center justify-between px-4 py-3"
+            style={{ backgroundColor: "#fef2f2", border: "none", cursor: "pointer" }}
+          >
+            <div className="flex items-center gap-2">
+              <span style={{ fontSize: "1rem" }}>💸</span>
+              <span className="font-bold text-sm" style={{ color: "#991b1b" }}>
+                {impagadas.length} sesión{impagadas.length > 1 ? "es" : ""} sin cobrar (más de 24h)
+              </span>
+            </div>
+            <span style={{ color: "#991b1b", fontSize: "0.8125rem" }}>{showImpagadas ? "▲ Ocultar" : "▼ Ver"}</span>
+          </button>
+          {showImpagadas && (
+            <div style={{ backgroundColor: "white", borderTop: "1px solid #fca5a5" }}>
+              {impagadas.map(c => (
+                <div key={c.id} className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid #fef2f2" }}>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-semibold text-sm" style={{ color: "#111827" }}>{c.pacienteNombre}</span>
+                    <span className="text-xs ml-2" style={{ color: "#6b7280" }}>
+                      {new Date(c.fecha + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })} · {c.hora}
+                    </span>
+                    {c.pagoEstado === "parcial" && <span className="text-xs ml-2 font-semibold" style={{ color: "#d97706" }}>Parcial</span>}
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button onClick={() => cambiarPago(c.id, "parcial")}
+                      className="text-xs px-2 py-1 rounded-full font-semibold"
+                      style={{ backgroundColor: c.pagoEstado === "parcial" ? "#fef3c7" : "#f3f4f6", color: c.pagoEstado === "parcial" ? "#d97706" : "#6b7280", border: "none", cursor: "pointer" }}>
+                      Parcial
+                    </button>
+                    <button onClick={() => cambiarPago(c.id, "pagado")}
+                      className="text-xs px-2 py-1 rounded-full font-semibold"
+                      style={{ backgroundColor: "#d1fae5", color: "#065f46", border: "none", cursor: "pointer" }}>
+                      ✓ Cobrado
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -286,7 +343,7 @@ export default function CalendarioPage() {
               ) : (
                 <div className="space-y-3">
                   {eventosDia.map((ev, i) => ev.tipo === "fisio"
-                    ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onDelete={eliminarCita} />
+                    ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
                     : <PilatesCard key={i} clase={ev.clase} />
                   )}
                 </div>
@@ -335,12 +392,14 @@ export default function CalendarioPage() {
   );
 }
 
-function CitaCard({ cita, warn24h, onEstado, onDelete }: {
+function CitaCard({ cita, warn24h, onEstado, onPago, onDelete }: {
   cita: Cita; warn24h: boolean;
   onEstado: (id: string, estado: EstadoCita) => void;
+  onPago: (id: string, pago: PagoEstado) => void;
   onDelete: (id: string) => void;
 }) {
   const esPrimeraVisita = cita.motivo === "Primera visita";
+  const esPasada = cita.fecha < new Date().toISOString().split("T")[0];
   return (
     <div className="p-3 rounded-xl" style={{ backgroundColor: esPrimeraVisita ? "#fff7ed" : "#fafafa", border: warn24h ? "1px solid #fcd34d" : esPrimeraVisita ? "1px solid #fed7aa" : "1px solid #DDD8CE" }}>
       {esPrimeraVisita && (
@@ -363,6 +422,8 @@ function CitaCard({ cita, warn24h, onEstado, onDelete }: {
         </div>
         <button onClick={() => onDelete(cita.id)} style={{ color: "#d1d5db", background: "none", border: "none", cursor: "pointer" }}>✕</button>
       </div>
+
+      {/* Estado de la cita */}
       <div className="flex gap-1 mt-2 flex-wrap">
         {(["pendiente","confirmada","completada","cancelada"] as EstadoCita[]).map(e => (
           <button key={e} onClick={() => onEstado(cita.id, e)} className="text-xs px-2 py-0.5 rounded-full transition-all"
@@ -371,6 +432,19 @@ function CitaCard({ cita, warn24h, onEstado, onDelete }: {
           </button>
         ))}
       </div>
+
+      {/* Control de cobro — solo visible en citas pasadas o completadas */}
+      {(esPasada || cita.estado === "completada") && cita.estado !== "cancelada" && (
+        <div className="flex gap-1 mt-2 flex-wrap items-center" style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.5rem" }}>
+          <span className="text-xs font-semibold mr-1" style={{ color: "#9ca3af" }}>Cobro:</span>
+          {(["sin_pagar","parcial","pagado"] as PagoEstado[]).map(p => (
+            <button key={p} onClick={() => onPago(cita.id, p)} className="text-xs px-2 py-0.5 rounded-full transition-all"
+              style={{ backgroundColor: cita.pagoEstado === p ? PAGO_COLORS[p] : "#f3f4f6", color: cita.pagoEstado === p ? "white" : "#6b7280", border: "none", cursor: "pointer", fontWeight: cita.pagoEstado === p ? 600 : 400 }}>
+              {PAGO_LABELS[p]}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

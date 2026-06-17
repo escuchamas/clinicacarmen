@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getCitasByMes, createCita, updateCitaEstado, deleteCita } from "@/lib/db";
-import { EstadoCita } from "@/lib/types";
+import { getCitasByMes, createCita, updateCitaEstado, updateCitaPago, deleteCita, getCitasImpagadas } from "@/lib/db";
+import { EstadoCita, PagoEstado } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -9,6 +9,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const { searchParams } = new URL(req.url);
+
+    if (searchParams.get("impagadas") === "1") {
+      const citas = await getCitasImpagadas();
+      return NextResponse.json(citas);
+    }
+
     const year = parseInt(searchParams.get("year") ?? String(new Date().getFullYear()));
     const month = parseInt(searchParams.get("month") ?? String(new Date().getMonth() + 1));
     const citas = await getCitasByMes(year, month);
@@ -33,6 +39,7 @@ export async function POST(req: NextRequest) {
       motivo: body.motivo ?? "",
       estado: body.estado ?? "pendiente",
       notas: body.notas ?? "",
+      pagoEstado: "sin_pagar",
     });
     return NextResponse.json(cita, { status: 201 });
   } catch (e) {
@@ -49,6 +56,8 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     if (body.action === "estado") {
       await updateCitaEstado(body.id, body.estado as EstadoCita);
+    } else if (body.action === "pago") {
+      await updateCitaPago(body.id, body.pagoEstado as PagoEstado);
     } else if (body.action === "delete") {
       await deleteCita(body.id);
     }

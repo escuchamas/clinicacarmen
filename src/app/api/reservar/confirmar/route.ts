@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     if (citasActivas.length > 0) {
       const c = citasActivas[0];
       return NextResponse.json(
-        { error: "ya_tiene_cita", fecha: c.fecha, hora: c.hora.slice(0, 5) },
+        { error: "ya_tiene_cita", citaId: c.id, fecha: c.fecha, hora: c.hora.slice(0, 5) },
         { status: 409 }
       );
     }
@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
       duracion: duracion ?? 60,
       motivo: motivo || "Reserva online",
       estado: "confirmada",
-      notas: notas || "Reserva online — pago pendiente de confirmar",
+      notas: notas || "Reserva online",
+      pagoEstado: "sin_pagar",
     });
 
     return NextResponse.json(cita, { status: 201 });
