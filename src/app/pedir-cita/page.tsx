@@ -49,6 +49,8 @@ export default function PedirCitaPage() {
   const [telInput, setTelInput] = useState("");
   const [loadingId, setLoadingId] = useState(false);
   const [errorId, setErrorId] = useState("");
+  const [errorDni, setErrorDni] = useState("");
+  const [errorTel, setErrorTel] = useState("");
   const [paciente, setPaciente] = useState<Paciente | null>(null);
 
   const hoy = new Date();
@@ -72,8 +74,36 @@ export default function PedirCitaPage() {
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
 
+  function validarDocumento(val: string): string {
+    const v = val.trim().toUpperCase().replace(/\s/g, "");
+    if (!v) return "El documento es obligatorio";
+    // DNI: 8 dígitos + letra
+    if (/^[0-9]{8}[A-Z]$/.test(v)) return "";
+    // NIE: X/Y/Z + 7 dígitos + letra
+    if (/^[XYZ][0-9]{7}[A-Z]$/.test(v)) return "";
+    // NIF empresa: letra + 7 dígitos + letra/dígito
+    if (/^[ABCDEFGHJNPQRSUVW][0-9]{7}[A-Z0-9]$/.test(v)) return "";
+    // Pasaporte u otro doc extranjero: 6-20 alfanumérico
+    if (/^[A-Z0-9]{6,20}$/.test(v)) return "";
+    return "Formato no válido — Ej: 12345678A · X1234567A";
+  }
+
+  function validarTelefono(val: string): string {
+    // Quitar espacios, guiones, puntos, paréntesis
+    const v = val.trim().replace(/[\s\-\.\(\)]/g, "");
+    if (!v) return "El teléfono es obligatorio";
+    // + opcional seguido de 6-15 dígitos (cubre España sin/con +34, internacionales)
+    if (/^\+?\d{6,15}$/.test(v)) return "";
+    return "Teléfono no válido — Ej: 600 000 000 · +34 600 000 000";
+  }
+
   async function handleIdentificar(e: React.FormEvent) {
     e.preventDefault();
+    const eDni = validarDocumento(dniInput);
+    const eTel = validarTelefono(telInput);
+    setErrorDni(eDni);
+    setErrorTel(eTel);
+    if (eDni || eTel) return;
     setErrorId("");
     setLoadingId(true);
     const res = await fetch("/api/reservar/identificar", {
@@ -266,13 +296,34 @@ export default function PedirCitaPage() {
               <form onSubmit={handleIdentificar} style={{ display: "grid", gap: "1rem" }}>
                 <div>
                   <label style={labelSt}>DNI / NIE del paciente</label>
-                  <input style={inputSt} placeholder="12345678A" value={dniInput} onChange={e => setDniInput(e.target.value)} required />
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>En caso de menor, el DNI del niño o niña</p>
+                  <input
+                    style={{ ...inputSt, ...(errorDni ? { borderColor: "#ef4444", backgroundColor: "#fef2f2" } : {}) }}
+                    placeholder="12345678A"
+                    value={dniInput}
+                    onChange={e => { setDniInput(e.target.value); if (errorDni) setErrorDni(""); }}
+                    onBlur={() => setErrorDni(validarDocumento(dniInput))}
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                  />
+                  {errorDni
+                    ? <p style={{ fontSize: "0.75rem", color: "#dc2626", marginTop: "0.3rem", fontWeight: 500 }}>⚠ {errorDni}</p>
+                    : <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>DNI, NIE, pasaporte u otro documento. En caso de menor, el del niño o niña.</p>
+                  }
                 </div>
                 <div>
                   <label style={labelSt}>Teléfono de contacto</label>
-                  <input style={inputSt} placeholder="600 000 000" value={telInput} onChange={e => setTelInput(e.target.value)} required />
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>El número que proporcionaste al registrarte — habitualmente el del tutor para menores</p>
+                  <input
+                    style={{ ...inputSt, ...(errorTel ? { borderColor: "#ef4444", backgroundColor: "#fef2f2" } : {}) }}
+                    placeholder="600 000 000"
+                    type="tel"
+                    value={telInput}
+                    onChange={e => { setTelInput(e.target.value); if (errorTel) setErrorTel(""); }}
+                    onBlur={() => setErrorTel(validarTelefono(telInput))}
+                  />
+                  {errorTel
+                    ? <p style={{ fontSize: "0.75rem", color: "#dc2626", marginTop: "0.3rem", fontWeight: 500 }}>⚠ {errorTel}</p>
+                    : <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>Puedes incluir el prefijo del país: +34, +44… Habitualmente el del tutor para menores.</p>
+                  }
                 </div>
                 {errorId && errorId !== "primera_visita" && (
                   <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "0.625rem", padding: "0.875rem", fontSize: "0.875rem", color: "#991b1b" }}>

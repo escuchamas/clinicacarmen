@@ -11,7 +11,8 @@ function generateId() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { dni, telefono, nombre, apellidos, email, fecha, hora, cuestionario } = await req.json();
+    const body = await req.json();
+    const { dni, telefono, nombre, apellidos, email, fecha, hora, cuestionario } = body;
 
     if (!dni || !telefono || !nombre || !apellidos || !fecha || !hora) {
       return NextResponse.json({ error: "Faltan campos obligatorios" }, { status: 400 });
@@ -25,21 +26,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "ya_existe", pacienteId: existing[0].id }, { status: 409 });
     }
 
-    // Crear paciente básico
+    // Crear paciente básico — solo columnas garantizadas en esquema original
     const pacienteId = generateId();
     await db`
-      INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, poblacion, fecha_alta, lopd_firmada, lopd_fecha)
-      VALUES (${pacienteId}, ${dni.trim()}, ${nombre.trim()}, ${apellidos.trim()}, ${email?.trim() ?? ""}, ${telefono.trim()}, NULL, "", NOW(), false, NULL)
+      INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono)
+      VALUES (
+        ${pacienteId},
+        ${dni.trim()},
+        ${nombre.trim()},
+        ${apellidos.trim()},
+        ${email?.trim() ?? ""},
+        ${telefono.trim()}
+      )
     `;
 
+    // Intentar rellenar columnas opcionales si existen (no falla si no existen)
+    try {
+      await db`
+        UPDATE pacientes
+        SET fecha_alta = CURRENT_DATE, lopd_firmada = false
+        WHERE id = ${pacienteId}
+          AND fecha_alta IS NULL
+      `;
+    } catch { /* columnas no creadas todavía, se ignora */ }
+
     // Construir notas con el cuestionario
+    const cq = cuestionario ?? {};
     const notas = [
       "=== SOLICITUD PRIMERA VISITA ===",
-      `Motivo: ${cuestionario.motivo}`,
-      `Dolor actual: ${cuestionario.dolorActual}`,
-      cuestionario.dolorActual === "Sí" ? `Desde hace: ${cuestionario.dolorDesde}` : null,
-      `Fisioterapia previa: ${cuestionario.fisioPrevia}`,
-      cuestionario.otrasNotas ? `Notas adicionales: ${cuestionario.otrasNotas}` : null,
+      cq.motivo ? `Motivo: ${cq.motivo}` : null,
+      cq.dolorActual ? `Dolor actual: ${cq.dolorActual}` : null,
+      cq.dolorActual === "Sí" && cq.dolorDesde ? `Desde hace: ${cq.dolorDesde}` : null,
+      cq.fisioPrevia ? `Fisioterapia previa: ${cq.fisioPrevia}` : null,
+      cq.otrasNotas ? `Notas adicionales: ${cq.otrasNotas}` : null,
     ].filter(Boolean).join("\n");
 
     // Crear cita pendiente de confirmación
@@ -51,7 +70,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ pacienteId, citaId }, { status: 201 });
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 });
+    console.error("[primera-visita]", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
