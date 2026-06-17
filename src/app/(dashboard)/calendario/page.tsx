@@ -35,6 +35,7 @@ export default function CalendarioPage() {
   const [saving, setSaving] = useState(false);
   const [impagadas, setImpagadas] = useState<Cita[]>([]);
   const [showImpagadas, setShowImpagadas] = useState(false);
+  const [showAgenda, setShowAgenda] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -69,11 +70,11 @@ export default function CalendarioPage() {
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); } else setMonth(m => m - 1);
-    setSelectedDay(null);
+    setSelectedDay(null); setShowAgenda(false);
   }
   function nextMonth() {
     if (month === 12) { setYear(y => y + 1); setMonth(1); } else setMonth(m => m + 1);
-    setSelectedDay(null);
+    setSelectedDay(null); setShowAgenda(false);
   }
 
   function getDaysInMonth() {
@@ -252,36 +253,40 @@ export default function CalendarioPage() {
       {selectedDay && (
         <>
           <div
-            className="fixed inset-0 z-30 sm:hidden"
+            className="fixed inset-0 z-30 md:hidden"
             style={{ backgroundColor: "rgba(0,0,0,0.35)" }}
             onClick={() => setSelectedDay(null)}
           />
           <div
-            className="fixed inset-x-0 bottom-0 z-40 sm:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 md:hidden"
             style={{
               backgroundColor: "white",
               borderRadius: "1.25rem 1.25rem 0 0",
               boxShadow: "0 -4px 32px rgba(0,0,0,0.15)",
-              maxHeight: "70vh",
+              maxHeight: "75vh",
               display: "flex",
               flexDirection: "column",
               paddingBottom: "calc(env(safe-area-inset-bottom) + 4rem)",
             }}
           >
+            {/* Handle + cabecera */}
             <div style={{ flexShrink: 0, padding: "0.75rem 1rem 0" }}>
               <div style={{ width: "40px", height: "4px", backgroundColor: "#e5e7eb", borderRadius: "2px", margin: "0 auto 0.875rem" }} />
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-bold text-sm capitalize" style={{ color: "#1a1a1a" }}>
                   {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
                 </h3>
-                <button
-                  className="btn-ghost text-xs py-1 px-2"
-                  onClick={() => { setForm(f => ({ ...f, fecha: selectedDay })); setShowForm(true); }}
-                >
-                  + Añadir
-                </button>
+                <div className="flex items-center gap-1">
+                  <button className="btn-ghost text-xs py-1 px-2" onClick={() => { setForm(f => ({ ...f, fecha: selectedDay })); setShowForm(true); }}>
+                    + Añadir
+                  </button>
+                  <button onClick={() => setSelectedDay(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "0.25rem 0.5rem", fontSize: "1.125rem", lineHeight: 1 }}>
+                    ✕
+                  </button>
+                </div>
               </div>
             </div>
+            {/* Contenido scrollable */}
             <div style={{ flex: 1, overflowY: "auto", padding: "0 1rem 1rem" }}>
               {eventosDia.length === 0 ? (
                 <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
@@ -298,9 +303,9 @@ export default function CalendarioPage() {
         </>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Calendario */}
-        <div className="lg:col-span-2 card p-4">
+        <div className="md:col-span-2 card p-4">
           <div className="flex items-center justify-between mb-4">
             <button onClick={prevMonth} className="btn-ghost p-2">‹</button>
             <h2 className="font-bold text-base" style={{ color: "#1a1a1a" }}>{MESES[month - 1]} {year}</h2>
@@ -370,8 +375,8 @@ export default function CalendarioPage() {
           </div>
         </div>
 
-        {/* Panel lateral — solo desktop */}
-        <div className="hidden lg:block card p-4">
+        {/* Panel lateral — md y superior */}
+        <div className="hidden md:block card p-4">
           {selectedDay ? (
             <>
               <div className="flex items-center justify-between mb-4">
@@ -403,33 +408,48 @@ export default function CalendarioPage() {
         </div>
       </div>
 
-      {/* Lista combinada del mes */}
-      {(citas.length > 0 || clases.length > 0) && (
-        <div className="card p-5 mt-5">
-          <h3 className="font-bold text-sm mb-4" style={{ color: "#1a1a1a" }}>Todos los eventos de {MESES[month - 1]}</h3>
-          <div className="space-y-2">
-            {[
-              ...citas.map(c => ({ fecha: c.fecha, hora: c.hora, tipo: "fisio" as const, data: c })),
-              ...clases.filter(c => c.estado === "activa").map(c => ({ fecha: c.fecha, hora: c.horaInicio, tipo: "pilates" as const, data: c })),
-            ].sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora)).map((ev, i) => (
-              <div key={i} className="flex items-center gap-3 py-2" style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "pilates" ? PURPLE : ESTADO_CITA_COLORS[(ev.data as Cita).estado ?? "pendiente"] }} />
-                <span className="text-sm font-medium w-20 flex-shrink-0" style={{ color: "#6b7280" }}>
-                  {new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })} {ev.hora}
-                </span>
-                {ev.tipo === "fisio"
-                  ? <Link href={`/pacientes/${(ev.data as Cita).pacienteId}`} className="text-sm font-medium flex-1 truncate" style={{ color: AQUA, textDecoration: "none" }}>{(ev.data as Cita).pacienteNombre}</Link>
-                  : <span className="text-sm font-medium flex-1 truncate" style={{ color: PURPLE }}>{(ev.data as ClasePilates).titulo}</span>
-                }
-                <span className="text-xs flex-shrink-0 px-2 py-0.5 rounded-full font-medium" style={{
-                  backgroundColor: ev.tipo === "pilates" ? "#EDE9FE" : "#f3f4f6",
-                  color: ev.tipo === "pilates" ? PURPLE : "#6b7280",
-                }}>
-                  {ev.tipo === "pilates" ? `${(ev.data as ClasePilates).inscritosCount}/${(ev.data as ClasePilates).capacidad} plazas` : (ev.data as Cita).motivo}
-                </span>
-              </div>
-            ))}
-          </div>
+      {/* Agenda del mes — colapsable, oculta cuando hay día seleccionado */}
+      {(citas.length > 0 || clases.length > 0) && !selectedDay && (
+        <div className="card mt-5 overflow-hidden">
+          <button
+            onClick={() => setShowAgenda(v => !v)}
+            className="w-full flex items-center justify-between px-5 py-4"
+            style={{ background: "none", border: "none", cursor: "pointer" }}
+          >
+            <span className="font-semibold text-sm" style={{ color: "#1a1a1a" }}>
+              Agenda de {MESES[month - 1]}
+              <span className="ml-2 font-normal" style={{ color: "#9ca3af" }}>
+                {citas.length + clases.filter(c => c.estado === "activa").length} eventos
+              </span>
+            </span>
+            <span style={{ color: "#9ca3af", fontSize: "0.75rem" }}>{showAgenda ? "▲ Ocultar" : "▼ Ver todos"}</span>
+          </button>
+          {showAgenda && (
+            <div style={{ borderTop: "1px solid #f3f4f6", padding: "0 1.25rem 1.25rem" }}>
+              {[
+                ...citas.map(c => ({ fecha: c.fecha, hora: c.hora, tipo: "fisio" as const, data: c })),
+                ...clases.filter(c => c.estado === "activa").map(c => ({ fecha: c.fecha, hora: c.horaInicio, tipo: "pilates" as const, data: c })),
+              ].sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora)).map((ev, i) => (
+                <div key={i} className="flex items-center gap-3 py-2" style={{ borderBottom: "1px solid #f9fafb" }}>
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "pilates" ? PURPLE : ESTADO_CITA_COLORS[(ev.data as Cita).estado ?? "pendiente"] }} />
+                  <button
+                    onClick={() => setSelectedDay(ev.fecha)}
+                    className="text-sm font-medium w-20 flex-shrink-0 text-left"
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6b7280" }}
+                  >
+                    {new Date(ev.fecha + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })} {ev.hora}
+                  </button>
+                  {ev.tipo === "fisio"
+                    ? <Link href={`/pacientes/${(ev.data as Cita).pacienteId}`} className="text-sm font-medium flex-1 truncate" style={{ color: AQUA, textDecoration: "none" }}>{(ev.data as Cita).pacienteNombre}</Link>
+                    : <span className="text-sm font-medium flex-1 truncate" style={{ color: PURPLE }}>{(ev.data as ClasePilates).titulo}</span>
+                  }
+                  <span className="text-xs flex-shrink-0 px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: ev.tipo === "pilates" ? "#EDE9FE" : "#f3f4f6", color: ev.tipo === "pilates" ? PURPLE : "#6b7280" }}>
+                    {ev.tipo === "pilates" ? `${(ev.data as ClasePilates).inscritosCount}/${(ev.data as ClasePilates).capacidad}` : (ev.data as Cita).motivo || ESTADO_CITA_LABELS[(ev.data as Cita).estado]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
