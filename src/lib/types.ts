@@ -147,6 +147,34 @@ export const CATEGORIA_COSTE_LABELS: Record<CategoriaCoste, string> = {
 
 export const TARIFA_POR_30MIN = 35; // €
 
+export type EstadoClase = "activa" | "cancelada";
+export type EstadoInscripcion = "inscrita" | "cancelada" | "penalizada";
+
+export interface ClasePilates {
+  id: string;
+  titulo: string;
+  fecha: string;
+  horaInicio: string;
+  horaFin: string;
+  capacidad: number;
+  notas: string;
+  estado: EstadoClase;
+  inscritosCount: number;
+  fechaCreacion: string;
+}
+
+export interface InscripcionPilates {
+  id: string;
+  pacienteId: string;
+  claseId: string;
+  estado: EstadoInscripcion;
+  fechaInscripcion: string;
+  fechaCancelacion?: string;
+  pacienteNombre?: string;
+  pacienteEmail?: string;
+  pacienteTelefono?: string;
+}
+
 export const BANDERAS_ROJAS_LISTA = [
   "Psiquiatría: Estrés post traumático, adicción a las drogas/alcohol, trastornos de personalidad",
   "Dolor repentino severo",

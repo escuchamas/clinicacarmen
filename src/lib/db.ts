@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { Paciente, HistoriaClinica, TratamientoEvolucion, InformePostSesion, Cita, EstadoCita, Coste, CategoriaCoste } from "./types";
+import { Paciente, HistoriaClinica, TratamientoEvolucion, InformePostSesion, Cita, EstadoCita, Coste, CategoriaCoste, ClasePilates, InscripcionPilates } from "./types";
 
 function sql() {
   return neon(process.env.DATABASE_URL!);
@@ -269,6 +269,169 @@ export async function getIngresosPorCitas(year: number, month: number): Promise<
   return { total, sesiones };
 }
 
+// ─── Paciente Portal Auth ─────────────────────────────────────────────────────
+
+export async function getPacienteByEmailWithPassword(email: string): Promise<{ id: string; nombre: string; email: string; passwordHash: string } | null> {
+  const db = sql();
+  const rows = await db`SELECT id, nombre, email, password_hash FROM pacientes WHERE LOWER(email) = LOWER(${email}) AND password_hash IS NOT NULL`;
+  if (rows.length === 0) return null;
+  return { id: String(rows[0].id), nombre: String(rows[0].nombre), email: String(rows[0].email), passwordHash: String(rows[0].password_hash) };
+}
+
+export async function setPacientePassword(pacienteId: string, passwordHash: string): Promise<void> {
+  const db = sql();
+  await db`UPDATE pacientes SET password_hash = ${passwordHash} WHERE id = ${pacienteId}`;
+}
+
+export async function getPacienteByEmailForPortal(email: string): Promise<Paciente | null> {
+  const db = sql();
+  const rows = await db`SELECT * FROM pacientes WHERE LOWER(email) = LOWER(${email})`;
+  return rows.length > 0 ? rowToPaciente(rows[0]) : null;
+}
+
+export async function createPacientePortal(nombre: string, email: string, passwordHash: string): Promise<Paciente> {
+  const db = sql();
+  const id = generateId();
+  const fechaAlta = new Date().toISOString().split("T")[0];
+  const dni = `PORTAL-${id}`;
+  await db`
+    INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono, fecha_alta, lopd_firmada, password_hash)
+    VALUES (${id}, ${dni}, ${nombre}, '', ${email}, '', ${fechaAlta}, false, ${passwordHash})
+  `;
+  return { id, dni, nombre, apellidos: "", email, telefono: "", fechaNacimiento: "", poblacion: "", fechaAlta, lopdFirmada: false };
+}
+
+// ─── Clases de Pilates ────────────────────────────────────────────────────────
+
+export async function getClasesPilates(desde?: string): Promise<ClasePilates[]> {
+  const db = sql();
+  const fechaDesde = desde ?? new Date().toISOString().split("T")[0];
+  const rows = await db`
+    SELECT cp.*, COUNT(ip.id) FILTER (WHERE ip.estado = 'inscrita') AS inscritos_count
+    FROM clases_pilates cp
+    LEFT JOIN inscripciones_pilates ip ON ip.clase_id = cp.id
+    WHERE cp.fecha >= ${fechaDesde}
+    GROUP BY cp.id
+    ORDER BY cp.fecha ASC, cp.hora_inicio ASC
+  `;
+  return rows.map(rowToClase);
+}
+
+export async function getClasesPilatesByMes(year: number, month: number): Promise<ClasePilates[]> {
+  const db = sql();
+  const desde = `${year}-${String(month).padStart(2, "0")}-01`;
+  const hasta = `${year}-${String(month).padStart(2, "0")}-31`;
+  const rows = await db`
+    SELECT cp.*, COUNT(ip.id) FILTER (WHERE ip.estado = 'inscrita') AS inscritos_count
+    FROM clases_pilates cp
+    LEFT JOIN inscripciones_pilates ip ON ip.clase_id = cp.id
+    WHERE cp.fecha BETWEEN ${desde} AND ${hasta}
+    GROUP BY cp.id
+    ORDER BY cp.fecha ASC, cp.hora_inicio ASC
+  `;
+  return rows.map(rowToClase);
+}
+
+export async function getClasePilatesById(id: string): Promise<ClasePilates | null> {
+  const db = sql();
+  const rows = await db`
+    SELECT cp.*, COUNT(ip.id) FILTER (WHERE ip.estado = 'inscrita') AS inscritos_count
+    FROM clases_pilates cp
+    LEFT JOIN inscripciones_pilates ip ON ip.clase_id = cp.id
+    WHERE cp.id = ${id}
+    GROUP BY cp.id
+  `;
+  return rows.length > 0 ? rowToClase(rows[0]) : null;
+}
+
+export async function createClasePilates(data: { titulo: string; fecha: string; horaInicio: string; horaFin: string; capacidad: number; notas?: string }): Promise<ClasePilates> {
+  const db = sql();
+  const id = generateId();
+  await db`
+    INSERT INTO clases_pilates (id, titulo, fecha, hora_inicio, hora_fin, capacidad, notas, estado)
+    VALUES (${id}, ${data.titulo}, ${data.fecha}, ${data.horaInicio}, ${data.horaFin}, ${data.capacidad}, ${data.notas ?? ""}, 'activa')
+  `;
+  return { id, titulo: data.titulo, fecha: data.fecha, horaInicio: data.horaInicio, horaFin: data.horaFin, capacidad: data.capacidad, notas: data.notas ?? "", estado: "activa", inscritosCount: 0, fechaCreacion: new Date().toISOString() };
+}
+
+export async function updateClasePilates(id: string, data: Partial<{ titulo: string; fecha: string; horaInicio: string; horaFin: string; capacidad: number; notas: string; estado: string }>): Promise<void> {
+  const db = sql();
+  await db`
+    UPDATE clases_pilates SET
+      titulo = COALESCE(${data.titulo ?? null}, titulo),
+      fecha = COALESCE(${data.fecha ?? null}, fecha),
+      hora_inicio = COALESCE(${data.horaInicio ?? null}, hora_inicio),
+      hora_fin = COALESCE(${data.horaFin ?? null}, horaFin),
+      capacidad = COALESCE(${data.capacidad ?? null}, capacidad),
+      notas = COALESCE(${data.notas ?? null}, notas),
+      estado = COALESCE(${data.estado ?? null}, estado)
+    WHERE id = ${id}
+  `;
+}
+
+export async function deleteClasePilates(id: string): Promise<void> {
+  const db = sql();
+  await db`DELETE FROM clases_pilates WHERE id = ${id}`;
+}
+
+// ─── Inscripciones Pilates ────────────────────────────────────────────────────
+
+export async function getInscripcionesByClase(claseId: string): Promise<InscripcionPilates[]> {
+  const db = sql();
+  const rows = await db`
+    SELECT ip.*, p.nombre || ' ' || p.apellidos AS paciente_nombre, p.email AS paciente_email, p.telefono AS paciente_telefono
+    FROM inscripciones_pilates ip
+    JOIN pacientes p ON p.id = ip.paciente_id
+    WHERE ip.clase_id = ${claseId}
+    ORDER BY ip.fecha_inscripcion ASC
+  `;
+  return rows.map(rowToInscripcion);
+}
+
+export async function getInscripcionesByPaciente(pacienteId: string): Promise<(InscripcionPilates & { claseInfo: ClasePilates })[]> {
+  const db = sql();
+  const rows = await db`
+    SELECT ip.*, cp.titulo, cp.fecha, cp.hora_inicio, cp.hora_fin, cp.capacidad, cp.notas AS clase_notas, cp.estado AS clase_estado,
+           COUNT(ip2.id) FILTER (WHERE ip2.estado = 'inscrita') AS inscritos_count
+    FROM inscripciones_pilates ip
+    JOIN clases_pilates cp ON cp.id = ip.clase_id
+    LEFT JOIN inscripciones_pilates ip2 ON ip2.clase_id = cp.id
+    WHERE ip.paciente_id = ${pacienteId}
+    GROUP BY ip.id, cp.id
+    ORDER BY cp.fecha ASC, cp.hora_inicio ASC
+  `;
+  return rows.map(r => ({
+    ...rowToInscripcion(r),
+    claseInfo: rowToClase(r),
+  }));
+}
+
+export async function getInscripcionByPacienteAndClase(pacienteId: string, claseId: string): Promise<InscripcionPilates | null> {
+  const db = sql();
+  const rows = await db`SELECT * FROM inscripciones_pilates WHERE paciente_id = ${pacienteId} AND clase_id = ${claseId}`;
+  return rows.length > 0 ? rowToInscripcion(rows[0]) : null;
+}
+
+export async function inscribirPaciente(pacienteId: string, claseId: string): Promise<InscripcionPilates> {
+  const db = sql();
+  const id = generateId();
+  await db`
+    INSERT INTO inscripciones_pilates (id, paciente_id, clase_id, estado, fecha_inscripcion)
+    VALUES (${id}, ${pacienteId}, ${claseId}, 'inscrita', NOW())
+    ON CONFLICT (paciente_id, clase_id) DO UPDATE SET estado = 'inscrita', fecha_cancelacion = NULL
+  `;
+  return { id, pacienteId, claseId, estado: "inscrita", fechaInscripcion: new Date().toISOString() };
+}
+
+export async function cancelarInscripcion(pacienteId: string, claseId: string, penalizar: boolean): Promise<void> {
+  const db = sql();
+  const estado = penalizar ? "penalizada" : "cancelada";
+  await db`
+    UPDATE inscripciones_pilates SET estado = ${estado}, fecha_cancelacion = NOW()
+    WHERE paciente_id = ${pacienteId} AND clase_id = ${claseId}
+  `;
+}
+
 // ─── Mappers ──────────────────────────────────────────────────────────────────
 
 function rowToCoste(r: Record<string, unknown>): Coste {
@@ -366,5 +529,34 @@ function rowToTratamiento(r: Record<string, unknown>): TratamientoEvolucion {
     nSesion: Number(r.n_sesion),
     contenido: String(r.contenido ?? ""),
     fechaCreacion: toDateStr(r.fecha_creacion),
+  };
+}
+
+function rowToClase(r: Record<string, unknown>): ClasePilates {
+  return {
+    id: String(r.id),
+    titulo: String(r.titulo ?? ""),
+    fecha: toDateStr(r.fecha),
+    horaInicio: r.hora_inicio ? String(r.hora_inicio).slice(0, 5) : "",
+    horaFin: r.hora_fin ? String(r.hora_fin).slice(0, 5) : "",
+    capacidad: Number(r.capacidad ?? 8),
+    notas: String(r.notas ?? r.clase_notas ?? ""),
+    estado: (r.estado ?? r.clase_estado ?? "activa") as "activa" | "cancelada",
+    inscritosCount: Number(r.inscritos_count ?? 0),
+    fechaCreacion: toDateStr(r.fecha_creacion),
+  };
+}
+
+function rowToInscripcion(r: Record<string, unknown>): InscripcionPilates {
+  return {
+    id: String(r.id),
+    pacienteId: String(r.paciente_id),
+    claseId: String(r.clase_id),
+    estado: (r.estado as "inscrita" | "cancelada" | "penalizada") ?? "inscrita",
+    fechaInscripcion: r.fecha_inscripcion ? String(r.fecha_inscripcion) : "",
+    fechaCancelacion: r.fecha_cancelacion ? String(r.fecha_cancelacion) : undefined,
+    pacienteNombre: r.paciente_nombre ? String(r.paciente_nombre) : undefined,
+    pacienteEmail: r.paciente_email ? String(r.paciente_email) : undefined,
+    pacienteTelefono: r.paciente_telefono ? String(r.paciente_telefono) : undefined,
   };
 }

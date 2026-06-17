@@ -79,9 +79,36 @@ CREATE TABLE IF NOT EXISTS costes (
   fecha_creacion TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_citas_fecha         ON citas (fecha);
-CREATE INDEX IF NOT EXISTS idx_citas_paciente      ON citas (paciente_id);
-CREATE INDEX IF NOT EXISTS idx_pacientes_dni       ON pacientes (LOWER(dni));
-CREATE INDEX IF NOT EXISTS idx_pacientes_nombre    ON pacientes (LOWER(nombre));
-CREATE INDEX IF NOT EXISTS idx_pacientes_apellidos ON pacientes (LOWER(apellidos));
-CREATE INDEX IF NOT EXISTS idx_pacientes_email     ON pacientes (LOWER(email));
+CREATE TABLE IF NOT EXISTS clases_pilates (
+  id             TEXT PRIMARY KEY,
+  titulo         TEXT NOT NULL,
+  fecha          DATE NOT NULL,
+  hora_inicio    TIME NOT NULL,
+  hora_fin       TIME NOT NULL,
+  capacidad      INTEGER NOT NULL DEFAULT 8,
+  notas          TEXT,
+  estado         TEXT NOT NULL DEFAULT 'activa',
+  fecha_creacion TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS inscripciones_pilates (
+  id                TEXT PRIMARY KEY,
+  paciente_id       TEXT NOT NULL REFERENCES pacientes(id) ON DELETE CASCADE,
+  clase_id          TEXT NOT NULL REFERENCES clases_pilates(id) ON DELETE CASCADE,
+  estado            TEXT NOT NULL DEFAULT 'inscrita',
+  fecha_inscripcion TIMESTAMPTZ DEFAULT NOW(),
+  fecha_cancelacion TIMESTAMPTZ,
+  UNIQUE(paciente_id, clase_id)
+);
+
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS password_hash TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_citas_fecha              ON citas (fecha);
+CREATE INDEX IF NOT EXISTS idx_citas_paciente           ON citas (paciente_id);
+CREATE INDEX IF NOT EXISTS idx_pacientes_dni            ON pacientes (LOWER(dni));
+CREATE INDEX IF NOT EXISTS idx_pacientes_nombre         ON pacientes (LOWER(nombre));
+CREATE INDEX IF NOT EXISTS idx_pacientes_apellidos      ON pacientes (LOWER(apellidos));
+CREATE INDEX IF NOT EXISTS idx_pacientes_email          ON pacientes (LOWER(email));
+CREATE INDEX IF NOT EXISTS idx_clases_pilates_fecha     ON clases_pilates (fecha);
+CREATE INDEX IF NOT EXISTS idx_inscripciones_clase      ON inscripciones_pilates (clase_id);
+CREATE INDEX IF NOT EXISTS idx_inscripciones_paciente   ON inscripciones_pilates (paciente_id);

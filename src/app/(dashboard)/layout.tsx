@@ -31,6 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <nav className="hidden sm:flex items-center gap-1">
               <a href="/pacientes" className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors" style={{ color: "#6b7280", textDecoration: "none" }}>Pacientes</a>
               <a href="/calendario" className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors" style={{ color: "#6b7280", textDecoration: "none" }}>Calendario</a>
+              <a href="/pilates" className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors" style={{ color: "#6b7280", textDecoration: "none" }}>Pilates</a>
               <a href="/finanzas" className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors" style={{ color: "#6b7280", textDecoration: "none" }}>Finanzas</a>
             </nav>
           </div>
