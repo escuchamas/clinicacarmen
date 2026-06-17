@@ -380,7 +380,7 @@ export default function CalendarioPage() {
         </div>
       )}
 
-      {/* Bottom sheet móvil — día seleccionado */}
+      {/* Bottom sheet móvil — resumen compacto del día */}
       {selectedDay && (
         <>
           <div
@@ -394,16 +394,12 @@ export default function CalendarioPage() {
               backgroundColor: "white",
               borderRadius: "1.25rem 1.25rem 0 0",
               boxShadow: "0 -4px 32px rgba(0,0,0,0.15)",
-              maxHeight: "75vh",
-              display: "flex",
-              flexDirection: "column",
               paddingBottom: "calc(env(safe-area-inset-bottom) + 4rem)",
             }}
           >
-            {/* Handle + cabecera */}
-            <div style={{ flexShrink: 0, padding: "0.75rem 1rem 0" }}>
-              <div style={{ width: "40px", height: "4px", backgroundColor: "#e5e7eb", borderRadius: "2px", margin: "0 auto 0.875rem" }} />
-              <div className="flex items-center justify-between mb-3">
+            <div style={{ padding: "0.75rem 1rem 0.25rem" }}>
+              <div style={{ width: "40px", height: "4px", backgroundColor: "#e5e7eb", borderRadius: "2px", margin: "0 auto 0.75rem" }} />
+              <div className="flex items-center justify-between">
                 <h3 className="font-bold text-sm capitalize" style={{ color: "#1a1a1a" }}>
                   {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
                 </h3>
@@ -417,17 +413,25 @@ export default function CalendarioPage() {
                 </div>
               </div>
             </div>
-            {/* Contenido scrollable */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "0 1rem 1rem" }}>
+            <div style={{ padding: "0.25rem 1rem 0.5rem" }}>
               {eventosDia.length === 0 ? (
-                <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
+                <p className="text-sm text-center py-4" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
               ) : (
-                <div className="space-y-3">
-                  {eventosDia.map((ev, i) => ev.tipo === "fisio"
-                    ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
-                    : <PilatesCard key={i} clase={ev.clase} />
-                  )}
-                </div>
+                eventosDia.map((ev, i) => (
+                  <div key={i} className="flex items-center gap-3" style={{ padding: "0.5rem 0", borderBottom: i < eventosDia.length - 1 ? "1px solid #f3f4f6" : "none" }}>
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }} />
+                    <span className="text-xs font-medium flex-shrink-0" style={{ color: "#9ca3af", minWidth: 36 }}>
+                      {ev.tipo === "fisio" ? ev.cita.hora : ev.clase.horaInicio}
+                    </span>
+                    <span className="text-sm font-semibold flex-1 truncate" style={{ color: ev.tipo === "fisio" ? AQUA : PURPLE }}>
+                      {ev.tipo === "fisio" ? ev.cita.pacienteNombre : ev.clase.titulo}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 font-medium"
+                      style={{ backgroundColor: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] + "20" : "#EDE9FE", color: ev.tipo === "fisio" ? ESTADO_CITA_COLORS[ev.cita.estado] : PURPLE }}>
+                      {ev.tipo === "fisio" ? ESTADO_CITA_LABELS[ev.cita.estado] : `${ev.clase.inscritosCount}/${ev.clase.capacidad}`}
+                    </span>
+                  </div>
+                ))
               )}
             </div>
           </div>
@@ -516,30 +520,32 @@ export default function CalendarioPage() {
         </div>
 
         {/* Panel lateral — md y superior */}
-        <div className="hidden md:block card p-4">
+        <div className="hidden md:flex md:flex-col card overflow-hidden" style={{ maxHeight: "520px" }}>
           {selectedDay ? (
             <>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-sm" style={{ color: "#1a1a1a" }}>
+              <div className="flex items-center justify-between flex-shrink-0 px-4 pt-4 pb-3" style={{ borderBottom: "1px solid #f3f4f6" }}>
+                <h3 className="font-bold text-sm capitalize" style={{ color: "#1a1a1a" }}>
                   {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })}
                 </h3>
                 <button className="btn-ghost text-xs py-1 px-2" onClick={() => { setForm(f => ({ ...f, fecha: selectedDay })); setShowForm(true); }}>
                   + Añadir
                 </button>
               </div>
-              {eventosDia.length === 0 ? (
-                <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
-              ) : (
-                <div className="space-y-3">
-                  {eventosDia.map((ev, i) => ev.tipo === "fisio"
-                    ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
-                    : <PilatesCard key={i} clase={ev.clase} />
-                  )}
-                </div>
-              )}
+              <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem 1rem 1rem" }}>
+                {eventosDia.length === 0 ? (
+                  <p className="text-sm text-center py-6" style={{ color: "#9ca3af" }}>No hay eventos este día</p>
+                ) : (
+                  <div className="space-y-3">
+                    {eventosDia.map((ev, i) => ev.tipo === "fisio"
+                      ? <CitaCard key={i} cita={ev.cita} warn24h={is24hWarning(ev.cita)} onEstado={cambiarEstado} onPago={cambiarPago} onDelete={eliminarCita} />
+                      : <PilatesCard key={i} clase={ev.clase} />
+                    )}
+                  </div>
+                )}
+              </div>
             </>
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-8 px-4">
               <CalendarDays size={36} color="#d1d5db" strokeWidth={1.5} style={{ marginBottom: "0.5rem" }} />
               <p className="text-sm font-medium" style={{ color: "#1a1a1a" }}>Selecciona un día</p>
               <p className="text-xs mt-1" style={{ color: "#9ca3af" }}>para ver o añadir eventos</p>
