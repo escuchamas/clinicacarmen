@@ -192,12 +192,14 @@ export async function getInformeByTratamiento(sesionId: string): Promise<Informe
 export async function getCitasByMes(year: number, month: number): Promise<Cita[]> {
   const db = sql();
   const desde = `${year}-${String(month).padStart(2, "0")}-01`;
-  const hasta = `${year}-${String(month).padStart(2, "0")}-31`;
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextYear = month === 12 ? year + 1 : year;
+  const hasta = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
   const rows = await db`
     SELECT c.*, p.nombre || ' ' || p.apellidos AS paciente_nombre
     FROM citas c
     JOIN pacientes p ON p.id = c.paciente_id
-    WHERE c.fecha BETWEEN ${desde} AND ${hasta}
+    WHERE c.fecha >= ${desde} AND c.fecha < ${hasta}
     ORDER BY c.fecha ASC, c.hora ASC
   `;
   return rows.map(rowToCita);
