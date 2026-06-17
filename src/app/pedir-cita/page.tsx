@@ -258,18 +258,21 @@ export default function PedirCitaPage() {
           <div>
             <h1 style={{ fontSize: "1.625rem", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Pedir cita online</h1>
             <p style={{ color: "#6b7280", marginBottom: "2rem", lineHeight: 1.6 }}>
-              Introduce tu DNI y teléfono para identificarte como paciente registrado.
+              Usa los datos con los que estás registrado en la clínica.{" "}
+              <span style={{ color: "#9ca3af" }}>Para menores de edad, introduce el DNI del paciente y el teléfono del tutor.</span>
             </p>
 
             <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: "1px solid #e5e7eb", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", marginBottom: "1.5rem" }}>
               <form onSubmit={handleIdentificar} style={{ display: "grid", gap: "1rem" }}>
                 <div>
-                  <label style={labelSt}>DNI / NIE</label>
+                  <label style={labelSt}>DNI / NIE del paciente</label>
                   <input style={inputSt} placeholder="12345678A" value={dniInput} onChange={e => setDniInput(e.target.value)} required />
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>En caso de menor, el DNI del niño o niña</p>
                 </div>
                 <div>
-                  <label style={labelSt}>Teléfono</label>
+                  <label style={labelSt}>Teléfono de contacto</label>
                   <input style={inputSt} placeholder="600 000 000" value={telInput} onChange={e => setTelInput(e.target.value)} required />
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>El número que proporcionaste al registrarte — habitualmente el del tutor para menores</p>
                 </div>
                 {errorId && errorId !== "primera_visita" && (
                   <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "0.625rem", padding: "0.875rem", fontSize: "0.875rem", color: "#991b1b" }}>
