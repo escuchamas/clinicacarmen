@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       hora,
       duracion: duracion ?? 60,
       motivo: motivo || "Reserva online",
-      estado: "pendiente",
+      estado: "confirmada",
       notas: notas || "Reserva online — pago pendiente de confirmar",
     });
 

@@ -403,10 +403,10 @@ export default function PedirCitaPage() {
             <CheckCircle2 size={64} color={AQUA} strokeWidth={1.5} style={{ margin: "0 auto 1.5rem" }} />
             <h2 style={{ fontSize: "1.625rem", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>¡Cita solicitada!</h2>
             <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "0.5rem" }}>
-              <strong>{paciente?.nombre}</strong>, tu cita para el <strong style={{ textTransform: "capitalize" }}>{fechaLabel}</strong> a las <strong>{horaSeleccionada}</strong> ha quedado registrada.
+              <strong>{paciente?.nombre}</strong>, tu cita del <strong style={{ textTransform: "capitalize" }}>{fechaLabel}</strong> a las <strong>{horaSeleccionada}</strong> está <strong style={{ color: AQUA }}>confirmada</strong>.
             </p>
             <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "2.5rem" }}>
-              Carmen te contactará para confirmar y gestionar el pago. Si tienes cualquier duda, escríbele por WhatsApp.
+              El pago se realizará en consulta. Si necesitas cancelar o tienes alguna duda, escríbele a Carmen con al menos 24 horas de antelación.
             </p>
             <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
               <a href={WA_URL} target="_blank" rel="noopener noreferrer"
