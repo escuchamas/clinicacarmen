@@ -36,9 +36,12 @@ export default function CalendarioPage() {
   const [impagadas, setImpagadas] = useState<Cita[]>([]);
   const [showImpagadas, setShowImpagadas] = useState(false);
   const [showAgenda, setShowAgenda] = useState(false);
-  const [diasBloqueados, setDiasBloqueados] = useState<{ id: string; fecha: string; motivo: string }[]>([]);
+  const [diasBloqueados, setDiasBloqueados] = useState<{ id: string; fecha: string; horaInicio: string | null; horaFin: string | null; motivo: string }[]>([]);
   const [showBloqueos, setShowBloqueos] = useState(false);
   const [motivoBloqueo, setMotivoBloqueo] = useState("");
+  const [tipoBloqueo, setTipoBloqueo] = useState<"dia" | "horas">("dia");
+  const [bloqueoHoraInicio, setBloqueoHoraInicio] = useState("09:00");
+  const [bloqueoHoraFin, setBloqueoHoraFin] = useState("11:00");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -71,22 +74,29 @@ export default function CalendarioPage() {
   }, [citas]);
 
   useEffect(() => {
-    fetch("/api/dias-bloqueados").then(r => r.ok ? r.json() : []).then(d => setDiasBloqueados(Array.isArray(d) ? d : []));
+    fetch("/api/dias-bloqueados").then(r => r.ok ? r.json() : []).then(d => setDiasBloqueados(Array.isArray(d) ? d.map((b: { id: string; fecha: string; horaInicio?: string | null; horaFin?: string | null; motivo?: string }) => ({ id: b.id, fecha: b.fecha, horaInicio: b.horaInicio ?? null, horaFin: b.horaFin ?? null, motivo: b.motivo ?? "" })) : []));
   }, []);
 
 
   async function bloquearDia(fecha: string) {
-    const res = await fetch("/api/dias-bloqueados", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fecha, motivo: motivoBloqueo.trim() }) });
+    const body = tipoBloqueo === "dia"
+      ? { fecha, motivo: motivoBloqueo.trim() }
+      : { fecha, horaInicio: bloqueoHoraInicio, horaFin: bloqueoHoraFin, motivo: motivoBloqueo.trim() };
+    const res = await fetch("/api/dias-bloqueados", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (res.ok) {
       const d = await res.json();
-      setDiasBloqueados(prev => [...prev.filter(b => b.fecha !== fecha), { id: d.id, fecha, motivo: motivoBloqueo.trim() }]);
+      if (tipoBloqueo === "dia") {
+        setDiasBloqueados(prev => [...prev.filter(b => b.fecha !== fecha || b.horaInicio !== null), { id: d.id, fecha, horaInicio: null, horaFin: null, motivo: motivoBloqueo.trim() }]);
+      } else {
+        setDiasBloqueados(prev => [...prev, { id: d.id, fecha, horaInicio: bloqueoHoraInicio, horaFin: bloqueoHoraFin, motivo: motivoBloqueo.trim() }]);
+      }
       setMotivoBloqueo("");
     }
   }
 
-  async function desbloquearDia(fecha: string) {
-    await fetch("/api/dias-bloqueados", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fecha }) });
-    setDiasBloqueados(prev => prev.filter(b => b.fecha !== fecha));
+  async function eliminarBloqueo(id: string) {
+    await fetch("/api/dias-bloqueados", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    setDiasBloqueados(prev => prev.filter(b => b.id !== id));
   }
 
   function prevMonth() {
@@ -289,53 +299,79 @@ export default function CalendarioPage() {
           </div>
 
           <p className="text-xs mb-4" style={{ color: "#6b7280" }}>
-            Los sábados y domingos están bloqueados por defecto. Añade fechas concretas en las que no estarás disponible.
+            Los sábados y domingos están bloqueados por defecto. Bloquea días completos o rangos horarios concretos.
           </p>
 
-          {/* Bloquear día seleccionado o cualquier fecha */}
-          <div className="flex gap-2 mb-4">
-            <div className="flex-1">
+          {/* Toggle tipo de bloqueo */}
+          <div className="flex gap-1 mb-3 p-1 rounded-lg" style={{ backgroundColor: "#f3f4f6" }}>
+            <button
+              onClick={() => setTipoBloqueo("dia")}
+              className="flex-1 text-xs py-1.5 rounded-md font-semibold transition-all"
+              style={{ backgroundColor: tipoBloqueo === "dia" ? "white" : "transparent", color: tipoBloqueo === "dia" ? "#1a1a1a" : "#6b7280", border: "none", cursor: "pointer", boxShadow: tipoBloqueo === "dia" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}
+            >
+              Día completo
+            </button>
+            <button
+              onClick={() => setTipoBloqueo("horas")}
+              className="flex-1 text-xs py-1.5 rounded-md font-semibold transition-all"
+              style={{ backgroundColor: tipoBloqueo === "horas" ? "white" : "transparent", color: tipoBloqueo === "horas" ? "#1a1a1a" : "#6b7280", border: "none", cursor: "pointer", boxShadow: tipoBloqueo === "horas" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}
+            >
+              Horas concretas
+            </button>
+          </div>
+
+          {/* Formulario de bloqueo */}
+          <div className="space-y-2 mb-4">
+            <div className="flex gap-2">
               <input
                 type="date"
-                className="input-field text-sm"
+                className="input-field text-sm flex-1"
                 value={selectedDay ?? ""}
                 onChange={e => setSelectedDay(e.target.value)}
                 min={new Date().toISOString().split("T")[0]}
               />
+              <input
+                className="input-field text-sm flex-1"
+                placeholder="Motivo (opcional)"
+                value={motivoBloqueo}
+                onChange={e => setMotivoBloqueo(e.target.value)}
+              />
             </div>
-            <input
-              className="input-field text-sm flex-1"
-              placeholder="Motivo (opcional)"
-              value={motivoBloqueo}
-              onChange={e => setMotivoBloqueo(e.target.value)}
-            />
+            {tipoBloqueo === "horas" && (
+              <div className="flex gap-2 items-center">
+                <input type="time" className="input-field text-sm flex-1" value={bloqueoHoraInicio} onChange={e => setBloqueoHoraInicio(e.target.value)} />
+                <span className="text-xs font-medium" style={{ color: "#6b7280", flexShrink: 0 }}>hasta</span>
+                <input type="time" className="input-field text-sm flex-1" value={bloqueoHoraFin} onChange={e => setBloqueoHoraFin(e.target.value)} />
+              </div>
+            )}
             <button
               onClick={() => selectedDay && bloquearDia(selectedDay)}
               disabled={!selectedDay}
-              className="btn-primary text-sm px-3"
-              style={{ whiteSpace: "nowrap" }}
+              className="btn-primary text-sm w-full justify-center"
             >
               <Lock size={13} style={{ display: "inline", marginRight: 4 }} />
-              Bloquear
+              {tipoBloqueo === "dia" ? "Bloquear día completo" : "Bloquear rango horario"}
             </button>
           </div>
 
-          {/* Lista de días bloqueados manualmente */}
+          {/* Lista de bloqueos */}
           {diasBloqueados.length === 0 ? (
-            <p className="text-xs text-center py-3" style={{ color: "#9ca3af" }}>No hay días bloqueados manualmente</p>
+            <p className="text-xs text-center py-3" style={{ color: "#9ca3af" }}>No hay bloqueos manuales</p>
           ) : (
             <div className="space-y-1">
               {diasBloqueados.map(b => (
-                <div key={b.id} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5" }}>
-                  <div className="flex items-center gap-2">
-                    <Lock size={12} color="#ef4444" />
+                <div key={b.id} className="flex items-center justify-between rounded-lg px-3 py-2"
+                  style={{ backgroundColor: b.horaInicio ? "#fffbeb" : "#fef2f2", border: `1px solid ${b.horaInicio ? "#fed7aa" : "#fca5a5"}` }}>
+                  <div className="flex items-center gap-2 min-w-0">
+                    {b.horaInicio ? <span style={{ fontSize: 12 }}>⏰</span> : <Lock size={12} color="#ef4444" />}
                     <span className="text-sm font-medium" style={{ color: "#111827" }}>
-                      {new Date(b.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(b.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" })}
                     </span>
-                    {b.motivo && <span className="text-xs" style={{ color: "#9ca3af" }}>· {b.motivo}</span>}
+                    {b.horaInicio && <span className="text-xs font-semibold" style={{ color: "#d97706" }}>{b.horaInicio}–{b.horaFin}</span>}
+                    {b.motivo && <span className="text-xs truncate" style={{ color: "#9ca3af" }}>· {b.motivo}</span>}
                   </div>
-                  <button onClick={() => desbloquearDia(b.fecha)} className="text-xs flex items-center gap-1" style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}>
-                    <LockOpen size={12} /> Desbloquear
+                  <button onClick={() => eliminarBloqueo(b.id)} className="text-xs flex items-center gap-1 flex-shrink-0 ml-2" style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}>
+                    <LockOpen size={12} /> Quitar
                   </button>
                 </div>
               ))}
@@ -429,8 +465,10 @@ export default function CalendarioPage() {
                 const tienePilates = eventos.some(e => e.tipo === "pilates");
                 const diaSemana = new Date(ds + "T12:00:00").getDay();
                 const esFinde = diaSemana === 0 || diaSemana === 6;
-                const estaBloqueado = diasBloqueados.some(b => b.fecha === ds);
-                const noDisponible = esFinde || estaBloqueado;
+                const bloqueosDia = diasBloqueados.filter(b => b.fecha === ds);
+                const estaBloqueadoDiaCompleto = bloqueosDia.some(b => !b.horaInicio);
+                const tieneBloqueoHoras = !estaBloqueadoDiaCompleto && bloqueosDia.some(b => b.horaInicio);
+                const noDisponible = esFinde || estaBloqueadoDiaCompleto;
                 return (
                   <button
                     key={i}
@@ -438,7 +476,7 @@ export default function CalendarioPage() {
                     className="rounded-lg p-1 min-h-[52px] flex flex-col items-center transition-all"
                     style={{
                       backgroundColor: selected ? AQUA : noDisponible ? "#f9fafb" : hoy ? "#ECFEFF" : "transparent",
-                      border: selected ? `2px solid ${AQUA}` : estaBloqueado ? "2px solid #fca5a5" : hoy ? "2px solid #A5F3FC" : "2px solid transparent",
+                      border: selected ? `2px solid ${AQUA}` : estaBloqueadoDiaCompleto ? "2px solid #fca5a5" : tieneBloqueoHoras ? "2px solid #fed7aa" : hoy ? "2px solid #A5F3FC" : "2px solid transparent",
                       cursor: "pointer",
                       opacity: noDisponible ? 0.5 : 1,
                     }}
@@ -447,11 +485,12 @@ export default function CalendarioPage() {
                       {day}
                     </span>
                     <div className="flex gap-0.5 justify-center flex-wrap">
-                      {estaBloqueado && !selected && <Lock size={8} color="#ef4444" />}
-                      {!estaBloqueado && tieneFisio && eventos.filter(e => e.tipo === "fisio").slice(0, 2).map((e, ei) => (
+                      {estaBloqueadoDiaCompleto && !selected && <Lock size={8} color="#ef4444" />}
+                      {tieneBloqueoHoras && !selected && <span style={{ fontSize: 8, lineHeight: 1 }}>⏰</span>}
+                      {!estaBloqueadoDiaCompleto && tieneFisio && eventos.filter(e => e.tipo === "fisio").slice(0, 2).map((e, ei) => (
                         <span key={`f${ei}`} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selected ? "white" : ESTADO_CITA_COLORS[(e as { tipo: "fisio"; cita: Cita }).cita.estado] }} />
                       ))}
-                      {!estaBloqueado && tienePilates && (
+                      {!estaBloqueadoDiaCompleto && tienePilates && (
                         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selected ? "white" : PURPLE }} />
                       )}
                     </div>

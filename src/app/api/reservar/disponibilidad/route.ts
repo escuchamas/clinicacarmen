@@ -28,30 +28,57 @@ export async function GET(req: NextRequest) {
 
     const db = sql();
 
-    // Comprobar si el día está bloqueado manualmente
-    let bloqueado = false;
+    // Comprobar bloqueos manuales (día completo u horas)
+    let bloqueadoDia = false;
     let motivoBloqueado = "";
+    const horasBloqueadas: { inicio: string; fin: string }[] = [];
     try {
       const bloqueos = await db`
-        SELECT motivo FROM dias_bloqueados WHERE fecha = ${fecha} LIMIT 1
+        SELECT hora_inicio, hora_fin, motivo FROM dias_bloqueados WHERE fecha = ${fecha}
       `;
-      if (bloqueos.length > 0) {
-        bloqueado = true;
-        motivoBloqueado = bloqueos[0].motivo ? String(bloqueos[0].motivo) : "Día no disponible";
+      for (const b of bloqueos) {
+        if (!b.hora_inicio) {
+          bloqueadoDia = true;
+          motivoBloqueado = b.motivo ? String(b.motivo) : "Día no disponible";
+        } else {
+          horasBloqueadas.push({ inicio: String(b.hora_inicio).slice(0, 5), fin: String(b.hora_fin ?? "23:59").slice(0, 5) });
+        }
       }
     } catch { /* tabla no existe todavía */ }
 
-    if (bloqueado) {
+    if (bloqueadoDia) {
       return NextResponse.json({ disponibles: [], bloqueado: true, motivo: motivoBloqueado });
     }
 
-    // Horas ya ocupadas
+    // Horas ocupadas por citas individuales
     const rows = await db`
       SELECT hora FROM citas
       WHERE fecha = ${fecha}
         AND estado != 'cancelada'
     `;
     const ocupados = new Set(rows.map((r) => String(r.hora).slice(0, 5)));
+
+    // Horas bloqueadas manualmente (rangos parciales)
+    for (const b of horasBloqueadas) {
+      for (const slot of ALL_SLOTS) {
+        if (slot >= b.inicio && slot < b.fin) ocupados.add(slot);
+      }
+    }
+
+    // Horas ocupadas por clases de pilates
+    try {
+      const clases = await db`
+        SELECT hora_inicio, hora_fin FROM clases_pilates
+        WHERE fecha = ${fecha} AND estado = 'activa'
+      `;
+      for (const clase of clases) {
+        const inicio = String(clase.hora_inicio).slice(0, 5);
+        const fin = String(clase.hora_fin).slice(0, 5);
+        for (const slot of ALL_SLOTS) {
+          if (slot >= inicio && slot < fin) ocupados.add(slot);
+        }
+      }
+    } catch { /* tabla no existe todavía */ }
 
     // Si es hoy, filtrar horas ya pasadas
     let slots = ALL_SLOTS;

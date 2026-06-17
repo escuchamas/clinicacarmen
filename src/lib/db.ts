@@ -391,7 +391,7 @@ export async function updateClasePilates(id: string, data: Partial<{ titulo: str
       titulo = COALESCE(${data.titulo ?? null}, titulo),
       fecha = COALESCE(${data.fecha ?? null}, fecha),
       hora_inicio = COALESCE(${data.horaInicio ?? null}, hora_inicio),
-      hora_fin = COALESCE(${data.horaFin ?? null}, horaFin),
+      hora_fin = COALESCE(${data.horaFin ?? null}, hora_fin),
       capacidad = COALESCE(${data.capacidad ?? null}, capacidad),
       notas = COALESCE(${data.notas ?? null}, notas),
       estado = COALESCE(${data.estado ?? null}, estado)
