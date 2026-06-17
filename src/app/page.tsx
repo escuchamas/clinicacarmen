@@ -148,7 +148,7 @@ export default async function HomePage() {
                 {[
                   { icon: <Fingerprint size={20} color={AQUA} strokeWidth={1.75} />, title: "Sin protocolo genérico", desc: "Cada paciente tiene un tratamiento diseñado específicamente para su caso." },
                   { icon: <MessageCircle size={20} color={AQUA} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
-                  { icon: <BadgeEuro size={20} color={AQUA} strokeWidth={1.75} />, title: "Precio claro, sin sorpresas", desc: "Sabes exactamente lo que cuesta antes de venir. Sin tarifas ocultas." },
+                  { icon: <BadgeEuro size={20} color={AQUA} strokeWidth={1.75} />, title: "Plan personalizado desde el primer día", desc: "En la primera visita Carmen evalúa tu caso y te propone el plan más adecuado. Sin compromisos previos." },
                 ].map(({ icon, title, desc }) => (
                   <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
                     <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
