@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -25,15 +30,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "El archivo supera el límite de 10 MB." }, { status: 400 });
     }
 
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const fileName = `prueba_${Date.now()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", pacienteId);
-
-    await mkdir(uploadDir, { recursive: true });
     const bytes = await file.arrayBuffer();
-    await writeFile(path.join(uploadDir, fileName), Buffer.from(bytes));
+    const buffer = Buffer.from(bytes);
 
-    return NextResponse.json({ url: `/uploads/${pacienteId}/${fileName}` });
+    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: `clinicacarmen/${pacienteId}`,
+          resource_type: "auto",
+        },
+        (error, result) => {
+          if (error || !result) reject(error);
+          else resolve(result as { secure_url: string });
+        }
+      );
+      stream.end(buffer);
+    });
+
+    return NextResponse.json({ url: result.secure_url });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Error al subir el archivo" }, { status: 500 });
