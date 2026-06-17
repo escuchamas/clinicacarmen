@@ -236,15 +236,11 @@ export async function updateCitaPago(id: string, pagoEstado: import("./types").P
 
 export async function getCitasImpagadas(): Promise<Cita[]> {
   const db = sql();
-  const ayer = new Date();
-  ayer.setDate(ayer.getDate() - 1);
-  const ayerStr = ayer.toISOString().split("T")[0];
   const rows = await db`
     SELECT c.*, p.nombre || ' ' || p.apellidos AS paciente_nombre
     FROM citas c
     JOIN pacientes p ON p.id = c.paciente_id
-    WHERE c.fecha <= ${ayerStr}
-      AND c.estado NOT IN ('cancelada', 'no_vino')
+    WHERE c.estado = 'vino'
       AND (c.pago_estado IS NULL OR c.pago_estado = 'sin_pagar' OR c.pago_estado = 'parcial')
     ORDER BY c.fecha DESC, c.hora ASC
   `;
