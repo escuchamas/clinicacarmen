@@ -11,7 +11,7 @@ const DARK = "#111827";
 const WA_NUM = "34608622236";
 const WA_URL = `https://wa.me/${WA_NUM}?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita. Soy nuevo paciente y me gustaría información sobre la primera visita.")}`;
 
-type Step = "identificar" | "fecha" | "hora" | "confirmar" | "exito";
+type Step = "identificar" | "fecha" | "hora" | "confirmar" | "exito" | "cancelada";
 
 interface Paciente {
   id: string;
@@ -52,7 +52,9 @@ export default function PedirCitaPage() {
   const [motivo, setMotivo] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const [errorConfirmar, setErrorConfirmar] = useState("");
-  const [citaExistente, setCitaExistente] = useState<{ fecha: string; hora: string } | null>(null);
+  const [citaExistente, setCitaExistente] = useState<{ citaId: string; fecha: string; hora: string } | null>(null);
+  const [cancelando, setCancelando] = useState(false);
+  const [errorCancelar, setErrorCancelar] = useState("");
 
   async function handleIdentificar(e: React.FormEvent) {
     e.preventDefault();
@@ -102,7 +104,7 @@ export default function PedirCitaPage() {
     if (!res.ok) {
       const data = await res.json();
       if (data.error === "ya_tiene_cita") {
-        setCitaExistente({ fecha: data.fecha, hora: data.hora });
+        setCitaExistente({ citaId: data.citaId, fecha: data.fecha, hora: data.hora });
         return;
       }
       setErrorConfirmar(data.error ?? "Error al confirmar la cita. Inténtalo de nuevo.");
@@ -110,6 +112,38 @@ export default function PedirCitaPage() {
     }
     setStep("exito");
   }
+
+  async function handleCancelarCita(rebooked: boolean) {
+    if (!paciente || !citaExistente) return;
+    setCancelando(true);
+    setErrorCancelar("");
+    const res = await fetch("/api/reservar/cancelar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pacienteId: paciente.id, citaId: citaExistente.citaId }),
+    });
+    setCancelando(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setErrorCancelar(data.error === "menos_24h"
+        ? "No se puede modificar con menos de 24 horas de antelación."
+        : (data.error ?? "Error al cancelar. Inténtalo de nuevo."));
+      return;
+    }
+    setCitaExistente(null);
+    if (rebooked) {
+      setFechaSeleccionada("");
+      setHoraSeleccionada("");
+      setStep("fecha");
+    } else {
+      setStep("cancelada");
+    }
+  }
+
+  const horasHastaCita = citaExistente
+    ? (new Date(`${citaExistente.fecha}T${citaExistente.hora}`).getTime() - Date.now()) / (1000 * 60 * 60)
+    : null;
+  const puedeAutogestionar = horasHastaCita !== null && horasHastaCita >= 24;
 
   const cells = buildCalendar(calYear, calMonth);
   const todayStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
@@ -388,20 +422,47 @@ export default function PedirCitaPage() {
                 <span style={{ fontWeight: 900, fontSize: "1.375rem", color: AQUA }}>45,00 €</span>
               </div>
               {citaExistente && (
-                <div style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "0.75rem", padding: "1.25rem", marginBottom: "1rem" }}>
-                  <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1e40af", marginBottom: "0.375rem" }}>
+                <div style={{ border: "1.5px solid #bfdbfe", borderRadius: "0.75rem", padding: "1.25rem", marginBottom: "1rem", backgroundColor: "#eff6ff" }}>
+                  <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1e40af", marginBottom: "0.25rem" }}>
                     Ya tienes una cita reservada
                   </p>
-                  <p style={{ fontSize: "0.875rem", color: "#3b82f6", marginBottom: "1rem", textTransform: "capitalize" }}>
+                  <p style={{ fontSize: "0.875rem", color: "#2563eb", marginBottom: "1rem", textTransform: "capitalize", fontWeight: 600 }}>
                     {new Date(citaExistente.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" })} a las {citaExistente.hora}
                   </p>
-                  <p style={{ fontSize: "0.875rem", color: "#374151", marginBottom: "1rem", lineHeight: 1.5 }}>
-                    Si necesitas cambiarla o cancelarla, escríbele a Carmen directamente.
-                  </p>
-                  <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
-                    <MessageCircle size={16} /> Gestionar con Carmen
-                  </a>
+
+                  {puedeAutogestionar ? (
+                    <>
+                      <p style={{ fontSize: "0.8125rem", color: "#374151", marginBottom: "1rem", lineHeight: 1.5 }}>
+                        Puedes cambiar la fecha o cancelarla desde aquí.
+                      </p>
+                      {errorCancelar && (
+                        <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "0.5rem", padding: "0.75rem", fontSize: "0.8125rem", color: "#991b1b", marginBottom: "0.875rem" }}>
+                          {errorCancelar}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
+                        <button onClick={() => handleCancelarCita(true)} disabled={cancelando}
+                          style={{ flex: 1, padding: "0.625rem 1rem", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.875rem", border: "none", borderRadius: "0.5rem", cursor: cancelando ? "not-allowed" : "pointer", opacity: cancelando ? 0.6 : 1 }}>
+                          {cancelando ? "..." : "Cambiar fecha"}
+                        </button>
+                        <button onClick={() => handleCancelarCita(false)} disabled={cancelando}
+                          style={{ flex: 1, padding: "0.625rem 1rem", backgroundColor: "white", color: "#dc2626", fontWeight: 700, fontSize: "0.875rem", border: "1.5px solid #fca5a5", borderRadius: "0.5rem", cursor: cancelando ? "not-allowed" : "pointer", opacity: cancelando ? 0.6 : 1 }}>
+                          {cancelando ? "..." : "Cancelar cita"}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p style={{ fontSize: "0.8125rem", color: "#374151", marginBottom: "0.875rem", lineHeight: 1.5 }}>
+                        Tu cita es en menos de 24 horas. Para modificarla tienes que escribirle a Carmen directamente.
+                      </p>
+                      <a href={`https://wa.me/${WA_NUM}?text=${encodeURIComponent("Hola Carmen, necesito modificar mi cita de mañana.")}`}
+                        target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "0.875rem", padding: "0.625rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
+                        <MessageCircle size={16} /> Escribir a Carmen
+                      </a>
+                    </>
+                  )}
                 </div>
               )}
               {errorConfirmar && (
@@ -441,6 +502,26 @@ export default function PedirCitaPage() {
             </div>
           </div>
         )}
+        {/* ── CITA CANCELADA ────────────────────────────── */}
+        {step === "cancelada" && (
+          <div style={{ textAlign: "center", padding: "2rem 0" }}>
+            <CheckCircle2 size={64} color="#6b7280" strokeWidth={1.5} style={{ margin: "0 auto 1.5rem" }} />
+            <h2 style={{ fontSize: "1.625rem", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>Cita cancelada</h2>
+            <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "2.5rem" }}>
+              Tu cita ha sido cancelada correctamente. Si quieres reservar una nueva, puedes hacerlo en cualquier momento.
+            </p>
+            <div style={{ display: "flex", gap: "0.875rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <button onClick={() => { setCitaExistente(null); setFechaSeleccionada(""); setHoraSeleccionada(""); setStep("fecha"); }}
+                style={{ ...btnAqua(false), width: "auto", padding: "0.75rem 1.75rem" }}>
+                Reservar nueva cita
+              </button>
+              <Link href="/" style={{ display: "inline-flex", alignItems: "center", backgroundColor: "white", color: DARK, fontWeight: 600, fontSize: "0.9375rem", padding: "0.75rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none", border: "1.5px solid #e5e7eb" }}>
+                Volver al inicio
+              </Link>
+            </div>
+          </div>
+        )}
+
       </main>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
