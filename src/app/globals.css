@@ -129,3 +129,5 @@ body {
   color: #1a1a1a;
   margin-bottom: 0.375rem;
 }
+
+.wa-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(37,211,102,0.55) !important; }
