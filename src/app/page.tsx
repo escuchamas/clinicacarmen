@@ -7,9 +7,9 @@ import {
   Fingerprint, MessageCircle, BadgeEuro, Phone,
 } from "lucide-react";
 
-const WA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría pedir información sobre una primera visita.")}`;
-const WA_CITA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
-const WA_PILATES_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría apuntarme a las clases de pilates. ¿Hay plazas disponibles?")}`;
+const WA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir información sobre una primera visita.")}`;
+const WA_CITA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
+const WA_PILATES_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría apuntarme a las clases de pilates. ¿Hay plazas disponibles?")}`;
 
 
 const AQUA = "#0891B2";

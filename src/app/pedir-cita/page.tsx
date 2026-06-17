@@ -8,7 +8,7 @@ const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
 const CREAM = "#F2EDE3";
 const DARK = "#111827";
-const WA_NUM = "34608622236";
+const WA_NUM = "34652591116";
 const WA_URL = `https://wa.me/${WA_NUM}?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita. Soy nuevo paciente y me gustaría información sobre la primera visita.")}`;
 
 type Step = "identificar" | "gestionar" | "cuestionario" | "fecha" | "hora" | "confirmar" | "exito" | "cancelada";

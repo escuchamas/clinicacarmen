@@ -9,7 +9,7 @@ const AQUA = "#0891B2";
 const CREAM = "#F2EDE3";
 const PURPLE = "#7C3AED";
 const DARK = "#111827";
-const WA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, tengo una consulta sobre las clases de pilates.")}`;
+const WA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, tengo una consulta sobre las clases de pilates.")}`;
 
 interface ModalState {
   claseId: string;
