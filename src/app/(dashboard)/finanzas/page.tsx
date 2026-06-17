@@ -1,9 +1,16 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Coste, CategoriaCoste, CATEGORIA_COSTE_LABELS } from "@/lib/types";
+import Link from "next/link";
+import { Coste, CategoriaCoste, CATEGORIA_COSTE_LABELS, Cita, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
 
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+function formatFecha(fecha: string) {
+  const [y, m, d] = fecha.split("-");
+  const mes = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][parseInt(m) - 1];
+  return `${parseInt(d)} ${mes} ${y}`;
+}
 
 interface FinanzasMes {
   costes: Coste[];
@@ -20,6 +27,11 @@ export default function FinanzasPage() {
   const [form, setForm] = useState({ fecha: today.toISOString().split("T")[0], concepto: "", importe: "", categoria: "otro" as CategoriaCoste, notas: "" });
   const [saving, setSaving] = useState(false);
 
+  // Impagos
+  const [impagos, setImpagos] = useState<Cita[]>([]);
+  const [loadingImpagos, setLoadingImpagos] = useState(true);
+  const [marcando, setMarcando] = useState<string | null>(null);
+
   const fetchDatos = useCallback(async () => {
     setLoading(true);
     try {
@@ -35,7 +47,20 @@ export default function FinanzasPage() {
     setLoading(false);
   }, [year, month]);
 
+  const fetchImpagos = useCallback(async () => {
+    setLoadingImpagos(true);
+    try {
+      const res = await fetch("/api/citas?impagadas=1");
+      const data = await res.json();
+      setImpagos(Array.isArray(data) ? data : []);
+    } catch {
+      setImpagos([]);
+    }
+    setLoadingImpagos(false);
+  }, []);
+
   useEffect(() => { fetchDatos(); }, [fetchDatos]);
+  useEffect(() => { fetchImpagos(); }, [fetchImpagos]);
 
   function prevMonth() {
     if (month === 1) { setYear(y => y - 1); setMonth(12); }
@@ -72,6 +97,17 @@ export default function FinanzasPage() {
     await fetchDatos();
   }
 
+  async function marcarPago(citaId: string, pagoEstado: PagoEstado) {
+    setMarcando(citaId);
+    await fetch("/api/citas", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "pago", id: citaId, pagoEstado }),
+    });
+    await fetchImpagos();
+    setMarcando(null);
+  }
+
   const totalCostes = datos.costes.reduce((sum, c) => sum + c.importe, 0);
   const totalIngresos = datos.ingresos.total;
   const balance = totalIngresos - totalCostes;
@@ -81,6 +117,9 @@ export default function FinanzasPage() {
     label,
     total: datos.costes.filter(c => c.categoria === cat).reduce((s, c) => s + c.importe, 0),
   })).filter(c => c.total > 0).sort((a, b) => b.total - a.total);
+
+  const sinPagar = impagos.filter(c => c.pagoEstado === "sin_pagar");
+  const parciales = impagos.filter(c => c.pagoEstado === "parcial");
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -136,6 +175,63 @@ export default function FinanzasPage() {
         <button className="btn-primary" onClick={() => setShowForm(true)}>+ Registrar gasto</button>
       </div>
 
+      {/* ── Cobros pendientes ───────────────────────────────────────────── */}
+      <div className="card overflow-hidden mb-6">
+        <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid #DDD8CE" }}>
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-sm" style={{ color: "#1a1a1a" }}>Cobros pendientes</h3>
+            {!loadingImpagos && impagos.length > 0 && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                minWidth: "20px", height: "20px", borderRadius: "9999px",
+                backgroundColor: "#ef4444", color: "white",
+                fontSize: "0.65rem", fontWeight: 700, padding: "0 5px",
+              }}>
+                {impagos.length}
+              </span>
+            )}
+          </div>
+          {!loadingImpagos && impagos.length === 0 && (
+            <span className="text-xs font-medium" style={{ color: "#10b981" }}>✓ Todo al día</span>
+          )}
+        </div>
+
+        {loadingImpagos ? (
+          <div className="flex justify-center py-8">
+            <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "#0891B2", borderTopColor: "transparent" }} />
+          </div>
+        ) : impagos.length === 0 ? (
+          <div className="px-5 py-6 text-center">
+            <p className="text-sm" style={{ color: "#9ca3af" }}>No hay cobros pendientes</p>
+          </div>
+        ) : (
+          <>
+            {/* Subgrupo sin pagar */}
+            {sinPagar.length > 0 && (
+              <>
+                <div className="px-5 py-2" style={{ backgroundColor: "#fef2f2", borderBottom: "1px solid #fecaca" }}>
+                  <span className="text-xs font-semibold" style={{ color: "#ef4444" }}>SIN COBRAR · {sinPagar.length}</span>
+                </div>
+                {sinPagar.map(cita => (
+                  <ImpagaRow key={cita.id} cita={cita} marcando={marcando} onMarcar={marcarPago} />
+                ))}
+              </>
+            )}
+            {/* Subgrupo parcial */}
+            {parciales.length > 0 && (
+              <>
+                <div className="px-5 py-2" style={{ backgroundColor: "#fffbeb", borderBottom: "1px solid #fde68a", borderTop: sinPagar.length > 0 ? "1px solid #DDD8CE" : undefined }}>
+                  <span className="text-xs font-semibold" style={{ color: "#d97706" }}>PAGO PARCIAL · {parciales.length}</span>
+                </div>
+                {parciales.map(cita => (
+                  <ImpagaRow key={cita.id} cita={cita} marcando={marcando} onMarcar={marcarPago} />
+                ))}
+              </>
+            )}
+          </>
+        )}
+      </div>
+
       {/* Selector de mes */}
       <div className="flex items-center justify-center gap-4 mb-6">
         <button onClick={prevMonth} className="btn-ghost px-3">‹</button>
@@ -177,7 +273,7 @@ export default function FinanzasPage() {
             <div className="card p-4 mb-5">
               <p className="text-xs font-bold mb-3" style={{ color: "#6b7280" }}>DISTRIBUCIÓN</p>
               <div className="flex h-4 rounded-full overflow-hidden gap-0.5">
-                <div style={{ width: `${totalIngresos > 0 ? (Math.min(totalIngresos, totalIngresos) / (totalIngresos + totalCostes)) * 100 : 0}%`, backgroundColor: "#10b981" }} />
+                <div style={{ width: `${totalIngresos > 0 ? (totalIngresos / (totalIngresos + totalCostes)) * 100 : 0}%`, backgroundColor: "#10b981" }} />
                 <div style={{ width: `${totalCostes > 0 ? (totalCostes / (totalIngresos + totalCostes)) * 100 : 0}%`, backgroundColor: "#ef4444" }} />
               </div>
               <div className="flex justify-between mt-2">
@@ -225,7 +321,6 @@ export default function FinanzasPage() {
 
             {/* Panel derecho */}
             <div className="space-y-4">
-              {/* Ingresos por sesiones */}
               <div className="card p-4">
                 <p className="section-title">Ingresos por sesiones</p>
                 <p className="text-xs mb-3" style={{ color: "#9ca3af" }}>
@@ -243,7 +338,6 @@ export default function FinanzasPage() {
                 </div>
               </div>
 
-              {/* Gastos por categoría */}
               {costesPorCategoria.length > 0 && (
                 <div className="card p-4">
                   <p className="section-title">Gastos por categoría</p>
@@ -261,6 +355,80 @@ export default function FinanzasPage() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+function ImpagaRow({ cita, marcando, onMarcar }: {
+  cita: Cita;
+  marcando: string | null;
+  onMarcar: (id: string, estado: PagoEstado) => void;
+}) {
+  const busy = marcando === cita.id;
+  return (
+    <div
+      className="flex items-center gap-3 px-5 py-3"
+      style={{ borderBottom: "1px solid #f9fafb" }}
+    >
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <Link
+          href={`/pacientes/${cita.pacienteId}`}
+          className="text-sm font-semibold hover:underline truncate block"
+          style={{ color: "#1a1a1a", textDecoration: "none" }}
+        >
+          {cita.pacienteNombre ?? "Paciente"}
+        </Link>
+        <p className="text-xs mt-0.5" style={{ color: "#9ca3af" }}>
+          {formatFecha(cita.fecha)} · {cita.hora.slice(0, 5)}
+          {cita.motivo ? ` · ${cita.motivo}` : ""}
+        </p>
+      </div>
+
+      {/* Badge estado pago */}
+      <span
+        className="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0"
+        style={{
+          backgroundColor: PAGO_COLORS[cita.pagoEstado] + "22",
+          color: PAGO_COLORS[cita.pagoEstado],
+        }}
+      >
+        {PAGO_LABELS[cita.pagoEstado]}
+      </span>
+
+      {/* Acciones */}
+      <div className="flex gap-1.5 flex-shrink-0">
+        {cita.pagoEstado !== "parcial" && (
+          <button
+            onClick={() => onMarcar(cita.id, "parcial")}
+            disabled={busy}
+            className="text-xs px-2.5 py-1 rounded-lg font-medium transition-colors"
+            style={{
+              backgroundColor: "#fffbeb",
+              color: "#d97706",
+              border: "1px solid #fde68a",
+              cursor: busy ? "not-allowed" : "pointer",
+              opacity: busy ? 0.6 : 1,
+            }}
+          >
+            Parcial
+          </button>
+        )}
+        <button
+          onClick={() => onMarcar(cita.id, "pagado")}
+          disabled={busy}
+          className="text-xs px-2.5 py-1 rounded-lg font-medium transition-colors"
+          style={{
+            backgroundColor: "#f0fdf4",
+            color: "#16a34a",
+            border: "1px solid #bbf7d0",
+            cursor: busy ? "not-allowed" : "pointer",
+            opacity: busy ? 0.6 : 1,
+          }}
+        >
+          {busy ? "..." : "Cobrado"}
+        </button>
+      </div>
     </div>
   );
 }
