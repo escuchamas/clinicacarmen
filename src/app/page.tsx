@@ -2,10 +2,15 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import ReservaForm from "./_components/ReservaForm";
 import QuizProblemas from "./_components/QuizProblemas";
+import Link from "next/link";
 import {
   Zap, Target, CalendarCheck,
   Fingerprint, MessageCircle, BadgeEuro,
 } from "lucide-react";
+
+const WA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría pedir información sobre una primera visita.")}`;
+const WA_CITA_URL = `https://wa.me/34608622236?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
+
 
 const AQUA = "#0891B2";
 const AQUA_DARK = "#0E7490";
@@ -178,20 +183,59 @@ export default async function HomePage() {
 
       {/* ── RESERVAR ────────────────────────────────────── */}
       <section id="reservar" style={{ backgroundColor: CREAM, padding: "5rem 1.5rem" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
               Pide tu cita ahora
             </h2>
             <p style={{ color: "#6b7280", fontSize: "1.0625rem", lineHeight: 1.6 }}>
-              Rellena el formulario y Carmen te llamará en menos de 2 horas para confirmar.<br />
-              Sin compromiso. Sin listas de espera.
+              ¿Ya eres paciente? Reserva tu cita en 2 minutos.<br />
+              ¿Primera vez? Escríbenos y te explicamos todo.
             </p>
           </div>
 
-          <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2.5rem", border: "1px solid #e5e7eb", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
-            <ReservaForm />
+          {/* Dos vías */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
+            {/* Paciente existente */}
+            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: `2px solid ${AQUA}`, boxShadow: "0 4px 20px rgba(8,145,178,0.1)" }}>
+              <span style={{ display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
+                Ya soy paciente
+              </span>
+              <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Reserva online</h3>
+              <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                Elige fecha y hora al momento. Solo necesitas tu DNI y teléfono.
+              </p>
+              <Link href="/pedir-cita" style={{ display: "block", textAlign: "center", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                Reservar cita →
+              </Link>
+            </div>
+
+            {/* Nuevo paciente */}
+            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: "1px solid #e5e7eb" }}>
+              <span style={{ display: "inline-block", backgroundColor: "#dcfce7", color: "#16a34a", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
+                Primera visita
+              </span>
+              <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Nuevo paciente</h3>
+              <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                La primera visita incluye evaluación completa. Escríbenos y te reservamos el primer hueco disponible.
+              </p>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                <MessageCircle size={18} /> WhatsApp
+              </a>
+            </div>
           </div>
+
+          {/* Formulario clásico (fallback) */}
+          <details style={{ backgroundColor: "white", borderRadius: "1.25rem", border: "1px solid #e5e7eb" }}>
+            <summary style={{ padding: "1.25rem 1.75rem", cursor: "pointer", fontWeight: 600, fontSize: "0.9375rem", color: "#6b7280", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span>O solicita cita por formulario (Carmen te confirma en &lt;2h)</span>
+              <span style={{ fontSize: "0.75rem" }}>▼</span>
+            </summary>
+            <div style={{ padding: "0 1.75rem 1.75rem" }}>
+              <ReservaForm />
+            </div>
+          </details>
 
           <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.8125rem", color: "#9ca3af" }}>
             Tus datos están protegidos y solo se utilizan para gestionar tu cita (LOPD/RGPD).

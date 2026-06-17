@@ -62,7 +62,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     authorized({ auth, request: { nextUrl } }) {
       const pathname = nextUrl.pathname;
-      const publicPaths = ["/", "/api/reservar", "/clases", "/acceso", "/api/auth/paciente"];
+      const publicPaths = ["/", "/api/reservar", "/clases", "/acceso", "/api/auth/paciente", "/pedir-cita"];
       const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
       if (isPublic) return true;
 
