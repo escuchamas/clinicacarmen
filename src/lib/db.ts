@@ -350,7 +350,8 @@ export async function getClasesPilates(desde?: string): Promise<ClasePilates[]> 
 export async function getClasesPilatesByMes(year: number, month: number): Promise<ClasePilates[]> {
   const db = sql();
   const desde = `${year}-${String(month).padStart(2, "0")}-01`;
-  const hasta = `${year}-${String(month).padStart(2, "0")}-31`;
+  const lastDay = new Date(year, month, 0).getDate();
+  const hasta = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
   const rows = await db`
     SELECT cp.*, COUNT(ip.id) FILTER (WHERE ip.estado = 'inscrita') AS inscritos_count
     FROM clases_pilates cp
