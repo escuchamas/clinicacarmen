@@ -611,7 +611,7 @@ export default function PacienteDetailPage() {
                             setHistoriaForm(f => ({ ...f, banderasRojas: e.target.checked ? [...curr, b] : curr.filter(x => x !== b) }));
                           }}
                           className="mt-0.5 h-4 w-4 flex-shrink-0"
-                          style={{ accentColor: "#0891B2" }}
+                          style={{ accentColor: "#0D9488" }}
                         />
                         <span className="text-sm" style={{ color: "#374151" }}>{b}</span>
                       </label>
@@ -973,13 +973,13 @@ export default function PacienteDetailPage() {
               ) : (
                 <div className="space-y-2 mb-2">
                   {consentDocs.map(doc => (
-                    <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
+                    <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0D9488" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0fdfa" : "white" }}>
                       <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
                         <input
                           type="checkbox"
                           checked={consentSelected.includes(doc.id)}
                           onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
-                          style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
+                          style={{ accentColor: "#0D9488", width: 16, height: 16, flexShrink: 0 }}
                         />
                         <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.nombre}</span>
                       </label>

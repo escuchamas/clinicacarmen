@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Calendar, Clock, Users, X, CheckCircle2, MessageCircle } from "lucide-react";
 import { ClasePilates } from "@/lib/types";
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 const CREAM = "#F2EDE3";
 const PURPLE = "#7C3AED";
 const DARK = "#111827";

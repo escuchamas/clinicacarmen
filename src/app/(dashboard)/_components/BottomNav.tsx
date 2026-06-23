@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Users, CalendarDays, Activity, BarChart3, Settings } from "lucide-react";
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 
 const TABS = [
   { href: "/pacientes", icon: Users, label: "Pacientes" },

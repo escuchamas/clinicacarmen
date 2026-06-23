@@ -12,7 +12,7 @@ const WA_CITA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola C
 const WA_PILATES_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría apuntarme a las clases de pilates. ¿Hay plazas disponibles?")}`;
 
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 const AQUA_DARK = "#0E7490";
 const CREAM = "#F2EDE3";
 const DARK = "#111827";

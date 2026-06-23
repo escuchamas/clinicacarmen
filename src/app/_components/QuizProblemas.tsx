@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronRight, Bone, Brain, Dumbbell, Zap, Stethoscope, Baby, X, type LucideIcon } from "lucide-react";
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 const AQUA_DARK = "#0E7490";
 
 type ProblemId = "espalda" | "cervicales" | "deportiva" | "hombro" | "postop" | "embarazo";

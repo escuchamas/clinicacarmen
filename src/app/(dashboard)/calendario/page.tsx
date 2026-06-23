@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
 import { AlertCircle, Banknote, CalendarDays, Lock, LockOpen, X } from "lucide-react";
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 const PURPLE = "#7C3AED";
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
@@ -248,7 +248,7 @@ export default function CalendarioPage() {
                       href="/pacientes/nuevo"
                       className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium"
                       style={{ color: AQUA, textDecoration: "none", borderTop: "1px solid #f3f4f6", display: "flex" }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f9ff")}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0fdfa")}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                     >
                       + Nuevo paciente
@@ -353,7 +353,7 @@ export default function CalendarioPage() {
         <div className="card p-5 mb-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm flex items-center gap-2" style={{ color: "#1a1a1a" }}>
-              <Lock size={14} color="#0891B2" /> Gestionar disponibilidad
+              <Lock size={14} color="#0D9488" /> Gestionar disponibilidad
             </h3>
             <button onClick={() => setShowBloqueos(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}>
               <X size={16} />

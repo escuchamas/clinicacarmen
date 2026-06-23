@@ -2,7 +2,7 @@
 
 :root {
   --cream: #F2EDE3;
-  --aqua: #0891B2;
+  --aqua: #0D9488;
   --aqua-dark: #0E7490;
   --aqua-light: #A5F3FC;
   --dark: #1a1a1a;
@@ -17,7 +17,7 @@ body {
 }
 
 .btn-primary {
-  background-color: #0891B2;
+  background-color: #0D9488;
   color: white;
   font-weight: 600;
   padding: 0.625rem 1.5rem;
@@ -58,7 +58,7 @@ body {
 }
 
 .btn-ghost {
-  color: #0891B2;
+  color: #0D9488;
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -84,7 +84,7 @@ body {
 }
 
 .input-field:focus {
-  border-color: #0891B2;
+  border-color: #0D9488;
   box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.2);
 }
 
@@ -102,7 +102,7 @@ body {
 }
 
 .textarea-field:focus {
-  border-color: #0891B2;
+  border-color: #0D9488;
   box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.2);
 }
 
@@ -118,7 +118,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #0891B2;
+  color: #0D9488;
   margin-bottom: 0.75rem;
 }
 

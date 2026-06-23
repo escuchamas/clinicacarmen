@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ChevronLeft, Calendar, Clock, User, CreditCard, MessageCircle, Lock } from "lucide-react";
 
-const AQUA = "#0891B2";
+const AQUA = "#0D9488";
 const AQUA_DARK = "#0E7490";
 const CREAM = "#F2EDE3";
 const DARK = "#111827";

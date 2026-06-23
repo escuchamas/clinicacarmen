@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <div className="flex items-center gap-2.5">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                style={{ backgroundColor: "#0891B2" }}
+                style={{ backgroundColor: "#0D9488" }}
               >
                 C
               </div>

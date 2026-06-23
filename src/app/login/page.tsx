@@ -39,7 +39,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 text-white text-2xl font-bold"
-            style={{ backgroundColor: "#0891B2" }}
+            style={{ backgroundColor: "#0D9488" }}
           >
             C
           </div>

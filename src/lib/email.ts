@@ -99,10 +99,10 @@ function lopdHtml(nombre: string, fecha: string): string {
 
         <!-- Cabecera -->
         <tr>
-          <td style="background:#0891B2;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
-            <div style="display:inline-block;width:44px;height:44px;background:white;border-radius:10px;line-height:44px;font-size:22px;font-weight:900;color:#0891B2;margin-bottom:12px;">C</div>
+          <td style="background:#0D9488;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
+            <div style="display:inline-block;width:44px;height:44px;background:white;border-radius:10px;line-height:44px;font-size:22px;font-weight:900;color:#0D9488;margin-bottom:12px;">C</div>
             <p style="margin:0;color:white;font-size:20px;font-weight:700;">Clínica Carmen</p>
-            <p style="margin:4px 0 0;color:#bae6fd;font-size:13px;">Fisioterapia</p>
+            <p style="margin:4px 0 0;color:#99f6e4;font-size:13px;">Fisioterapia</p>
           </td>
         </tr>
 
@@ -112,8 +112,8 @@ function lopdHtml(nombre: string, fecha: string): string {
             <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:#1a1a1a;">Hola, ${nombre}</p>
             <p style="margin:0 0 24px;font-size:14px;color:#6b7280;">Gracias por reservar tu primera visita. A continuación te informamos sobre cómo tratamos tus datos personales.</p>
 
-            <div style="background:#f0f9ff;border-left:4px solid #0891B2;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:24px;">
-              <p style="margin:0;font-size:13px;color:#0369a1;font-weight:600;">Información básica sobre protección de datos</p>
+            <div style="background:#f0fdfa;border-left:4px solid #0D9488;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:24px;">
+              <p style="margin:0;font-size:13px;color:#0f766e;font-weight:600;">Información básica sobre protección de datos</p>
             </div>
 
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
@@ -162,7 +162,7 @@ function lopdHtml(nombre: string, fecha: string): string {
                   <p style="margin:0;font-size:12px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Tus derechos</p>
                 </td>
                 <td style="padding:10px 0 10px 16px;">
-                  <p style="margin:0;font-size:13px;color:#374151;">Puedes ejercer tus derechos de <strong>acceso, rectificación, supresión, oposición, limitación y portabilidad</strong> escribiendo a Carmen por WhatsApp o al correo electrónico de la clínica. También puedes presentar una reclamación ante la <a href="https://www.aepd.es" style="color:#0891B2;">Agencia Española de Protección de Datos (aepd.es)</a>.</p>
+                  <p style="margin:0;font-size:13px;color:#374151;">Puedes ejercer tus derechos de <strong>acceso, rectificación, supresión, oposición, limitación y portabilidad</strong> escribiendo a Carmen por WhatsApp o al correo electrónico de la clínica. También puedes presentar una reclamación ante la <a href="https://www.aepd.es" style="color:#0D9488;">Agencia Española de Protección de Datos (aepd.es)</a>.</p>
                 </td>
               </tr>
             </table>

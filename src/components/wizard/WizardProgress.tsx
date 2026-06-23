@@ -28,7 +28,7 @@ export default function WizardProgress({ currentStep, onStepClick, completedStep
         <div
           className="absolute top-5 left-0 h-0.5 transition-all duration-500"
           style={{
-            backgroundColor: "#0891B2",
+            backgroundColor: "#0D9488",
             width: `${(Math.max(currentStep - 1, 0) / (STEPS.length - 1)) * 100}%`,
           }}
         />
@@ -55,8 +55,8 @@ export default function WizardProgress({ currentStep, onStepClick, completedStep
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-200 border-2"
                   style={{
-                    backgroundColor: isCompleted || isCurrent ? "#0891B2" : "white",
-                    borderColor: isCompleted || isCurrent ? "#0891B2" : "#DDD8CE",
+                    backgroundColor: isCompleted || isCurrent ? "#0D9488" : "white",
+                    borderColor: isCompleted || isCurrent ? "#0D9488" : "#DDD8CE",
                     transform: isCurrent ? "scale(1.1)" : "scale(1)",
                   }}
                 >
@@ -70,7 +70,7 @@ export default function WizardProgress({ currentStep, onStepClick, completedStep
                 </div>
                 <span
                   className="text-xs font-medium hidden sm:block"
-                  style={{ color: isCurrent ? "#0891B2" : isCompleted ? "#6b7280" : "#9ca3af" }}
+                  style={{ color: isCurrent ? "#0D9488" : isCompleted ? "#6b7280" : "#9ca3af" }}
                 >
                   {step.label}
                 </span>

@@ -132,7 +132,7 @@ export const ESTADO_CITA_LABELS: Record<EstadoCita, string> = {
 };
 
 export const ESTADO_CITA_COLORS: Record<EstadoCita, string> = {
-  agendada: "#0891B2",
+  agendada: "#0D9488",
   vino: "#10b981",
   no_vino: "#f59e0b",
   cancelada: "#ef4444",
