@@ -487,6 +487,61 @@ export async function cancelarInscripcion(pacienteId: string, claseId: string, p
   `;
 }
 
+// ─── Leads ───────────────────────────────────────────────────────────────────
+
+export type LeadEstado = "nuevo" | "contactado" | "convertido" | "perdido";
+
+export interface Lead {
+  id: string;
+  nombre: string;
+  telefono: string;
+  email: string;
+  mensaje: string;
+  origen: string;
+  estado: LeadEstado;
+  pacienteId: string | null;
+  createdAt: string;
+}
+
+const ORIGEN_LABELS: Record<string, string> = {
+  landing:    "Landing page",
+  pedir_cita: "Pedir cita (wizard)",
+};
+export { ORIGEN_LABELS };
+
+export async function getLeads(): Promise<Lead[]> {
+  const db = sql();
+  try {
+    const rows = await db`SELECT id, nombre, telefono, email, mensaje, origen, estado, paciente_id, created_at FROM leads ORDER BY created_at DESC`;
+    return rows.map(r => ({
+      id: String(r.id),
+      nombre: String(r.nombre ?? ""),
+      telefono: String(r.telefono ?? ""),
+      email: String(r.email ?? ""),
+      mensaje: String(r.mensaje ?? ""),
+      origen: String(r.origen ?? ""),
+      estado: (r.estado as LeadEstado) ?? "nuevo",
+      pacienteId: r.paciente_id ? String(r.paciente_id) : null,
+      createdAt: toDateStr(r.created_at),
+    }));
+  } catch { return []; }
+}
+
+export async function createLead(data: { nombre: string; telefono: string; email?: string; mensaje?: string; origen: string; pacienteId?: string }): Promise<void> {
+  const db = sql();
+  try {
+    await db`
+      INSERT INTO leads (nombre, telefono, email, mensaje, origen, paciente_id)
+      VALUES (${data.nombre}, ${data.telefono}, ${data.email ?? ""}, ${data.mensaje ?? ""}, ${data.origen}, ${data.pacienteId ?? null})
+    `;
+  } catch { /* tabla no creada todavía */ }
+}
+
+export async function updateLeadEstado(id: string, estado: LeadEstado): Promise<void> {
+  const db = sql();
+  await db`UPDATE leads SET estado = ${estado} WHERE id = ${id}`;
+}
+
 // ─── Consentimientos ─────────────────────────────────────────────────────────
 
 export interface ConsentimientoDoc {

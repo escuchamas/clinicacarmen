@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { createLead } from "@/lib/db";
 
 function sql() {
   return neon(process.env.DATABASE_URL!);
@@ -42,6 +43,8 @@ export async function POST(req: NextRequest) {
       INSERT INTO citas (id, paciente_id, fecha, hora, duracion, motivo, estado, notas, fecha_creacion)
       VALUES (${citaId}, ${pacienteId}, ${fechaCita}, ${hora}, 60, ${motivo ?? "Primera consulta"}, 'pendiente', ${notasCita}, NOW())
     `;
+
+    createLead({ nombre: nombre.trim(), telefono: telefono.trim(), email: email?.trim(), mensaje: motivo?.trim(), origen: "landing", pacienteId }).catch(() => {});
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (e) {

@@ -4,8 +4,10 @@ import WhatsAppButton from "./_components/WhatsAppButton";
 import Link from "next/link";
 import {
   Zap, Target, CalendarCheck,
-  Fingerprint, MessageCircle, BadgeEuro, Phone,
+  Fingerprint, MessageCircle, BadgeEuro,
+  Users, Dumbbell,
 } from "lucide-react";
+import HeroSlider from "./_components/HeroSlider";
 
 const WA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir información sobre una primera visita.")}`;
 const WA_CITA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
@@ -41,6 +43,9 @@ export default async function HomePage() {
           </a>
         </div>
       </header>
+
+      {/* ── HERO SLIDER ─────────────────────────────────── */}
+      <HeroSlider />
 
       {/* ── HERO ────────────────────────────────────────── */}
       <section style={{ backgroundColor: "white", padding: "5rem 1.5rem 4rem" }}>
@@ -199,12 +204,12 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginBottom: "2.5rem" }}>
             {[
-              { emoji: "👥", title: "Grupos reducidos", desc: "Máximo 8 personas por clase. Las plazas son limitadas para que Carmen pueda corregirte en cada ejercicio." },
-              { emoji: "🎯", title: "Todos los niveles", desc: "Sin experiencia previa necesaria. La clase se adapta al nivel del grupo, desde iniciación hasta avanzado." },
-              { emoji: "💪", title: "Complemento perfecto", desc: "Ideal como mantenimiento tras el tratamiento de fisioterapia o como práctica independiente." },
-            ].map(({ emoji, title, desc }) => (
+              { icon: <Users size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Grupos reducidos", desc: "Máximo 8 personas por clase. Las plazas son limitadas para que Carmen pueda corregirte en cada ejercicio." },
+              { icon: <Target size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Todos los niveles", desc: "Sin experiencia previa necesaria. La clase se adapta al nivel del grupo, desde iniciación hasta avanzado." },
+              { icon: <Dumbbell size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Complemento perfecto", desc: "Ideal como mantenimiento tras el tratamiento de fisioterapia o como práctica independiente." },
+            ].map(({ icon, title, desc }) => (
               <div key={title} style={{ backgroundColor: "#F5F3FF", borderRadius: "1rem", padding: "1.75rem", border: "1px solid #DDD6FE" }}>
-                <p style={{ fontSize: "1.75rem", marginBottom: "0.75rem" }}>{emoji}</p>
+                <div style={{ marginBottom: "0.875rem" }}>{icon}</div>
                 <h3 style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.5rem", color: "#1a1a1a" }}>{title}</h3>
                 <p style={{ color: "#6b7280", fontSize: "0.875rem", lineHeight: 1.6 }}>{desc}</p>
               </div>

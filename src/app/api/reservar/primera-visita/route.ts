@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { sendLopdEmail } from "@/lib/email";
+import { createLead } from "@/lib/db";
 
 function sql() {
   return neon(process.env.DATABASE_URL!);
@@ -75,6 +76,8 @@ export async function POST(req: NextRequest) {
         console.error("[lopd-email]", err)
       );
     }
+
+    createLead({ nombre: nombre.trim(), telefono: telefono.trim(), email: email?.trim(), mensaje: (cuestionario as Record<string,string>)?.motivo, origen: "pedir_cita", pacienteId }).catch(() => {});
 
     return NextResponse.json({ pacienteId, citaId }, { status: 201 });
   } catch (e) {
