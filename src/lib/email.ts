@@ -1,7 +1,84 @@
 import { Resend } from "resend";
+import fs from "fs";
+import path from "path";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM ?? "Clínica Carmen <onboarding@resend.dev>";
+
+export const CONSENTIMIENTOS = [
+  { id: "epi",           label: "EPI (Electrólisis Percutánea Intratisular)", file: "epi.pdf" },
+  { id: "neuromodulacion", label: "Neuromodulación Percutánea",               file: "neuromodulacion.pdf" },
+  { id: "puncion-seca",  label: "Punción Seca",                               file: "puncion-seca.pdf" },
+] as const;
+
+export type ConsentimientoId = typeof CONSENTIMIENTOS[number]["id"];
+
+export async function sendConsentimientosPdf(
+  to: string,
+  nombre: string,
+  apellidos: string,
+  ids: ConsentimientoId[]
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return;
+  if (ids.length === 0) return;
+
+  const seleccionados = CONSENTIMIENTOS.filter(c => ids.includes(c.id));
+  const carpeta = path.join(process.cwd(), "public", "consentimientos");
+
+  const attachments = seleccionados.map(c => ({
+    filename: c.label + ".pdf",
+    content: fs.readFileSync(path.join(carpeta, c.file)).toString("base64"),
+  }));
+
+  const lista = seleccionados.map(c => `<li>${c.label}</li>`).join("");
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: "Consentimientos informados — Clínica Carmen",
+    attachments,
+    html: `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#f5f0e8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f0e8;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr>
+          <td style="background:#2D7D5E;border-radius:12px 12px 0 0;padding:28px 32px;text-align:center;">
+            <div style="display:inline-block;width:44px;height:44px;background:white;border-radius:10px;line-height:44px;font-size:22px;font-weight:900;color:#2D7D5E;margin-bottom:12px;">C</div>
+            <p style="margin:0;color:white;font-size:20px;font-weight:700;">Clínica Carmen</p>
+            <p style="margin:4px 0 0;color:#a7f3d0;font-size:13px;">Consentimientos informados</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:white;padding:32px;">
+            <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:#1a1a1a;">Hola, ${nombre} ${apellidos}</p>
+            <p style="margin:0 0 20px;font-size:14px;color:#6b7280;">
+              Te adjuntamos los consentimientos informados para las técnicas que se van a aplicar en tu tratamiento.
+              Por favor, léelos con atención antes de tu próxima sesión.
+            </p>
+            <div style="background:#f0fdf4;border-left:4px solid #2D7D5E;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:24px;">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#166534;">Documentos adjuntos</p>
+              <ul style="margin:0;padding-left:18px;font-size:13px;color:#374151;">${lista}</ul>
+            </div>
+            <p style="margin:0;font-size:13px;color:#6b7280;">
+              Si tienes cualquier duda sobre las técnicas o el contenido de estos documentos, consúltala directamente con Carmen antes de la sesión.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f9fafb;border-radius:0 0 12px 12px;padding:20px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;">Clínica Carmen · Fisioterapia</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  });
+}
 
 export async function sendLopdEmail(to: string, nombre: string, apellidos: string): Promise<void> {
   if (!process.env.RESEND_API_KEY) return; // silently skip if not configured

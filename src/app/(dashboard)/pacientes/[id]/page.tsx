@@ -40,6 +40,8 @@ export default function PacienteDetailPage() {
   const [editForm, setEditForm] = useState<EditForm>({ nombre: "", apellidos: "", dni: "", email: "", telefono: "", fechaNacimiento: "", poblacion: "" });
   const [savingEdit2, setSavingEdit2] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentSelected, setConsentSelected] = useState<string[]>([]);
   const [sendingConsent, setSendingConsent] = useState(false);
   const [consentSent, setConsentSent] = useState(false);
   const [editingHistoria, setEditingHistoria] = useState(false);
@@ -188,20 +190,29 @@ export default function PacienteDetailPage() {
     setEditingHistoria(true);
   }
 
-  async function enviarConsentimiento() {
+  const CONSENT_DOCS = [
+    { id: "epi",             label: "EPI (Electrólisis Percutánea Intratisular)" },
+    { id: "neuromodulacion", label: "Neuromodulación Percutánea" },
+    { id: "puncion-seca",    label: "Punción Seca" },
+  ];
+
+  async function enviarConsentimientosPdf() {
+    if (consentSelected.length === 0) return;
     setSendingConsent(true);
     const res = await fetch(`/api/pacientes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ seccion: "consentimiento" }),
+      body: JSON.stringify({ seccion: "consentimientos_pdf", ids: consentSelected }),
     });
     setSendingConsent(false);
     if (res.ok) {
+      setShowConsentModal(false);
+      setConsentSelected([]);
       setConsentSent(true);
       setTimeout(() => setConsentSent(false), 4000);
     } else {
       const d = await res.json().catch(() => ({}));
-      alert(d.error ?? "Error al enviar el consentimiento");
+      alert(d.error ?? "Error al enviar los consentimientos");
     }
   }
 
@@ -360,18 +371,11 @@ export default function PacienteDetailPage() {
           <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
             {paciente.email && (
               <button
-                onClick={enviarConsentimiento}
-                disabled={sendingConsent}
+                onClick={() => { setShowConsentModal(true); setConsentSelected([]); }}
                 className="text-sm py-1.5 px-3 rounded-lg font-medium transition-colors"
-                style={{
-                  backgroundColor: consentSent ? "#f0fdf4" : "#f0fdf4",
-                  color: consentSent ? "#16a34a" : "#2D7D5E",
-                  border: `1px solid ${consentSent ? "#86efac" : "#6ee7b7"}`,
-                  cursor: sendingConsent ? "not-allowed" : "pointer",
-                  opacity: sendingConsent ? 0.7 : 1,
-                }}
+                style={{ backgroundColor: "#f0fdf4", color: "#2D7D5E", border: "1px solid #6ee7b7" }}
               >
-                {sendingConsent ? "Enviando..." : consentSent ? "✓ Enviado" : "Consentimiento"}
+                Consentimientos
               </button>
             )}
             <button
@@ -883,6 +887,48 @@ export default function PacienteDetailPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Modal consentimientos PDF */}
+      {showConsentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.45)" }}>
+          <div className="card p-6 w-full max-w-sm">
+            <h3 className="font-bold text-base mb-1" style={{ color: "#1a1a1a" }}>Enviar consentimientos</h3>
+            <p className="text-xs mb-4" style={{ color: "#6b7280" }}>Selecciona los documentos a enviar por correo a {paciente?.nombre}</p>
+            <div className="space-y-2 mb-5">
+              {CONSENT_DOCS.map(doc => (
+                <label key={doc.id} className="flex items-center gap-3 p-3 rounded-lg cursor-pointer" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
+                  <input
+                    type="checkbox"
+                    checked={consentSelected.includes(doc.id)}
+                    onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
+                    style={{ accentColor: "#0891B2", width: 16, height: 16 }}
+                  />
+                  <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={enviarConsentimientosPdf}
+                disabled={sendingConsent || consentSelected.length === 0}
+                className="btn-primary flex-1 justify-center"
+                style={{ opacity: consentSelected.length === 0 ? 0.5 : 1 }}
+              >
+                {sendingConsent ? "Enviando..." : `Enviar${consentSelected.length > 0 ? ` (${consentSelected.length})` : ""}`}
+              </button>
+              <button className="btn-secondary" onClick={() => setShowConsentModal(false)}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast éxito */}
+      {consentSent && (
+        <div className="fixed bottom-6 left-1/2 z-50 rounded-xl px-5 py-3 shadow-xl flex items-center gap-2" style={{ transform: "translateX(-50%)", backgroundColor: "#2D7D5E", color: "white" }}>
+          <span style={{ fontSize: 16 }}>✓</span>
+          <span className="text-sm font-medium">Consentimientos enviados correctamente</span>
         </div>
       )}
     </div>
