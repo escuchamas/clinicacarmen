@@ -29,7 +29,7 @@ export default async function HomePage() {
       {/* ── STICKY HEADER ───────────────────────────────── */}
       <header style={{
         position: "sticky", top: 0, zIndex: 50,
-        backgroundColor: "white",
+        backgroundColor: CREAM,
         borderBottom: "1px solid #DCC8B2",
         padding: "0 1.5rem",
       }}>
@@ -52,7 +52,7 @@ export default async function HomePage() {
       <HeroSlider />
 
       {/* ── HERO ────────────────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "5rem 1.5rem 4rem" }}>
+      <section style={{ backgroundColor: "white", padding: "5rem 1.5rem 4rem" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
           <span style={{
             display: "inline-block", backgroundColor: "#ECE0D4", color: BRAND_D,
@@ -88,7 +88,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
+      <section style={{ backgroundColor: "white", padding: "2rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
           {[
             { icon: <Zap size={22} color={BRAND} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
@@ -110,7 +110,7 @@ export default async function HomePage() {
       <QuizProblemas />
 
       {/* ── CÓMO FUNCIONA ───────────────────────────────── */}
-      <section id="como-funciona" style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
+      <section id="como-funciona" style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
@@ -142,7 +142,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── POR QUÉ CARMEN ──────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
+      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "center" }}>
             <div>
@@ -190,7 +190,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── PILATES ─────────────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
+      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{
@@ -242,7 +242,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── RESERVAR ────────────────────────────────────── */}
-      <section id="reservar" style={{ backgroundColor: CREAM, padding: "5rem 1.5rem" }}>
+      <section id="reservar" style={{ backgroundColor: "white", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>

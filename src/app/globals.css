@@ -19,7 +19,7 @@
 }
 
 body {
-  background-color: var(--cream);
+  background-color: white;
   color: var(--dark);
   font-family: var(--font-body, Montserrat), system-ui, -apple-system, sans-serif;
   font-weight: 400;

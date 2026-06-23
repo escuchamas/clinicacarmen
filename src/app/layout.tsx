@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`h-full ${cormorant.variable} ${montserrat.variable}`}>
-      <body className="min-h-full" style={{ backgroundColor: "#F2ECE6" }} suppressHydrationWarning>
+      <body className="min-h-full" style={{ backgroundColor: "white" }} suppressHydrationWarning>
         {children}
       </body>
     </html>
