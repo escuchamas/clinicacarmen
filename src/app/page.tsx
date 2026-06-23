@@ -77,9 +77,9 @@ export default async function HomePage() {
               Pedir cita ahora →
             </a>
             <a href="#como-funciona" style={{
-              backgroundColor: "white", color: DARK, fontWeight: 600, fontSize: "1rem",
+              backgroundColor: "white", color: SAGE_D, fontWeight: 600, fontSize: "1rem",
               padding: "0.875rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none",
-              border: "1.5px solid #DCC8B2",
+              border: `1.5px solid ${SAGE}`,
             }}>
               ¿Cómo funciona?
             </a>
@@ -92,7 +92,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
           {[
             { icon: <Zap size={22} color={BRAND} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
-            { icon: <Target size={22} color={BRAND} strokeWidth={2} />, title: "Sin protocolos genéricos", desc: "Cada tratamiento es distinto porque cada dolor es distinto." },
+            { icon: <Target size={22} color={SAGE} strokeWidth={2} />, title: "Sin protocolos genéricos", desc: "Cada tratamiento es distinto porque cada dolor es distinto." },
             { icon: <CalendarCheck size={22} color={BRAND} strokeWidth={2} />, title: "Cita en menos de 48h", desc: "Sin listas de espera. Reserva hoy, empieza esta semana." },
           ].map(({ icon, title, desc }) => (
             <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
@@ -124,9 +124,9 @@ export default async function HomePage() {
               { num: "01", title: "Pides tu cita online", body: "Dos minutos, con tu DNI y teléfono. Si ya eres paciente, la cita queda confirmada al instante. Si es tu primera vez, el sistema te guía paso a paso." },
               { num: "02", title: "Primera evaluación a fondo", body: "Analizamos tu caso en detalle. El dolor tiene un origen y hay que encontrarlo antes de tratar." },
               { num: "03", title: "Tu plan de tratamiento", body: "Sesiones de 45-60 min de terapia manual + pauta de ejercicio personalizada para casa." },
-            ].map(({ num, title, body }) => (
-              <div key={num} style={{ backgroundColor: "white", borderRadius: "1rem", padding: "2rem", border: "1px solid #DCC8B2" }}>
-                <p style={{ fontSize: "2.5rem", fontWeight: 900, color: BRAND, opacity: 0.2, lineHeight: 1, marginBottom: "1rem" }}>{num}</p>
+            ].map(({ num, title, body }, i) => (
+              <div key={num} style={{ backgroundColor: "white", borderRadius: "1rem", padding: "2rem", border: "1px solid #DCC8B2", boxShadow: i === 1 ? `inset 0 3px 0 ${SAGE}` : "none" }}>
+                <p style={{ fontSize: "2.5rem", fontWeight: 900, color: i === 1 ? SAGE : BRAND, opacity: 0.25, lineHeight: 1, marginBottom: "1rem" }}>{num}</p>
                 <h3 style={{ fontSize: "1.125rem", fontWeight: 800, marginBottom: "0.625rem" }}>{title}</h3>
                 <p style={{ color: "#6b7280", lineHeight: 1.6, fontSize: "0.9375rem" }}>{body}</p>
               </div>
@@ -158,7 +158,7 @@ export default async function HomePage() {
               <div style={{ display: "grid", gap: "1rem" }}>
                 {[
                   { icon: <Fingerprint size={20} color={BRAND} strokeWidth={1.75} />, title: "Sin protocolo genérico", desc: "Cada paciente tiene un tratamiento diseñado específicamente para su caso." },
-                  { icon: <MessageCircle size={20} color={BRAND} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
+                  { icon: <MessageCircle size={20} color={SAGE} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
                   { icon: <BadgeEuro size={20} color={BRAND} strokeWidth={1.75} />, title: "Plan personalizado desde el primer día", desc: "En la primera visita evaluamos tu caso y te proponemos el plan más adecuado. Sin compromisos previos." },
                 ].map(({ icon, title, desc }) => (
                   <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
@@ -172,7 +172,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center", border: "1px solid #DCC8B2" }}>
+            <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center", border: "1px solid #DCC8B2", boxShadow: `inset 0 3px 0 ${SAGE}` }}>
               <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: SAGE_BG, border: `2px solid ${SAGE}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem" }}>
                 <img src="/logo-vertical.jpeg" alt="Carmen Gómez" style={{ width: 52, height: 52, objectFit: "contain", borderRadius: "50%" }} />
               </div>

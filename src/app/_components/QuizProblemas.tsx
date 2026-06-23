@@ -283,7 +283,7 @@ export default function QuizProblemas() {
 
         <div style={{ textAlign: "center", marginBottom: "2.75rem" }}>
           <span style={{
-            display: "inline-block", backgroundColor: AQUA, color: "white",
+            display: "inline-block", backgroundColor: "#E6EDE2", color: "#88997A",
             fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
             padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.25rem",
           }}>
@@ -299,7 +299,7 @@ export default function QuizProblemas() {
 
         {/* Cards grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "1rem" }}>
-          {PROBLEMS.map(({ id, icon: Icon, title, desc }) => (
+          {PROBLEMS.map(({ id, icon: Icon, title, desc }, i) => (
             <button
               key={id}
               onClick={() => openModal(id)}
@@ -326,9 +326,10 @@ export default function QuizProblemas() {
             >
               <div style={{
                 flexShrink: 0, width: 44, height: 44, borderRadius: "0.75rem",
-                backgroundColor: "#FAF6F2", display: "flex", alignItems: "center", justifyContent: "center",
+                backgroundColor: i % 2 === 0 ? "#FAF6F2" : "#E6EDE2",
+                display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                <Icon size={22} color={AQUA} strokeWidth={1.75} />
+                <Icon size={22} color={i % 2 === 0 ? AQUA : "#88997A"} strokeWidth={1.75} />
               </div>
               <div>
                 <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1C1410", marginBottom: "0.25rem" }}>{title}</p>
