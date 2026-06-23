@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
 import { AlertCircle, Banknote, CalendarDays, Lock, LockOpen, X } from "lucide-react";
@@ -31,8 +31,11 @@ export default function CalendarioPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [pacientes, setPacientes] = useState<{ id: string; nombre: string; apellidos: string }[]>([]);
   const [form, setForm] = useState<NuevaCitaForm>({ pacienteId: "", fecha: "", hora: "10:00", duracion: 60, motivo: "", notas: "" });
+  const [pacienteQuery, setPacienteQuery] = useState("");
+  const [pacienteNombre, setPacienteNombre] = useState("");
+  const [pacienteSugerencias, setPacienteSugerencias] = useState<{ id: string; nombre: string; apellidos: string; telefono?: string }[]>([]);
+  const pacienteDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saving, setSaving] = useState(false);
   const [impagadas, setImpagadas] = useState<Cita[]>([]);
   const [showImpagadas, setShowImpagadas] = useState(false);
@@ -66,9 +69,23 @@ export default function CalendarioPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  useEffect(() => {
-    fetch("/api/pacientes").then(r => r.json()).then(d => setPacientes(Array.isArray(d) ? d : []));
-  }, []);
+  function buscarPaciente(q: string) {
+    setPacienteQuery(q);
+    if (pacienteDebounce.current) clearTimeout(pacienteDebounce.current);
+    if (!q.trim()) { setPacienteSugerencias([]); return; }
+    pacienteDebounce.current = setTimeout(async () => {
+      const res = await fetch(`/api/pacientes?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setPacienteSugerencias(Array.isArray(data) ? data.slice(0, 6) : []);
+    }, 250);
+  }
+
+  function seleccionarPaciente(p: { id: string; nombre: string; apellidos: string }) {
+    setForm(f => ({ ...f, pacienteId: p.id }));
+    setPacienteNombre(`${p.nombre} ${p.apellidos}`);
+    setPacienteQuery(`${p.nombre} ${p.apellidos}`);
+    setPacienteSugerencias([]);
+  }
 
   useEffect(() => {
     fetch("/api/citas?impagadas=1").then(r => r.ok ? r.json() : []).then(d => setImpagadas(Array.isArray(d) ? d : []));
@@ -149,7 +166,7 @@ export default function CalendarioPage() {
     if (!form.pacienteId || !form.fecha || !form.hora) return;
     setSaving(true);
     const res = await fetch("/api/citas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-    if (res.ok) { await fetchData(); setShowForm(false); setForm({ pacienteId: "", fecha: "", hora: "10:00", duracion: 60, motivo: "", notas: "" }); }
+    if (res.ok) { await fetchData(); setShowForm(false); setForm({ pacienteId: "", fecha: "", hora: "10:00", duracion: 60, motivo: "", notas: "" }); setPacienteQuery(""); setPacienteNombre(""); setPacienteSugerencias([]); }
     setSaving(false);
   }
 
@@ -198,12 +215,46 @@ export default function CalendarioPage() {
                 <label className="label">Fecha *</label>
                 <input className="input-field" type="date" value={form.fecha} onChange={e => setForm(f => ({ ...f, fecha: e.target.value }))} />
               </div>
-              <div>
+              <div className="relative">
                 <label className="label">Paciente *</label>
-                <select className="input-field" value={form.pacienteId} onChange={e => setForm(f => ({ ...f, pacienteId: e.target.value }))}>
-                  <option value="">Selecciona un paciente...</option>
-                  {pacientes.map(p => <option key={p.id} value={p.id}>{p.nombre} {p.apellidos}</option>)}
-                </select>
+                <input
+                  className="input-field"
+                  placeholder="Buscar paciente..."
+                  value={pacienteQuery}
+                  onChange={e => { buscarPaciente(e.target.value); if (!e.target.value) { setForm(f => ({ ...f, pacienteId: "" })); setPacienteNombre(""); } }}
+                  autoComplete="off"
+                />
+                {(pacienteSugerencias.length > 0 || (pacienteQuery.length > 1 && !form.pacienteId)) && (
+                  <div className="absolute left-0 right-0 z-50 rounded-lg shadow-lg overflow-hidden" style={{ top: "100%", marginTop: 2, backgroundColor: "white", border: "1px solid #e2ddd3" }}>
+                    {pacienteSugerencias.map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onMouseDown={() => seleccionarPaciente(p)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-left"
+                        style={{ border: "none", cursor: "pointer", backgroundColor: "transparent" }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f9fafb")}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                      >
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: AQUA }}>
+                          {p.nombre.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" style={{ color: "#1a1a1a" }}>{p.nombre} {p.apellidos}</p>
+                        </div>
+                      </button>
+                    ))}
+                    <Link
+                      href="/pacientes/nuevo"
+                      className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium"
+                      style={{ color: AQUA, textDecoration: "none", borderTop: "1px solid #f3f4f6", display: "flex" }}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f9ff")}
+                      onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                    >
+                      + Nuevo paciente
+                    </Link>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
