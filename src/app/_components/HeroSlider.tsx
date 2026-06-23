@@ -25,7 +25,7 @@ const SLIDES: Slide[] = [
     ctaHref: "#reservar",
     bg: "linear-gradient(135deg, #6B4E3E 0%, #9B7B68 60%, #B8977F 100%)",
     overlay: "linear-gradient(to right, rgba(155,123,104,0.82) 0%, rgba(155,123,104,0.38) 100%)",
-    imageSrc: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1400&q=80",
+    imageSrc: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80",
   },
   {
     tag: "Lesiones deportivas",

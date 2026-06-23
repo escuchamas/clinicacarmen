@@ -278,7 +278,7 @@ export default function QuizProblemas() {
   }
 
   return (
-    <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "#FAF6F2" }}>
+    <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "#F5EFE9" }}>
       <div style={{ maxWidth: 820, margin: "0 auto" }}>
 
         <div style={{ textAlign: "center", marginBottom: "2.75rem" }}>

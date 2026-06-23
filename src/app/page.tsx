@@ -32,9 +32,9 @@ export default async function HomePage() {
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <img
-            src="/logo-horizontal.jpeg"
+            src="/logo-fino.jpeg"
             alt="Carmen Gómez · Clínica de Fisioterapia"
-            style={{ height: 44, width: "auto", display: "block" }}
+            style={{ height: 40, width: "auto", display: "block" }}
           />
           <a href="#reservar" style={{
             backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem",
@@ -49,7 +49,7 @@ export default async function HomePage() {
       <HeroSlider />
 
       {/* ── HERO ────────────────────────────────────────── */}
-      <section style={{ backgroundColor: "white", padding: "5rem 1.5rem 4rem" }}>
+      <section style={{ backgroundColor: CREAM, padding: "5rem 1.5rem 4rem" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
           <span style={{
             display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK,
@@ -139,7 +139,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── POR QUÉ CARMEN ──────────────────────────────── */}
-      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
+      <section style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "center" }}>
             <div>
@@ -185,7 +185,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── PILATES ─────────────────────────────────────── */}
-      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
+      <section style={{ backgroundColor: CREAM, padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{
