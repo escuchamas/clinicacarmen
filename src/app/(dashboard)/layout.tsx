@@ -19,17 +19,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       >
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                style={{ backgroundColor: "#9B7B68" }}
-              >
-                C
-              </div>
-              <span className="font-bold text-base" style={{ color: "#1a1a1a" }}>
-                Clínica Carmen
-              </span>
-            </div>
+            <img
+              src="/logo-fino.jpeg"
+              alt="Carmen Gómez · Clínica de Fisioterapia"
+              style={{ height: 36, width: "auto", display: "block", flexShrink: 0 }}
+            />
             <TopNav />
           </div>
 

@@ -19,6 +19,10 @@ const raleway = Raleway({
 export const metadata: Metadata = {
   title: "Carmen Gómez · Clínica de Fisioterapia",
   description: "Fisioterapia manual y Pilates terapéutico en Campillos, Málaga.",
+  icons: {
+    icon: "/logo-vertical.jpeg",
+    apple: "/logo-vertical.jpeg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
