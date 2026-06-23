@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
+  if (!process.env.CLOUDINARY_API_SECRET) {
+    return NextResponse.json({ error: "Cloudinary no está configurado en las variables de entorno del servidor" }, { status: 500 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -50,7 +54,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: result.secure_url });
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Error al subir el archivo" }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[upload]", msg);
+    return NextResponse.json({ error: "Error al subir el archivo: " + msg }, { status: 500 });
   }
 }
