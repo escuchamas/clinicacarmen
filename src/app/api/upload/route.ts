@@ -54,8 +54,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: result.secure_url });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error("[upload]", msg);
-    return NextResponse.json({ error: "Error al subir el archivo: " + msg }, { status: 500 });
+    const msg =
+      e instanceof Error
+        ? e.message
+        : typeof e === "object" && e !== null && "message" in e
+        ? String((e as Record<string, unknown>).message)
+        : JSON.stringify(e);
+    console.error("[upload] Cloudinary error:", JSON.stringify(e));
+    return NextResponse.json({ error: "Error Cloudinary: " + msg }, { status: 500 });
   }
 }
