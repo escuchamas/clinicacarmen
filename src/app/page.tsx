@@ -290,7 +290,7 @@ export default async function HomePage() {
           {/* Formulario clásico (fallback) */}
           <details style={{ backgroundColor: "white", borderRadius: "1.25rem", border: "1px solid #e5e7eb" }}>
             <summary style={{ padding: "1.25rem 1.75rem", cursor: "pointer", fontWeight: 600, fontSize: "0.9375rem", color: "#6b7280", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span>O solicita tu primera visita y Carmen te confirma en breve</span>
+              <span>O solicita tu primera visita y te la confirmamos en breve</span>
               <span style={{ fontSize: "0.75rem" }}>▼</span>
             </summary>
             <div style={{ padding: "0 1.75rem 1.75rem" }}>
