@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const AQUA = "#0D9488";
+const AQUA = "#9B7B68";
 
 const TABS = [
   { href: "/pacientes", label: "Pacientes" },
@@ -41,7 +41,7 @@ export default function TopNav() {
             <span
               style={{
                 color: active ? AQUA : "#6b7280",
-                backgroundColor: active ? "#ccfbf1" : "transparent",
+                backgroundColor: active ? "#EDE0D8" : "transparent",
                 borderRadius: "0.5rem",
                 padding: "0.375rem 0.75rem",
                 fontWeight: active ? 600 : 500,

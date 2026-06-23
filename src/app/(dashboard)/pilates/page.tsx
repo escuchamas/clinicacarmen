@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { ClasePilates, InscripcionPilates, Paciente } from "@/lib/types";
 import { Users, Clock, Plus, Trash2, ChevronDown, ChevronUp, UserPlus, X } from "lucide-react";
 
-const AQUA = "#0D9488";
+const AQUA = "#9B7B68";
 const PURPLE = "#7C3AED";
 const PURPLE_LIGHT = "#EDE9FE";
 

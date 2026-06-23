@@ -14,14 +14,14 @@ const WA_CITA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola C
 const WA_PILATES_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría apuntarme a las clases de pilates. ¿Hay plazas disponibles?")}`;
 
 
-const AQUA = "#0D9488";
-const AQUA_DARK = "#0E7490";
-const CREAM = "#F2EDE3";
-const DARK = "#111827";
+const AQUA = "#9B7B68";
+const AQUA_DARK = "#7B5E4E";
+const CREAM = "#F5EFE9";
+const DARK = "#1C1410";
 
 export default async function HomePage() {
   return (
-    <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", color: DARK }}>
+    <div style={{ color: DARK }}>
 
       {/* ── STICKY HEADER ───────────────────────────────── */}
       <header style={{
@@ -31,10 +31,11 @@ export default async function HomePage() {
         padding: "0 1.5rem",
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: "1rem" }}>M</div>
-            <span style={{ fontWeight: 700, fontSize: "1rem", color: DARK }}>Millennialfisio</span>
-          </div>
+          <img
+            src="/logo-horizontal.jpeg"
+            alt="Carmen Gómez · Clínica de Fisioterapia"
+            style={{ height: 44, width: "auto", display: "block" }}
+          />
           <a href="#reservar" style={{
             backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem",
             padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none",
@@ -51,7 +52,7 @@ export default async function HomePage() {
       <section style={{ backgroundColor: "white", padding: "5rem 1.5rem 4rem" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
           <span style={{
-            display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK,
+            display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK,
             fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
             padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
           }}>
@@ -68,7 +69,7 @@ export default async function HomePage() {
             <a href="#reservar" style={{
               backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1.0625rem",
               padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none",
-              boxShadow: "0 4px 14px rgba(8,145,178,0.35)",
+              boxShadow: "0 4px 14px rgba(155, 123, 104, 0.35)",
             }}>
               Pedir cita ahora →
             </a>
@@ -142,7 +143,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "center" }}>
             <div>
-              <span style={{ display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.3rem 0.875rem", borderRadius: 999, marginBottom: "1.25rem" }}>
+              <span style={{ display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.3rem 0.875rem", borderRadius: 999, marginBottom: "1.25rem" }}>
                 Por qué Millennialfisio
               </span>
               <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "1rem", lineHeight: 1.2 }}>
@@ -252,7 +253,7 @@ export default async function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
             {/* Paciente existente */}
             <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: `2px solid ${AQUA}`, boxShadow: "0 4px 20px rgba(8,145,178,0.1)" }}>
-              <span style={{ display: "inline-block", backgroundColor: "#CFFAFE", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
+              <span style={{ display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
                 Ya soy paciente
               </span>
               <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Reserva online</h3>
@@ -306,9 +307,13 @@ export default async function HomePage() {
       {/* ── FOOTER ──────────────────────────────────────── */}
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-            <div style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800, fontSize: "0.875rem" }}>M</div>
-            <span style={{ fontWeight: 700, color: "white" }}>Millennialfisio</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 600, fontSize: "0.9375rem", color: "white", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+              Carmen Gómez
+            </span>
+            <span style={{ fontFamily: '"Raleway", system-ui, sans-serif', fontSize: "0.625rem", color: "#a8977f", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              Clínica de Fisioterapia
+            </span>
           </div>
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
             <a href="#reservar" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Reservar cita</a>

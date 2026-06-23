@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session) redirect("/login");
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F2EDE3" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#F5EFE9" }}>
       <style>{`
         .btn-logout:hover { background-color: #f3f4f6; }
       `}</style>
@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <div className="flex items-center gap-2.5">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                style={{ backgroundColor: "#0D9488" }}
+                style={{ backgroundColor: "#9B7B68" }}
               >
                 C
               </div>

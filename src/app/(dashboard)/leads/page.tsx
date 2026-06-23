@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-const AQUA = "#0D9488";
+const AQUA = "#9B7B68";
 
 type LeadEstado = "nuevo" | "contactado" | "convertido" | "perdido";
 
@@ -20,12 +20,12 @@ interface Lead {
 }
 
 const ORIGEN_LABEL: Record<string, { label: string; color: string; bg: string }> = {
-  landing:    { label: "Landing page",       color: "#0D9488", bg: "#f0fdfa" },
+  landing:    { label: "Landing page",       color: "#9B7B68", bg: "#faf6f2" },
   pedir_cita: { label: "Pedir cita (wizard)", color: "#7C3AED", bg: "#f5f3ff" },
 };
 
 const ESTADO_CONFIG: Record<LeadEstado, { label: string; color: string; bg: string }> = {
-  nuevo:      { label: "Nuevo",      color: "#0D9488", bg: "#f0fdfa" },
+  nuevo:      { label: "Nuevo",      color: "#9B7B68", bg: "#faf6f2" },
   contactado: { label: "Contactado", color: "#d97706", bg: "#fffbeb" },
   convertido: { label: "Convertido", color: "#16a34a", bg: "#f0fdf4" },
   perdido:    { label: "Perdido",    color: "#9ca3af", bg: "#f9fafb" },
@@ -98,7 +98,7 @@ export default function LeadsPage() {
             onClick={() => setFiltro(e)}
             className="text-sm px-3 py-1.5 rounded-lg font-medium"
             style={{
-              backgroundColor: filtro === e ? (e === "todos" ? AQUA : ESTADO_CONFIG[e]?.bg ?? "#f0fdfa") : "white",
+              backgroundColor: filtro === e ? (e === "todos" ? AQUA : ESTADO_CONFIG[e]?.bg ?? "#faf6f2") : "white",
               color: filtro === e ? (e === "todos" ? "white" : ESTADO_CONFIG[e]?.color ?? AQUA) : "#6b7280",
               border: `1px solid ${filtro === e ? (e === "todos" ? AQUA : ESTADO_CONFIG[e]?.color ?? AQUA) : "#e2ddd3"}`,
               cursor: "pointer",

@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, ChevronLeft, Calendar, Clock, User, CreditCard, MessageCircle, Lock } from "lucide-react";
 
-const AQUA = "#0D9488";
-const AQUA_DARK = "#0E7490";
-const CREAM = "#F2EDE3";
-const DARK = "#111827";
+const AQUA = "#9B7B68";
+const AQUA_DARK = "#7B5E4E";
+const CREAM = "#F5EFE9";
+const DARK = "#1C1410";
 const WA_NUM = "34652591116";
 const WA_URL = `https://wa.me/${WA_NUM}?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita. Soy nuevo paciente y me gustaría información sobre la primera visita.")}`;
 

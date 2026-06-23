@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Trash2, Upload, FileText, X } from "lucide-react";
 
-const AQUA = "#0D9488";
+const AQUA = "#9B7B68";
 
 interface ConsentDoc {
   id: string;

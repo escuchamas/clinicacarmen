@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Calendar, Clock, Users, X, CheckCircle2, MessageCircle } from "lucide-react";
 import { ClasePilates } from "@/lib/types";
 
-const AQUA = "#0D9488";
-const CREAM = "#F2EDE3";
+const AQUA = "#9B7B68";
+const CREAM = "#F5EFE9";
 const PURPLE = "#7C3AED";
-const DARK = "#111827";
+const DARK = "#1C1410";
 const WA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, tengo una consulta sobre las clases de pilates.")}`;
 
 interface ModalState {

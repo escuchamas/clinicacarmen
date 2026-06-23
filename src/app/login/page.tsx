@@ -32,14 +32,14 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{ backgroundColor: "#F2EDE3" }}
+      style={{ backgroundColor: "#F5EFE9" }}
     >
       <div className="w-full max-w-sm">
         {/* Logo / Cabecera */}
         <div className="text-center mb-8">
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 text-white text-2xl font-bold"
-            style={{ backgroundColor: "#0D9488" }}
+            style={{ backgroundColor: "#9B7B68" }}
           >
             C
           </div>

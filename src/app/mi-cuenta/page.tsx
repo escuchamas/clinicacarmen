@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { Calendar, Clock, Users, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
-const AQUA = "#0D9488";
-const CREAM = "#F2EDE3";
+const AQUA = "#9B7B68";
+const CREAM = "#F5EFE9";
 const PURPLE = "#7C3AED";
-const DARK = "#111827";
+const DARK = "#1C1410";
 
 interface ClaseConInscripcion {
   id: string;

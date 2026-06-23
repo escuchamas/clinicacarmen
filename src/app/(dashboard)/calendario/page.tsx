@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, ClasePilates, PagoEstado, PAGO_LABELS, PAGO_COLORS } from "@/lib/types";
 import { AlertCircle, Banknote, CalendarDays, Lock, LockOpen, X } from "lucide-react";
 
-const AQUA = "#0D9488";
+const AQUA = "#9B7B68";
 const PURPLE = "#7C3AED";
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
@@ -248,7 +248,7 @@ export default function CalendarioPage() {
                       href="/pacientes/nuevo"
                       className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium"
                       style={{ color: AQUA, textDecoration: "none", borderTop: "1px solid #f3f4f6", display: "flex" }}
-                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0fdfa")}
+                      onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#faf6f2")}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                     >
                       + Nuevo paciente
@@ -307,7 +307,7 @@ export default function CalendarioPage() {
               {impagadas.map(c => (
                 <div key={c.id} className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid #fef2f2" }}>
                   <div className="flex-1 min-w-0">
-                    <span className="font-semibold text-sm" style={{ color: "#111827" }}>{c.pacienteNombre}</span>
+                    <span className="font-semibold text-sm" style={{ color: "#1C1410" }}>{c.pacienteNombre}</span>
                     <span className="text-xs ml-2" style={{ color: "#6b7280" }}>
                       {new Date(c.fecha + "T12:00:00").toLocaleDateString("es-ES", { day: "numeric", month: "short" })} · {c.hora}
                     </span>
@@ -353,7 +353,7 @@ export default function CalendarioPage() {
         <div className="card p-5 mb-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-sm flex items-center gap-2" style={{ color: "#1a1a1a" }}>
-              <Lock size={14} color="#0D9488" /> Gestionar disponibilidad
+              <Lock size={14} color="#9B7B68" /> Gestionar disponibilidad
             </h3>
             <button onClick={() => setShowBloqueos(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af" }}>
               <X size={16} />
@@ -426,7 +426,7 @@ export default function CalendarioPage() {
                   style={{ backgroundColor: b.horaInicio ? "#fffbeb" : "#fef2f2", border: `1px solid ${b.horaInicio ? "#fed7aa" : "#fca5a5"}` }}>
                   <div className="flex items-center gap-2 min-w-0">
                     {b.horaInicio ? <span style={{ fontSize: 12 }}>⏰</span> : <Lock size={12} color="#ef4444" />}
-                    <span className="text-sm font-medium" style={{ color: "#111827" }}>
+                    <span className="text-sm font-medium" style={{ color: "#1C1410" }}>
                       {new Date(b.fecha + "T12:00:00").toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" })}
                     </span>
                     {b.horaInicio && <span className="text-xs font-semibold" style={{ color: "#d97706" }}>{b.horaInicio}–{b.horaFin}</span>}
@@ -558,7 +558,7 @@ export default function CalendarioPage() {
                     onClick={() => setSelectedDay(selected ? null : ds)}
                     className="rounded-lg p-1 min-h-[52px] flex flex-col items-center transition-all"
                     style={{
-                      backgroundColor: selected ? AQUA : noDisponible ? "#f9fafb" : hoy ? "#ECFEFF" : "transparent",
+                      backgroundColor: selected ? AQUA : noDisponible ? "#f9fafb" : hoy ? "#FAF6F2" : "transparent",
                       border: selected ? `2px solid ${AQUA}` : estaBloqueadoDiaCompleto ? "2px solid #fca5a5" : tieneBloqueoHoras ? "2px solid #fed7aa" : hoy ? "2px solid #A5F3FC" : "2px solid transparent",
                       cursor: "pointer",
                       opacity: noDisponible ? 0.5 : 1,

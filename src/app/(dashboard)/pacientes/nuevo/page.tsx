@@ -171,7 +171,7 @@ export default function NuevoPacientePage() {
             <ul className="mb-5 space-y-1">
               {warning.campos.map((c) => (
                 <li key={c} className="text-sm flex items-center gap-2" style={{ color: "#374151" }}>
-                  <span style={{ color: "#0D9488" }}>·</span> {c}
+                  <span style={{ color: "#9B7B68" }}>·</span> {c}
                 </li>
               ))}
             </ul>
@@ -224,7 +224,7 @@ export default function NuevoPacientePage() {
 
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-sm" style={{ color: "#9ca3af" }}>
-        <Link href="/pacientes" style={{ color: "#0D9488", textDecoration: "none" }}>Pacientes</Link>
+        <Link href="/pacientes" style={{ color: "#9B7B68", textDecoration: "none" }}>Pacientes</Link>
         <span>/</span>
         <span>Nuevo paciente</span>
       </div>
@@ -261,7 +261,7 @@ export default function NuevoPacientePage() {
               <input className="input-field" value={data.paso1.poblacion} onChange={(e) => updatePaso("paso1", "poblacion", e.target.value)} placeholder="Ciudad o municipio" />
             </Field>
           </div>
-          <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: data.paso1.lopdFirmada ? "#ECFEFF" : "#fff8f0", border: `1px solid ${data.paso1.lopdFirmada ? "#86efac" : "#DDD8CE"}` }}>
+          <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: data.paso1.lopdFirmada ? "#FAF6F2" : "#fff8f0", border: `1px solid ${data.paso1.lopdFirmada ? "#86efac" : "#DDD8CE"}` }}>
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -302,12 +302,12 @@ export default function NuevoPacientePage() {
           <Field label="Motivo de consulta *" error={errors.motivoConsulta}>
             <textarea className="textarea-field" rows={8} value={data.paso3.motivoConsulta} onChange={(e) => updatePaso("paso3", "motivoConsulta", e.target.value)} placeholder="Describe el motivo de consulta del paciente..." />
           </Field>
-          <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: "#F2EDE3", border: "1px solid #DDD8CE" }}>
-            <p className="text-xs font-bold mb-2" style={{ color: "#0D9488" }}>📝 CHULETA — Aspectos a explorar</p>
+          <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: "#F5EFE9", border: "1px solid #DDD8CE" }}>
+            <p className="text-xs font-bold mb-2" style={{ color: "#9B7B68" }}>📝 CHULETA — Aspectos a explorar</p>
             <ul className="space-y-1">
               {["Mecanismo lesional","Localización y extensión del dolor","Intensidad y tipo de dolor","Comportamiento 24h y estadio","Factores agravantes y de alivio","¿Cuál crees tú que es la causa de tu dolor?","¿Por qué crees que no estás mejorando?","Miedo y dudas sobre tu problema"].map((item) => (
                 <li key={item} className="text-xs flex items-start gap-1.5" style={{ color: "#6b7280" }}>
-                  <span style={{ color: "#0D9488" }}>·</span>{item}
+                  <span style={{ color: "#9B7B68" }}>·</span>{item}
                 </li>
               ))}
             </ul>
@@ -364,7 +364,7 @@ export default function NuevoPacientePage() {
                       updatePaso("paso5", "banderasRojas", e.target.checked ? [...current, bandera] : current.filter((b) => b !== bandera));
                     }}
                     className="mt-0.5 h-4 w-4 rounded flex-shrink-0"
-                    style={{ accentColor: "#0D9488" }}
+                    style={{ accentColor: "#9B7B68" }}
                   />
                   <span className="text-sm" style={{ color: "#374151" }}>{bandera}</span>
                 </label>

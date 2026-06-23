@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { ChevronRight, Bone, Brain, Dumbbell, Zap, Stethoscope, Baby, X, type LucideIcon } from "lucide-react";
 
-const AQUA = "#0D9488";
-const AQUA_DARK = "#0E7490";
+const AQUA = "#9B7B68";
+const AQUA_DARK = "#7B5E4E";
 
 type ProblemId = "espalda" | "cervicales" | "deportiva" | "hombro" | "postop" | "embarazo";
 type ModalStep = "questions" | "profile";
@@ -13,15 +13,16 @@ interface Problem {
   id: ProblemId;
   icon: LucideIcon;
   title: string;
+  desc: string;
 }
 
 const PROBLEMS: Problem[] = [
-  { id: "espalda",    icon: Bone,        title: "Dolor de espalda" },
-  { id: "cervicales", icon: Brain,       title: "Cervicales y cabeza" },
-  { id: "deportiva",  icon: Dumbbell,    title: "Lesión deportiva" },
-  { id: "hombro",     icon: Zap,         title: "Hombro y brazo" },
-  { id: "postop",     icon: Stethoscope, title: "Postoperatorio" },
-  { id: "embarazo",   icon: Baby,        title: "Embarazo y postparto" },
+  { id: "espalda",    icon: Bone,        title: "Dolor de espalda",      desc: "Lumbar, ciática, contracturas" },
+  { id: "cervicales", icon: Brain,       title: "Cervicales y cabeza",   desc: "Tensión, cefaleas, rigidez" },
+  { id: "deportiva",  icon: Dumbbell,    title: "Lesión deportiva",      desc: "Tendinitis, esguinces, sobrecargas" },
+  { id: "hombro",     icon: Zap,         title: "Hombro y brazo",        desc: "Manguito, movilidad, dolor nocturno" },
+  { id: "postop",     icon: Stethoscope, title: "Postoperatorio",        desc: "Rehabilitación, recuperación funcional" },
+  { id: "embarazo",   icon: Baby,        title: "Embarazo y postparto",  desc: "Pelvis, suelo pélvico, postparto" },
 ];
 
 type QuestionOption = { id: string; label: string };
@@ -277,39 +278,62 @@ export default function QuizProblemas() {
   }
 
   return (
-    <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "white" }}>
-      <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
+    <section style={{ padding: "4.5rem 1.5rem", backgroundColor: "#FAF6F2" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto" }}>
 
-        <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
-          ¿Qué zona te molesta?
-        </h2>
-        <p style={{ color: "#6b7280", fontSize: "1.0625rem", marginBottom: "2.5rem" }}>
-          Cuéntanos tu problema y te decimos si podemos ayudarte — en menos de un minuto.
-        </p>
+        <div style={{ textAlign: "center", marginBottom: "2.75rem" }}>
+          <span style={{
+            display: "inline-block", backgroundColor: AQUA, color: "white",
+            fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+            padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.25rem",
+          }}>
+            Encuentra tu tratamiento
+          </span>
+          <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "0.75rem" }}>
+            ¿Qué zona te molesta?
+          </h2>
+          <p style={{ color: "#4b5563", fontSize: "1.0625rem", maxWidth: 520, margin: "0 auto" }}>
+            Cuéntanos tu problema y te decimos si podemos ayudarte — en menos de un minuto.
+          </p>
+        </div>
 
-        {/* Chips */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem", justifyContent: "center" }}>
-          {PROBLEMS.map(({ id, icon: Icon, title }) => (
+        {/* Cards grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "1rem" }}>
+          {PROBLEMS.map(({ id, icon: Icon, title, desc }) => (
             <button
               key={id}
               onClick={() => openModal(id)}
               style={{
-                display: "flex", alignItems: "center", gap: "0.5rem",
-                padding: "0.625rem 1.125rem",
+                display: "flex", alignItems: "flex-start", gap: "1rem",
+                padding: "1.375rem 1.25rem",
                 backgroundColor: "white",
-                border: "1.5px solid #e5e7eb",
-                borderRadius: "999px",
+                border: "1.5px solid #EDE0D8",
+                borderRadius: "1rem",
                 cursor: "pointer",
-                fontSize: "0.9375rem",
-                fontWeight: 600,
-                color: "#374151",
-                transition: "border-color 0.15s, background-color 0.15s, color 0.15s",
+                textAlign: "left",
+                transition: "border-color 0.15s, box-shadow 0.15s, transform 0.1s",
               }}
-              onMouseOver={e => { e.currentTarget.style.borderColor = AQUA; e.currentTarget.style.backgroundColor = "#F0FDFA"; e.currentTarget.style.color = AQUA_DARK; }}
-              onMouseOut={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.color = "#374151"; }}
+              onMouseOver={e => {
+                e.currentTarget.style.borderColor = AQUA;
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(155,123,104,0.12)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.borderColor = "#EDE0D8";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              <Icon size={17} color={AQUA} strokeWidth={2} />
-              {title}
+              <div style={{
+                flexShrink: 0, width: 44, height: 44, borderRadius: "0.75rem",
+                backgroundColor: "#FAF6F2", display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Icon size={22} color={AQUA} strokeWidth={1.75} />
+              </div>
+              <div>
+                <p style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1C1410", marginBottom: "0.25rem" }}>{title}</p>
+                <p style={{ fontSize: "0.8125rem", color: "#6b7280", lineHeight: 1.4 }}>{desc}</p>
+              </div>
             </button>
           ))}
         </div>
@@ -337,7 +361,7 @@ export default function QuizProblemas() {
             {/* Header */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "1.25rem 1.5rem", borderBottom: "1px solid #f3f4f6", position: "sticky", top: 0, backgroundColor: "white", zIndex: 1 }}>
               <selectedData.icon size={20} color={AQUA} strokeWidth={1.75} />
-              <span style={{ fontWeight: 700, fontSize: "1rem", color: "#111827", flex: 1 }}>{selectedData.title}</span>
+              <span style={{ fontWeight: 700, fontSize: "1rem", color: "#1C1410", flex: 1 }}>{selectedData.title}</span>
               <button onClick={closeModal} style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: "0.25rem", lineHeight: 1 }}>
                 <X size={20} />
               </button>
@@ -351,7 +375,7 @@ export default function QuizProblemas() {
                   <div style={{ display: "grid", gap: "1.75rem" }}>
                     {currentQuestions.map((q, qi) => (
                       <div key={q.id}>
-                        <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.875rem", color: "#111827", lineHeight: 1.6 }}>
+                        <p style={{ fontWeight: 700, fontSize: "0.9375rem", marginBottom: "0.875rem", color: "#1C1410", lineHeight: 1.6 }}>
                           <span style={{ color: AQUA, marginRight: "0.375rem" }}>{qi + 1}.</span>{q.text}
                         </p>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -359,7 +383,7 @@ export default function QuizProblemas() {
                             const sel = answers[q.id] === opt.id;
                             return (
                               <button key={opt.id} onClick={() => answer(q.id, opt.id)}
-                                style={{ padding: "0.5625rem 1.125rem", borderRadius: "999px", border: `1.5px solid ${sel ? AQUA : "#e5e7eb"}`, backgroundColor: sel ? "#CFFAFE" : "white", color: sel ? AQUA_DARK : "#374151", fontWeight: sel ? 700 : 500, fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s" }}>
+                                style={{ padding: "0.5625rem 1.125rem", borderRadius: "999px", border: `1.5px solid ${sel ? AQUA : "#e5e7eb"}`, backgroundColor: sel ? "#EDE0D8" : "white", color: sel ? AQUA_DARK : "#374151", fontWeight: sel ? 700 : 500, fontSize: "0.9rem", cursor: "pointer", transition: "all 0.15s" }}>
                                 {opt.label}
                               </button>
                             );
@@ -382,12 +406,12 @@ export default function QuizProblemas() {
               {/* PERFIL */}
               {modalStep === "profile" && profile && (
                 <>
-                  <div style={{ backgroundColor: "#F0FDFA", borderRadius: "1rem", padding: "1.5rem", border: `1.5px solid ${AQUA}`, marginBottom: "1.25rem" }}>
-                    <p style={{ fontWeight: 800, fontSize: "1rem", color: "#111827", marginBottom: "0.875rem" }}>{profile.title}</p>
+                  <div style={{ backgroundColor: "#FAF6F2", borderRadius: "1rem", padding: "1.5rem", border: `1.5px solid ${AQUA}`, marginBottom: "1.25rem" }}>
+                    <p style={{ fontWeight: 800, fontSize: "1rem", color: "#1C1410", marginBottom: "0.875rem" }}>{profile.title}</p>
                     <p style={{ color: "#374151", lineHeight: 1.8, fontSize: "0.9375rem", marginBottom: "1rem" }}>{profile.body}</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
                       {profile.chips.map(c => (
-                        <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#CFFAFE", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>{c}</span>
+                        <span key={c} style={{ fontSize: "0.8125rem", padding: "0.25rem 0.75rem", backgroundColor: "#EDE0D8", color: AQUA_DARK, borderRadius: 999, fontWeight: 600 }}>{c}</span>
                       ))}
                     </div>
                   </div>

@@ -84,7 +84,7 @@ export default function DashboardPage() {
           <div className="absolute inset-y-0 right-3 flex items-center">
             <div
               className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-              style={{ borderColor: "#0D9488", borderTopColor: "transparent" }}
+              style={{ borderColor: "#9B7B68", borderTopColor: "transparent" }}
             />
           </div>
         )}
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         <div className="flex justify-center py-16">
           <div
             className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-            style={{ borderColor: "#0D9488", borderTopColor: "transparent" }}
+            style={{ borderColor: "#9B7B68", borderTopColor: "transparent" }}
           />
         </div>
       ) : pacientes.length === 0 ? (
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                 {/* Avatar */}
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                  style={{ backgroundColor: "#0D9488" }}
+                  style={{ backgroundColor: "#9B7B68" }}
                 >
                   {getInitials(p.nombre, p.apellidos)}
                 </div>

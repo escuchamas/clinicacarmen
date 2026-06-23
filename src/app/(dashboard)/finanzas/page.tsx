@@ -198,7 +198,7 @@ export default function FinanzasPage() {
 
         {loadingImpagos ? (
           <div className="flex justify-center py-8">
-            <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "#0D9488", borderTopColor: "transparent" }} />
+            <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "#9B7B68", borderTopColor: "transparent" }} />
           </div>
         ) : impagos.length === 0 ? (
           <div className="px-5 py-6 text-center">
@@ -241,7 +241,7 @@ export default function FinanzasPage() {
 
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "#0D9488", borderTopColor: "transparent" }} />
+          <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: "#9B7B68", borderTopColor: "transparent" }} />
         </div>
       ) : (
         <>
@@ -263,7 +263,7 @@ export default function FinanzasPage() {
               label="Balance estimado"
               value={`${balance >= 0 ? "+" : ""}${balance.toFixed(2)} €`}
               sub={balance >= 0 ? "Resultado positivo" : "Resultado negativo"}
-              color={balance >= 0 ? "#0D9488" : "#ef4444"}
+              color={balance >= 0 ? "#9B7B68" : "#ef4444"}
               highlight
             />
           </div>
