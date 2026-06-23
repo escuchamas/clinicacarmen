@@ -29,8 +29,8 @@ export default async function HomePage() {
       {/* ── STICKY HEADER ───────────────────────────────── */}
       <header style={{
         position: "sticky", top: 0, zIndex: 50,
-        backgroundColor: CREAM,
-        borderBottom: "1px solid #C4A882",
+        backgroundColor: "white",
+        borderBottom: "1px solid #DCC8B2",
         padding: "0 1.5rem",
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
