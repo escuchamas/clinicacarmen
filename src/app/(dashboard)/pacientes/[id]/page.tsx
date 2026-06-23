@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Paciente, HistoriaClinica, TratamientoEvolucion, Cita, EstadoCita, ESTADO_CITA_LABELS, ESTADO_CITA_COLORS, PagoEstado, PAGO_LABELS, PAGO_COLORS, BANDERAS_ROJAS_LISTA } from "@/lib/types";
@@ -43,6 +43,11 @@ export default function PacienteDetailPage() {
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [consentDocs, setConsentDocs] = useState<{ id: string; nombre: string; url: string; file?: string }[]>([]);
   const [consentSelected, setConsentSelected] = useState<string[]>([]);
+  const [consentUploadName, setConsentUploadName] = useState("");
+  const [consentUploadFile, setConsentUploadFile] = useState<File | null>(null);
+  const [consentUploading, setConsentUploading] = useState(false);
+  const [consentUploadError, setConsentUploadError] = useState("");
+  const consentFileRef = useRef<HTMLInputElement>(null);
   const [sendingConsent, setSendingConsent] = useState(false);
   const [consentSent, setConsentSent] = useState(false);
   const [editingHistoria, setEditingHistoria] = useState(false);
@@ -194,6 +199,41 @@ export default function PacienteDetailPage() {
   useEffect(() => {
     fetch("/api/consentimientos").then(r => r.json()).then(d => setConsentDocs(Array.isArray(d) ? d : []));
   }, []);
+
+  async function subirConsentimiento() {
+    if (!consentUploadName.trim() || !consentUploadFile) {
+      setConsentUploadError("Pon un nombre y selecciona un PDF.");
+      return;
+    }
+    setConsentUploadError("");
+    setConsentUploading(true);
+    const form = new FormData();
+    form.append("file", consentUploadFile);
+    form.append("folder", "consentimientos");
+    const upRes = await fetch("/api/upload", { method: "POST", body: form });
+    if (!upRes.ok) {
+      const d = await upRes.json().catch(() => ({}));
+      setConsentUploadError(d.error ?? "Error al subir");
+      setConsentUploading(false);
+      return;
+    }
+    const { url } = await upRes.json();
+    const saveRes = await fetch("/api/consentimientos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre: consentUploadName.trim(), url }),
+    });
+    setConsentUploading(false);
+    if (saveRes.ok) {
+      const nuevo = await saveRes.json();
+      setConsentDocs(prev => [...prev, nuevo]);
+      setConsentUploadName("");
+      setConsentUploadFile(null);
+      if (consentFileRef.current) consentFileRef.current.value = "";
+    } else {
+      setConsentUploadError("Error al guardar el documento");
+    }
+  }
 
   async function enviarConsentimientosPdf() {
     if (consentSelected.length === 0) return;
@@ -919,51 +959,100 @@ export default function PacienteDetailPage() {
       {/* Modal consentimientos PDF */}
       {showConsentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(0,0,0,0.45)" }}>
-          <div className="card p-6 w-full max-w-sm">
-            <h3 className="font-bold text-base mb-1" style={{ color: "#1a1a1a" }}>Enviar consentimientos</h3>
-            <p className="text-xs mb-4" style={{ color: "#6b7280" }}>Selecciona los documentos a enviar por correo a {paciente?.nombre}</p>
-            {consentDocs.length === 0 ? (
-              <p className="text-sm py-4 text-center mb-4" style={{ color: "#9ca3af" }}>No hay consentimientos configurados. Sube PDFs en Ajustes.</p>
-            ) : (
-              <div className="space-y-2 mb-5">
-                {consentDocs.map(doc => (
-                  <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
-                    <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
-                      <input
-                        type="checkbox"
-                        checked={consentSelected.includes(doc.id)}
-                        onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
-                        style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
-                      />
-                      <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.nombre}</span>
-                    </label>
-                    <a
-                      href={doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title="Descargar para imprimir"
-                      className="flex-shrink-0 text-xs px-2 py-1 rounded-md font-medium"
-                      style={{ color: "#6b7280", border: "1px solid #e2ddd3", textDecoration: "none", backgroundColor: "white" }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f3f4f6"; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "white"; }}
-                    >
-                      ↓ PDF
-                    </a>
-                  </div>
-                ))}
+          <div className="card w-full max-w-lg flex flex-col" style={{ maxHeight: "90vh" }}>
+            {/* Cabecera */}
+            <div className="p-6 pb-4 flex-shrink-0">
+              <h3 className="font-bold text-base mb-0.5" style={{ color: "#1a1a1a" }}>Consentimientos informados</h3>
+              <p className="text-xs" style={{ color: "#6b7280" }}>Selecciona los documentos a enviar por correo a {paciente?.nombre}</p>
+            </div>
+
+            {/* Lista con scroll */}
+            <div className="flex-1 overflow-y-auto px-6" style={{ minHeight: 0 }}>
+              {consentDocs.length === 0 ? (
+                <p className="text-sm py-4 text-center" style={{ color: "#9ca3af" }}>Aún no hay documentos. Sube el primer PDF abajo.</p>
+              ) : (
+                <div className="space-y-2 mb-2">
+                  {consentDocs.map(doc => (
+                    <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
+                      <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                        <input
+                          type="checkbox"
+                          checked={consentSelected.includes(doc.id)}
+                          onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
+                          style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
+                        />
+                        <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.nombre}</span>
+                      </label>
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer" title="Descargar"
+                        className="flex-shrink-0 text-xs px-2 py-1 rounded-md"
+                        style={{ color: "#6b7280", border: "1px solid #e2ddd3", textDecoration: "none", backgroundColor: "white" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f3f4f6"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "white"; }}
+                      >↓</a>
+                      <button
+                        title="Eliminar"
+                        onClick={async () => {
+                          if (!confirm(`¿Eliminar "${doc.nombre}"?`)) return;
+                          await fetch(`/api/consentimientos/${doc.id}`, { method: "DELETE" });
+                          setConsentDocs(prev => prev.filter(d => d.id !== doc.id));
+                          setConsentSelected(prev => prev.filter(x => x !== doc.id));
+                        }}
+                        className="flex-shrink-0 text-xs px-1.5 py-1 rounded-md"
+                        style={{ color: "#9ca3af", border: "1px solid #e2ddd3", background: "white", cursor: "pointer" }}
+                        onMouseEnter={e => { e.currentTarget.style.color = "#dc2626"; e.currentTarget.style.borderColor = "#fca5a5"; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = "#9ca3af"; e.currentTarget.style.borderColor = "#e2ddd3"; }}
+                      >✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Upload inline */}
+              <div className="py-4" style={{ borderTop: consentDocs.length > 0 ? "1px solid #f3f4f6" : "none", marginTop: consentDocs.length > 0 ? 8 : 0 }}>
+                <p className="text-xs font-medium mb-2" style={{ color: "#6b7280" }}>Añadir nuevo documento</p>
+                <div className="flex gap-2 flex-wrap">
+                  <input
+                    className="input-field flex-1"
+                    style={{ minWidth: 120 }}
+                    placeholder="Nombre del documento"
+                    value={consentUploadName}
+                    onChange={e => setConsentUploadName(e.target.value)}
+                  />
+                  <input
+                    ref={consentFileRef}
+                    type="file"
+                    accept="application/pdf"
+                    className="input-field flex-1"
+                    style={{ minWidth: 140, paddingTop: "0.375rem" }}
+                    onChange={e => setConsentUploadFile(e.target.files?.[0] ?? null)}
+                  />
+                  <button
+                    onClick={subirConsentimiento}
+                    disabled={consentUploading}
+                    className="btn-primary flex-shrink-0"
+                    style={{ opacity: consentUploading ? 0.7 : 1 }}
+                  >
+                    {consentUploading ? "Subiendo..." : "Subir"}
+                  </button>
+                </div>
+                {consentUploadError && <p className="text-xs mt-1.5" style={{ color: "#dc2626" }}>{consentUploadError}</p>}
               </div>
-            )}
-            <p className="text-xs mb-4" style={{ color: "#9ca3af" }}>Descarga los PDF para imprimir y firma manual. La firma digital se añadirá próximamente.</p>
-            <div className="flex gap-3">
-              <button
-                onClick={enviarConsentimientosPdf}
-                disabled={sendingConsent || consentSelected.length === 0}
-                className="btn-primary flex-1 justify-center"
-                style={{ opacity: consentSelected.length === 0 ? 0.5 : 1 }}
-              >
-                {sendingConsent ? "Enviando..." : `Enviar por email${consentSelected.length > 0 ? ` (${consentSelected.length})` : ""}`}
-              </button>
-              <button className="btn-secondary" onClick={() => setShowConsentModal(false)}>Cancelar</button>
+            </div>
+
+            {/* Pie fijo */}
+            <div className="p-6 pt-4 flex-shrink-0" style={{ borderTop: "1px solid #f3f4f6" }}>
+              <p className="text-xs mb-3" style={{ color: "#9ca3af" }}>Los PDF marcados con ↓ se pueden descargar para imprimir y firmar a mano.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={enviarConsentimientosPdf}
+                  disabled={sendingConsent || consentSelected.length === 0}
+                  className="btn-primary flex-1 justify-center"
+                  style={{ opacity: consentSelected.length === 0 ? 0.5 : 1 }}
+                >
+                  {sendingConsent ? "Enviando..." : `Enviar por email${consentSelected.length > 0 ? ` (${consentSelected.length})` : ""}`}
+                </button>
+                <button className="btn-secondary" onClick={() => setShowConsentModal(false)}>Cancelar</button>
+              </div>
             </div>
           </div>
         </div>
