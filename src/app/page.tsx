@@ -13,11 +13,14 @@ const WA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen
 const WA_CITA_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
 const WA_PILATES_URL = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría apuntarme a las clases de pilates. ¿Hay plazas disponibles?")}`;
 
-
-const AQUA = "#9B7B68";
-const AQUA_DARK = "#7B5E4E";
-const CREAM = "#F5EFE9";
-const DARK = "#1C1410";
+/* Paleta guía de diseño */
+const BRAND   = "#8E7D6B";  /* Taupe */
+const BRAND_D = "#735E52";  /* Taupe oscuro */
+const SAGE    = "#A8B89A";  /* Verde Salvia */
+const SAGE_D  = "#88997A";  /* Verde Salvia oscuro */
+const SAGE_BG = "#E6EDE2";  /* Fondo sage */
+const CREAM   = "#F2ECE6";  /* Beige Claro */
+const DARK    = "#1C1410";
 
 export default async function HomePage() {
   return (
@@ -37,7 +40,7 @@ export default async function HomePage() {
             style={{ height: 40, width: "auto", display: "block" }}
           />
           <a href="#reservar" style={{
-            backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem",
+            backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem",
             padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none",
           }}>
             Reservar cita →
@@ -52,7 +55,7 @@ export default async function HomePage() {
       <section style={{ backgroundColor: CREAM, padding: "5rem 1.5rem 4rem" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
           <span style={{
-            display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK,
+            display: "inline-block", backgroundColor: "#ECE0D4", color: BRAND_D,
             fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
             padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
           }}>
@@ -60,23 +63,23 @@ export default async function HomePage() {
           </span>
           <h1 style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: "1.25rem", letterSpacing: "-0.02em" }}>
             Deja de aguantar el dolor.<br />
-            <span style={{ color: AQUA }}>Vuelve a moverte como antes.</span>
+            <span style={{ color: BRAND }}>Vuelve a moverte como antes.</span>
           </h1>
           <p style={{ fontSize: "1.1875rem", color: "#4b5563", lineHeight: 1.65, marginBottom: "2.5rem", maxWidth: 560, margin: "0 auto 2.5rem" }}>
             Fisioterapia manual personalizada en Campillos para pacientes de Teba, Ardales, Cañete la Real, Almargen y toda la comarca. Sin protocolos genéricos, sin listas de espera.
           </p>
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <a href="#reservar" style={{
-              backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1.0625rem",
+              backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "1.0625rem",
               padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none",
-              boxShadow: "0 4px 14px rgba(155, 123, 104, 0.35)",
+              boxShadow: "0 4px 14px rgba(142, 125, 107, 0.35)",
             }}>
               Pedir cita ahora →
             </a>
             <a href="#como-funciona" style={{
               backgroundColor: "white", color: DARK, fontWeight: 600, fontSize: "1rem",
               padding: "0.875rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none",
-              border: "1.5px solid #e5e7eb",
+              border: "1.5px solid #DCC8B2",
             }}>
               ¿Cómo funciona?
             </a>
@@ -88,9 +91,9 @@ export default async function HomePage() {
       <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
           {[
-            { icon: <Zap size={22} color={AQUA} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
-            { icon: <Target size={22} color={AQUA} strokeWidth={2} />, title: "Sin protocolos genéricos", desc: "Cada tratamiento es distinto porque cada dolor es distinto." },
-            { icon: <CalendarCheck size={22} color={AQUA} strokeWidth={2} />, title: "Cita en menos de 48h", desc: "Sin listas de espera. Reserva hoy, empieza esta semana." },
+            { icon: <Zap size={22} color={BRAND} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
+            { icon: <Target size={22} color={BRAND} strokeWidth={2} />, title: "Sin protocolos genéricos", desc: "Cada tratamiento es distinto porque cada dolor es distinto." },
+            { icon: <CalendarCheck size={22} color={BRAND} strokeWidth={2} />, title: "Cita en menos de 48h", desc: "Sin listas de espera. Reserva hoy, empieza esta semana." },
           ].map(({ icon, title, desc }) => (
             <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
               <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
@@ -122,8 +125,8 @@ export default async function HomePage() {
               { num: "02", title: "Primera evaluación a fondo", body: "Analizamos tu caso en detalle. El dolor tiene un origen y hay que encontrarlo antes de tratar." },
               { num: "03", title: "Tu plan de tratamiento", body: "Sesiones de 45-60 min de terapia manual + pauta de ejercicio personalizada para casa." },
             ].map(({ num, title, body }) => (
-              <div key={num} style={{ backgroundColor: "white", borderRadius: "1rem", padding: "2rem", border: "1px solid #e5e7eb" }}>
-                <p style={{ fontSize: "2.5rem", fontWeight: 900, color: AQUA, opacity: 0.2, lineHeight: 1, marginBottom: "1rem" }}>{num}</p>
+              <div key={num} style={{ backgroundColor: "white", borderRadius: "1rem", padding: "2rem", border: "1px solid #DCC8B2" }}>
+                <p style={{ fontSize: "2.5rem", fontWeight: 900, color: BRAND, opacity: 0.2, lineHeight: 1, marginBottom: "1rem" }}>{num}</p>
                 <h3 style={{ fontSize: "1.125rem", fontWeight: 800, marginBottom: "0.625rem" }}>{title}</h3>
                 <p style={{ color: "#6b7280", lineHeight: 1.6, fontSize: "0.9375rem" }}>{body}</p>
               </div>
@@ -131,7 +134,7 @@ export default async function HomePage() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
-            <a href="#reservar" style={{ backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1.0625rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none", display: "inline-block" }}>
+            <a href="#reservar" style={{ backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "1.0625rem", padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none", display: "inline-block" }}>
               Empezar ahora →
             </a>
           </div>
@@ -143,20 +146,20 @@ export default async function HomePage() {
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "center" }}>
             <div>
-              <span style={{ display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.3rem 0.875rem", borderRadius: 999, marginBottom: "1.25rem" }}>
-                Por qué Millennialfisio
+              <span style={{ display: "inline-block", backgroundColor: "#ECE0D4", color: BRAND_D, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.3rem 0.875rem", borderRadius: 999, marginBottom: "1.25rem" }}>
+                Por qué elegir a Carmen
               </span>
               <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: "1rem", lineHeight: 1.2 }}>
                 No eres un número de expediente
               </h2>
               <p style={{ color: "#4b5563", lineHeight: 1.65, marginBottom: "2rem", fontSize: "1rem" }}>
-                Soy Carmen Gómez, fisioterapeuta en Campillos especializada en terapia manual. Atiendo a pacientes de toda la Comarca de Guadalteba — Teba, Ardales, Cañete la Real, Almargen, Carratraca. En Millennialfisio eres mi único paciente en cada sesión: sin asistentes, sin protocolos genéricos, sin prisas.
+                Soy Carmen Gómez, fisioterapeuta en Campillos especializada en terapia manual. Atiendo a pacientes de toda la Comarca de Guadalteba — Teba, Ardales, Cañete la Real, Almargen, Carratraca. Eres mi único paciente en cada sesión: sin asistentes, sin protocolos genéricos, sin prisas.
               </p>
               <div style={{ display: "grid", gap: "1rem" }}>
                 {[
-                  { icon: <Fingerprint size={20} color={AQUA} strokeWidth={1.75} />, title: "Sin protocolo genérico", desc: "Cada paciente tiene un tratamiento diseñado específicamente para su caso." },
-                  { icon: <MessageCircle size={20} color={AQUA} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
-                  { icon: <BadgeEuro size={20} color={AQUA} strokeWidth={1.75} />, title: "Plan personalizado desde el primer día", desc: "En la primera visita Carmen evalúa tu caso y te propone el plan más adecuado. Sin compromisos previos." },
+                  { icon: <Fingerprint size={20} color={BRAND} strokeWidth={1.75} />, title: "Sin protocolo genérico", desc: "Cada paciente tiene un tratamiento diseñado específicamente para su caso." },
+                  { icon: <MessageCircle size={20} color={BRAND} strokeWidth={1.75} />, title: "Seguimiento entre sesiones", desc: "Puedes escribirme si tienes dudas sobre los ejercicios o notas algún cambio." },
+                  { icon: <BadgeEuro size={20} color={BRAND} strokeWidth={1.75} />, title: "Plan personalizado desde el primer día", desc: "En la primera visita evaluamos tu caso y te proponemos el plan más adecuado. Sin compromisos previos." },
                 ].map(({ icon, title, desc }) => (
                   <div key={title} style={{ display: "flex", gap: "0.875rem", alignItems: "flex-start" }}>
                     <div style={{ flexShrink: 0, marginTop: 2 }}>{icon}</div>
@@ -169,14 +172,16 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center" }}>
-              <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 900, fontSize: "2rem", margin: "0 auto 1.5rem" }}>C</div>
+            <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center", border: "1px solid #DCC8B2" }}>
+              <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: SAGE_BG, border: `2px solid ${SAGE}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem" }}>
+                <img src="/logo-vertical.jpeg" alt="Carmen Gómez" style={{ width: 52, height: 52, objectFit: "contain", borderRadius: "50%" }} />
+              </div>
               <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.25rem" }}>Carmen Gómez</p>
-              <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.75rem" }}>Fisioterapeuta · Millennialfisio</p>
-              <blockquote style={{ fontStyle: "italic", color: "#374151", lineHeight: 1.65, fontSize: "0.9375rem", borderLeft: `3px solid ${AQUA}`, paddingLeft: "1rem", textAlign: "left" }}>
+              <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.75rem" }}>Fisioterapeuta · Campillos, Málaga</p>
+              <blockquote style={{ fontStyle: "italic", color: "#374151", lineHeight: 1.65, fontSize: "0.9375rem", borderLeft: `3px solid ${BRAND}`, paddingLeft: "1rem", textAlign: "left" }}>
                 &ldquo;Cuando un paciente me dice que puede volver a dormir bien, a practicar deporte o a jugar con sus hijos sin dolor, es el mejor resultado que puedo obtener.&rdquo;
               </blockquote>
-              <a href="#reservar" style={{ display: "block", marginTop: "1.5rem", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", textDecoration: "none" }}>
+              <a href="#reservar" style={{ display: "block", marginTop: "1.5rem", backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", textDecoration: "none" }}>
                 Reservar con Carmen →
               </a>
             </div>
@@ -189,7 +194,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{
-              display: "inline-block", backgroundColor: "#EDE9FE", color: "#7C3AED",
+              display: "inline-block", backgroundColor: SAGE_BG, color: SAGE_D,
               fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
               padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
             }}>
@@ -205,20 +210,20 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginBottom: "2.5rem" }}>
             {[
-              { icon: <Users size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Grupos reducidos", desc: "Máximo 8 personas por clase. Las plazas son limitadas para que Carmen pueda corregirte en cada ejercicio." },
-              { icon: <Target size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Todos los niveles", desc: "Sin experiencia previa necesaria. La clase se adapta al nivel del grupo, desde iniciación hasta avanzado." },
-              { icon: <Dumbbell size={24} color="#7C3AED" strokeWidth={1.75} />, title: "Complemento perfecto", desc: "Ideal como mantenimiento tras el tratamiento de fisioterapia o como práctica independiente." },
+              { icon: <Users size={24} color={SAGE_D} strokeWidth={1.75} />, title: "Grupos reducidos", desc: "Máximo 8 personas por clase. Las plazas son limitadas para que Carmen pueda corregirte en cada ejercicio." },
+              { icon: <Target size={24} color={SAGE_D} strokeWidth={1.75} />, title: "Todos los niveles", desc: "Sin experiencia previa necesaria. La clase se adapta al nivel del grupo, desde iniciación hasta avanzado." },
+              { icon: <Dumbbell size={24} color={SAGE_D} strokeWidth={1.75} />, title: "Complemento perfecto", desc: "Ideal como mantenimiento tras el tratamiento de fisioterapia o como práctica independiente." },
             ].map(({ icon, title, desc }) => (
-              <div key={title} style={{ backgroundColor: "#F5F3FF", borderRadius: "1rem", padding: "1.75rem", border: "1px solid #DDD6FE" }}>
+              <div key={title} style={{ backgroundColor: SAGE_BG, borderRadius: "1rem", padding: "1.75rem", border: `1px solid ${SAGE}` }}>
                 <div style={{ marginBottom: "0.875rem" }}>{icon}</div>
-                <h3 style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.5rem", color: "#1a1a1a" }}>{title}</h3>
+                <h3 style={{ fontWeight: 800, fontSize: "1rem", marginBottom: "0.5rem", color: DARK }}>{title}</h3>
                 <p style={{ color: "#6b7280", fontSize: "0.875rem", lineHeight: 1.6 }}>{desc}</p>
               </div>
             ))}
           </div>
 
-          <div style={{ backgroundColor: "#F5F3FF", borderRadius: "1.25rem", padding: "2rem", border: "1px solid #DDD6FE", textAlign: "center" }}>
-            <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.5rem", color: "#1a1a1a" }}>
+          <div style={{ backgroundColor: SAGE_BG, borderRadius: "1.25rem", padding: "2rem", border: `1px solid ${SAGE}`, textAlign: "center" }}>
+            <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.5rem", color: DARK }}>
               Las plazas se gestionan directamente con Carmen
             </p>
             <p style={{ color: "#6b7280", fontSize: "0.9375rem", marginBottom: "1.5rem" }}>
@@ -226,7 +231,7 @@ export default async function HomePage() {
             </p>
             <a href={WA_PILATES_URL} target="_blank" rel="noopener noreferrer" style={{
               display: "inline-flex", alignItems: "center", gap: "0.5rem",
-              backgroundColor: "#7C3AED", color: "white", fontWeight: 700, fontSize: "1rem",
+              backgroundColor: SAGE, color: "white", fontWeight: 700, fontSize: "1rem",
               padding: "0.875rem 2rem", borderRadius: "0.625rem", textDecoration: "none",
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -252,22 +257,22 @@ export default async function HomePage() {
           {/* Dos vías */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
             {/* Paciente existente */}
-            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: `2px solid ${AQUA}`, boxShadow: "0 4px 20px rgba(8,145,178,0.1)" }}>
-              <span style={{ display: "inline-block", backgroundColor: "#EDE0D8", color: AQUA_DARK, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
+            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: `2px solid ${BRAND}`, boxShadow: "0 4px 20px rgba(142,125,107,0.1)" }}>
+              <span style={{ display: "inline-block", backgroundColor: "#ECE0D4", color: BRAND_D, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
                 Ya soy paciente
               </span>
               <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Reserva online</h3>
               <p style={{ color: "#6b7280", fontSize: "0.9375rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                 Elige fecha y hora al momento. Solo necesitas tu DNI y teléfono.
               </p>
-              <Link href="/pedir-cita" style={{ display: "block", textAlign: "center", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+              <Link href="/pedir-cita" style={{ display: "block", textAlign: "center", backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
                 Reservar cita →
               </Link>
             </div>
 
             {/* Nuevo paciente */}
-            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: "1px solid #e5e7eb" }}>
-              <span style={{ display: "inline-block", backgroundColor: "#dcfce7", color: "#16a34a", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
+            <div style={{ backgroundColor: "white", borderRadius: "1.25rem", padding: "2rem", border: `1.5px solid ${SAGE}` }}>
+              <span style={{ display: "inline-block", backgroundColor: SAGE_BG, color: SAGE_D, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.25rem 0.75rem", borderRadius: 999, marginBottom: "1rem" }}>
                 Primera visita
               </span>
               <h3 style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.5rem" }}>Nuevo paciente</h3>
@@ -276,11 +281,11 @@ export default async function HomePage() {
               </p>
               <div style={{ display: "grid", gap: "0.625rem" }}>
                 <Link href="/pedir-cita"
-                  style={{ display: "block", textAlign: "center", backgroundColor: "#16a34a", color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
+                  style={{ display: "block", textAlign: "center", backgroundColor: SAGE, color: "white", fontWeight: 700, fontSize: "1rem", padding: "0.875rem", borderRadius: "0.625rem", textDecoration: "none" }}>
                   Reservar primera cita →
                 </Link>
                 <a href={WA_URL} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "white", color: "#16a34a", fontWeight: 600, fontSize: "0.9375rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none", border: "1.5px solid #dcfce7" }}>
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", backgroundColor: "white", color: SAGE_D, fontWeight: 600, fontSize: "0.9375rem", padding: "0.75rem", borderRadius: "0.625rem", textDecoration: "none", border: `1.5px solid ${SAGE_BG}` }}>
                   <MessageCircle size={16} /> ¿Tienes dudas? Escríbenos por WhatsApp
                 </a>
               </div>
@@ -288,7 +293,7 @@ export default async function HomePage() {
           </div>
 
           {/* Formulario clásico (fallback) */}
-          <details style={{ backgroundColor: "white", borderRadius: "1.25rem", border: "1px solid #e5e7eb" }}>
+          <details style={{ backgroundColor: "white", borderRadius: "1.25rem", border: "1px solid #DCC8B2" }}>
             <summary style={{ padding: "1.25rem 1.75rem", cursor: "pointer", fontWeight: 600, fontSize: "0.9375rem", color: "#6b7280", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span>O solicita tu primera visita y te la confirmamos en breve</span>
               <span style={{ fontSize: "0.75rem" }}>▼</span>
@@ -307,7 +312,7 @@ export default async function HomePage() {
       {/* ── FOOTER ──────────────────────────────────────── */}
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-          <div style={{ backgroundColor: "#F5EFE9", padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
+          <div style={{ backgroundColor: "#F2ECE6", padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
             <img
               src="/logo-fino.jpeg"
               alt="Carmen Gómez · Clínica de Fisioterapia"
@@ -319,7 +324,7 @@ export default async function HomePage() {
             <a href="/login" style={{ color: "#4b5563", fontSize: "0.75rem", textDecoration: "none" }}>· acceso interno ·</a>
           </div>
           <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>
-            © {new Date().getFullYear()} Millennialfisio · Campillos, Málaga
+            © {new Date().getFullYear()} Carmen Gómez · Clínica de Fisioterapia, Campillos
           </p>
         </div>
       </footer>

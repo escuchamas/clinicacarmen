@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const AQUA = "#9B7B68";
+const BRAND = "#8E7D6B";
 const WA_CITA = `https://wa.me/34652591116?text=${encodeURIComponent("Hola Carmen, me gustaría pedir cita.")}`;
 
 interface Slide {
@@ -11,8 +11,8 @@ interface Slide {
   sub: string;
   cta: string;
   ctaHref: string;
-  bg: string;       // gradient fallback when image fails
-  overlay: string;  // colored semi-transparent veil over the photo
+  bg: string;
+  overlay: string;
   imageSrc: string;
 }
 
@@ -23,8 +23,8 @@ const SLIDES: Slide[] = [
     sub: "Tratamiento personalizado desde la primera sesión. Sin protocolos genéricos, sin listas de espera.",
     cta: "Pedir cita ahora →",
     ctaHref: "#reservar",
-    bg: "linear-gradient(135deg, #6B4E3E 0%, #9B7B68 60%, #B8977F 100%)",
-    overlay: "linear-gradient(to right, rgba(155,123,104,0.82) 0%, rgba(155,123,104,0.38) 100%)",
+    bg: "linear-gradient(135deg, #5C4A40 0%, #8E7D6B 60%, #B49A84 100%)",
+    overlay: "linear-gradient(to right, rgba(142,125,107,0.82) 0%, rgba(142,125,107,0.38) 100%)",
     imageSrc: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=80",
   },
   {
@@ -43,8 +43,8 @@ const SLIDES: Slide[] = [
     sub: "Máximo 8 personas por clase. Mejora tu postura, fortalece el core y complementa tu rehabilitación.",
     cta: "Ver clases disponibles →",
     ctaHref: "#reservar",
-    bg: "linear-gradient(135deg, #4c1d95 0%, #7C3AED 60%, #a855f7 100%)",
-    overlay: "linear-gradient(to right, rgba(124,58,237,0.82) 0%, rgba(124,58,237,0.38) 100%)",
+    bg: "linear-gradient(135deg, #4A6B44 0%, #A8B89A 60%, #C8D8C0 100%)",
+    overlay: "linear-gradient(to right, rgba(100,130,88,0.82) 0%, rgba(100,130,88,0.38) 100%)",
     imageSrc: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1400&q=80",
   },
   {
@@ -62,7 +62,6 @@ const SLIDES: Slide[] = [
 export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
-  // track which images failed so we fall back to gradient
   const [imgFailed, setImgFailed] = useState<Record<number, boolean>>({});
 
   const next = useCallback(() => setCurrent(c => (c + 1) % SLIDES.length), []);
@@ -140,7 +139,7 @@ export default function HeroSlider() {
               <a
                 href={s.ctaHref}
                 style={{
-                  display: "inline-block", backgroundColor: "white", color: AQUA,
+                  display: "inline-block", backgroundColor: "white", color: BRAND,
                   fontWeight: 700, fontSize: "0.9375rem",
                   padding: "0.75rem 1.75rem", borderRadius: "0.625rem", textDecoration: "none",
                   boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
