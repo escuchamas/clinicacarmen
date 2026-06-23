@@ -662,19 +662,45 @@ export default function PacienteDetailPage() {
                   {historia.pruebaImagenUrl && (
                     <div className="mt-3">
                       {historia.pruebaImagenUrl.endsWith(".pdf") ? (
-                        <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer"
-                          className="text-sm font-medium"
-                          style={{ color: "#2D7D5E", textDecoration: "underline" }}>
-                          Ver PDF de la prueba
-                        </a>
+                        <div className="flex items-center gap-2">
+                          <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer"
+                            className="text-sm font-medium"
+                            style={{ color: "#2D7D5E", textDecoration: "underline" }}>
+                            Ver PDF de la prueba
+                          </a>
+                          <button
+                            onClick={async () => {
+                              if (!confirm("¿Eliminar este archivo?")) return;
+                              await fetch(`/api/pacientes/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seccion: "historia", datos: { pruebaImagenUrl: null } }) });
+                              setData(prev => prev ? { ...prev, historia: prev.historia ? { ...prev.historia, pruebaImagenUrl: undefined } : prev.historia } : prev);
+                            }}
+                            className="text-xs px-2 py-0.5 rounded"
+                            style={{ color: "#dc2626", border: "1px solid #fca5a5", background: "none", cursor: "pointer" }}
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       ) : (
-                        <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer">
-                          <img
-                            src={historia.pruebaImagenUrl}
-                            alt="Prueba de imagen"
-                            style={{ maxWidth: "100%", maxHeight: 400, borderRadius: 8, border: "1px solid #e2ddd3", objectFit: "contain" }}
-                          />
-                        </a>
+                        <div>
+                          <a href={historia.pruebaImagenUrl} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={historia.pruebaImagenUrl}
+                              alt="Prueba de imagen"
+                              style={{ maxWidth: "100%", maxHeight: 400, borderRadius: 8, border: "1px solid #e2ddd3", objectFit: "contain" }}
+                            />
+                          </a>
+                          <button
+                            onClick={async () => {
+                              if (!confirm("¿Eliminar esta imagen?")) return;
+                              await fetch(`/api/pacientes/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seccion: "historia", datos: { pruebaImagenUrl: null } }) });
+                              setData(prev => prev ? { ...prev, historia: prev.historia ? { ...prev.historia, pruebaImagenUrl: undefined } : prev.historia } : prev);
+                            }}
+                            className="text-xs mt-1.5 px-2 py-0.5 rounded"
+                            style={{ color: "#dc2626", border: "1px solid #fca5a5", background: "none", cursor: "pointer" }}
+                          >
+                            Eliminar imagen
+                          </button>
+                        </div>
                       )}
                     </div>
                   )}
