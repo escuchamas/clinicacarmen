@@ -19,8 +19,9 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const pacienteId = formData.get("pacienteId") as string | null;
+    const folder = formData.get("folder") as string | null;
 
-    if (!file || !pacienteId) {
+    if (!file) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
     }
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          folder: `clinicacarmen/${pacienteId}`,
+          folder: `clinicacarmen/${folder ?? pacienteId ?? "admin"}`,
           resource_type: "auto",
         },
         (error, result) => {

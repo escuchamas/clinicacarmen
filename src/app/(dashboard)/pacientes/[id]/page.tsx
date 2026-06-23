@@ -41,6 +41,7 @@ export default function PacienteDetailPage() {
   const [savingEdit2, setSavingEdit2] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentDocs, setConsentDocs] = useState<{ id: string; nombre: string; url: string; file?: string }[]>([]);
   const [consentSelected, setConsentSelected] = useState<string[]>([]);
   const [sendingConsent, setSendingConsent] = useState(false);
   const [consentSent, setConsentSent] = useState(false);
@@ -190,19 +191,18 @@ export default function PacienteDetailPage() {
     setEditingHistoria(true);
   }
 
-  const CONSENT_DOCS = [
-    { id: "epi",             label: "EPI (Electrólisis Percutánea Intratisular)", file: "epi.pdf" },
-    { id: "neuromodulacion", label: "Neuromodulación Percutánea",               file: "neuromodulacion.pdf" },
-    { id: "puncion-seca",    label: "Punción Seca",                             file: "puncion-seca.pdf" },
-  ];
+  useEffect(() => {
+    fetch("/api/consentimientos").then(r => r.json()).then(d => setConsentDocs(Array.isArray(d) ? d : []));
+  }, []);
 
   async function enviarConsentimientosPdf() {
     if (consentSelected.length === 0) return;
     setSendingConsent(true);
+    const docs = consentDocs.filter(d => consentSelected.includes(d.id)).map(d => ({ nombre: d.nombre, url: d.url }));
     const res = await fetch(`/api/pacientes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ seccion: "consentimientos_pdf", ids: consentSelected }),
+      body: JSON.stringify({ seccion: "consentimientos_pdf", docs }),
     });
     setSendingConsent(false);
     if (res.ok) {
@@ -896,32 +896,37 @@ export default function PacienteDetailPage() {
           <div className="card p-6 w-full max-w-sm">
             <h3 className="font-bold text-base mb-1" style={{ color: "#1a1a1a" }}>Enviar consentimientos</h3>
             <p className="text-xs mb-4" style={{ color: "#6b7280" }}>Selecciona los documentos a enviar por correo a {paciente?.nombre}</p>
-            <div className="space-y-2 mb-5">
-              {CONSENT_DOCS.map(doc => (
-                <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
-                  <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
-                    <input
-                      type="checkbox"
-                      checked={consentSelected.includes(doc.id)}
-                      onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
-                      style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
-                    />
-                    <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.label}</span>
-                  </label>
-                  <a
-                    href={`/consentimientos/${doc.file}`}
-                    download={doc.label + ".pdf"}
-                    title="Descargar para imprimir"
-                    className="flex-shrink-0 text-xs px-2 py-1 rounded-md font-medium"
-                    style={{ color: "#6b7280", border: "1px solid #e2ddd3", textDecoration: "none", backgroundColor: "white" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f3f4f6"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "white"; }}
-                  >
-                    ↓ PDF
-                  </a>
-                </div>
-              ))}
-            </div>
+            {consentDocs.length === 0 ? (
+              <p className="text-sm py-4 text-center mb-4" style={{ color: "#9ca3af" }}>No hay consentimientos configurados. Sube PDFs en Ajustes.</p>
+            ) : (
+              <div className="space-y-2 mb-5">
+                {consentDocs.map(doc => (
+                  <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
+                    <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={consentSelected.includes(doc.id)}
+                        onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
+                        style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
+                      />
+                      <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.nombre}</span>
+                    </label>
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Descargar para imprimir"
+                      className="flex-shrink-0 text-xs px-2 py-1 rounded-md font-medium"
+                      style={{ color: "#6b7280", border: "1px solid #e2ddd3", textDecoration: "none", backgroundColor: "white" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f3f4f6"; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "white"; }}
+                    >
+                      ↓ PDF
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
             <p className="text-xs mb-4" style={{ color: "#9ca3af" }}>Descarga los PDF para imprimir y firma manual. La firma digital se añadirá próximamente.</p>
             <div className="flex gap-3">
               <button

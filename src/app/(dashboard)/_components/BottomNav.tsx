@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Users, CalendarDays, Activity, BarChart3 } from "lucide-react";
+import { Users, CalendarDays, Activity, BarChart3, Settings } from "lucide-react";
 
 const AQUA = "#0891B2";
 
@@ -12,6 +12,7 @@ const TABS = [
   { href: "/calendario", icon: CalendarDays, label: "Calendario" },
   { href: "/pilates", icon: Activity, label: "Pilates" },
   { href: "/finanzas", icon: BarChart3, label: "Finanzas" },
+  { href: "/ajustes", icon: Settings, label: "Ajustes" },
 ];
 
 export default function BottomNav() {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getPacienteById, updatePaciente, deletePaciente, getHistoriaClinica, updateHistoriaClinica } from "@/lib/db";
-import { sendConsentimientoEmail, sendConsentimientosPdf, ConsentimientoId } from "@/lib/email";
+import { sendConsentimientoEmail, sendConsentimientosPdf } from "@/lib/email";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     } else if (body.seccion === "consentimientos_pdf") {
       const paciente = await getPacienteById(id);
       if (!paciente?.email) return NextResponse.json({ error: "El paciente no tiene email" }, { status: 400 });
-      await sendConsentimientosPdf(paciente.email, paciente.nombre, paciente.apellidos, body.ids as ConsentimientoId[]);
+      await sendConsentimientosPdf(paciente.email, paciente.nombre, paciente.apellidos, body.docs as { nombre: string; url: string }[]);
     }
     return NextResponse.json({ ok: true });
   } catch (e) {

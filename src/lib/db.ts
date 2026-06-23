@@ -487,6 +487,45 @@ export async function cancelarInscripcion(pacienteId: string, claseId: string, p
   `;
 }
 
+// ─── Consentimientos ─────────────────────────────────────────────────────────
+
+export interface ConsentimientoDoc {
+  id: string;
+  nombre: string;
+  url: string;
+  createdAt: string;
+}
+
+export async function getConsentimientos(): Promise<ConsentimientoDoc[]> {
+  const db = sql();
+  try {
+    const rows = await db`SELECT id, nombre, url, created_at FROM consentimientos ORDER BY created_at ASC`;
+    return rows.map(r => ({
+      id: String(r.id),
+      nombre: String(r.nombre),
+      url: String(r.url),
+      createdAt: toDateStr(r.created_at),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function createConsentimiento(nombre: string, url: string): Promise<ConsentimientoDoc> {
+  const db = sql();
+  const rows = await db`
+    INSERT INTO consentimientos (nombre, url) VALUES (${nombre}, ${url})
+    RETURNING id, nombre, url, created_at
+  `;
+  const r = rows[0];
+  return { id: String(r.id), nombre: String(r.nombre), url: String(r.url), createdAt: toDateStr(r.created_at) };
+}
+
+export async function deleteConsentimiento(id: string): Promise<void> {
+  const db = sql();
+  await db`DELETE FROM consentimientos WHERE id = ${id}`;
+}
+
 // ─── Mappers ──────────────────────────────────────────────────────────────────
 
 function rowToCoste(r: Record<string, unknown>): Coste {

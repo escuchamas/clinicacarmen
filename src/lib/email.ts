@@ -1,36 +1,26 @@
 import { Resend } from "resend";
-import fs from "fs";
-import path from "path";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM ?? "Clínica Carmen <onboarding@resend.dev>";
-
-export const CONSENTIMIENTOS = [
-  { id: "epi",           label: "EPI (Electrólisis Percutánea Intratisular)", file: "epi.pdf" },
-  { id: "neuromodulacion", label: "Neuromodulación Percutánea",               file: "neuromodulacion.pdf" },
-  { id: "puncion-seca",  label: "Punción Seca",                               file: "puncion-seca.pdf" },
-] as const;
-
-export type ConsentimientoId = typeof CONSENTIMIENTOS[number]["id"];
 
 export async function sendConsentimientosPdf(
   to: string,
   nombre: string,
   apellidos: string,
-  ids: ConsentimientoId[]
+  docs: { nombre: string; url: string }[]
 ): Promise<void> {
   if (!process.env.RESEND_API_KEY) return;
-  if (ids.length === 0) return;
+  if (docs.length === 0) return;
 
-  const seleccionados = CONSENTIMIENTOS.filter(c => ids.includes(c.id));
-  const carpeta = path.join(process.cwd(), "public", "consentimientos");
+  const attachments = await Promise.all(
+    docs.map(async (doc) => {
+      const res = await fetch(doc.url);
+      const buffer = Buffer.from(await res.arrayBuffer());
+      return { filename: doc.nombre + ".pdf", content: buffer.toString("base64") };
+    })
+  );
 
-  const attachments = seleccionados.map(c => ({
-    filename: c.label + ".pdf",
-    content: fs.readFileSync(path.join(carpeta, c.file)).toString("base64"),
-  }));
-
-  const lista = seleccionados.map(c => `<li>${c.label}</li>`).join("");
+  const lista = docs.map(d => `<li>${d.nombre}</li>`).join("");
 
   await resend.emails.send({
     from: FROM,
