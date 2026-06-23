@@ -7,11 +7,11 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Fisioterapia manual y Pilates terapéutico en Campillos, Málaga",
     start_url: "/",
     display: "standalone",
-    background_color: "#F5EFE9",
-    theme_color: "#9B7B68",
+    background_color: "#F2ECE6",
+    theme_color: "#8E7D6B",
     icons: [
       {
-        src: "/logo-vertical.jpeg",
+        src: "/logo-isotipo.jpeg",
         sizes: "any",
         type: "image/jpeg",
       },

@@ -173,11 +173,11 @@ export default async function HomePage() {
             </div>
 
             <div style={{ backgroundColor: CREAM, borderRadius: "1.25rem", padding: "2.5rem", textAlign: "center", border: "1px solid #DCC8B2", boxShadow: `inset 0 3px 0 ${SAGE}` }}>
-              <div style={{ width: 80, height: 80, borderRadius: "50%", backgroundColor: SAGE_BG, border: `2px solid ${SAGE}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem" }}>
-                <img src="/logo-vertical.jpeg" alt="Carmen Gómez" style={{ width: 52, height: 52, objectFit: "contain", borderRadius: "50%" }} />
+              <div style={{ width: 96, height: 96, borderRadius: "50%", backgroundColor: "#F2ECE6", border: `2px solid ${SAGE}`, overflow: "hidden", margin: "0 auto 1rem" }}>
+                <img src="/logo-isotipo.jpeg" alt="Isotipo Carmen Gómez" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
-              <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.25rem" }}>Carmen Gómez</p>
-              <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.75rem" }}>Fisioterapeuta · Campillos, Málaga</p>
+              <p style={{ fontWeight: 800, fontSize: "1.125rem", marginBottom: "0.125rem", fontFamily: "var(--font-heading, 'Cormorant Garamond'), Georgia, serif", letterSpacing: "0.04em" }}>Carmen Gómez</p>
+              <p style={{ fontSize: "0.8125rem", color: BRAND, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "1.75rem" }}>Fisioterapeuta · Campillos</p>
               <blockquote style={{ fontStyle: "italic", color: "#374151", lineHeight: 1.65, fontSize: "0.9375rem", borderLeft: `3px solid ${BRAND}`, paddingLeft: "1rem", textAlign: "left" }}>
                 &ldquo;Cuando un paciente me dice que puede volver a dormir bien, a practicar deporte o a jugar con sus hijos sin dolor, es el mejor resultado que puedo obtener.&rdquo;
               </blockquote>
