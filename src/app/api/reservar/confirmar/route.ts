@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createCita } from "@/lib/db";
+import { createCita, getPacienteById, createLead } from "@/lib/db";
 import { neon } from "@neondatabase/serverless";
 
 function sql() {
@@ -47,6 +47,19 @@ export async function POST(req: NextRequest) {
       notas: notas || "Reserva online",
       pagoEstado: "sin_pagar",
     });
+
+    // Guardar como lead para email marketing / seguimiento
+    const paciente = await getPacienteById(pacienteId);
+    if (paciente) {
+      await createLead({
+        nombre: paciente.nombre + (paciente.apellidos ? ` ${paciente.apellidos}` : ""),
+        telefono: paciente.telefono,
+        email: paciente.email,
+        mensaje: motivo || "Reserva online (paciente existente)",
+        origen: "pedir_cita",
+        pacienteId,
+      });
+    }
 
     return NextResponse.json(cita, { status: 201 });
   } catch (e) {

@@ -24,10 +24,18 @@ export async function POST(req: NextRequest) {
     const fechaAlta = new Date().toISOString().split("T")[0];
     const dniWeb = `WEB-${pacienteId}`;
 
+    // Insert only guaranteed base columns
     await db`
-      INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono, fecha_alta, lopd_firmada)
-      VALUES (${pacienteId}, ${dniWeb}, ${nombre.trim()}, '', ${email?.trim() ?? ''}, ${telefono.trim()}, ${fechaAlta}, false)
+      INSERT INTO pacientes (id, dni, nombre, apellidos, email, telefono)
+      VALUES (${pacienteId}, ${dniWeb}, ${nombre.trim()}, '', ${email?.trim() ?? ''}, ${telefono.trim()})
     `;
+
+    // Optional columns — graceful if not yet migrated
+    try {
+      await db`
+        UPDATE pacientes SET fecha_alta = ${fechaAlta}, lopd_firmada = false WHERE id = ${pacienteId}
+      `;
+    } catch { /* columnas opcionales no migradas todavía */ }
 
     const citaId = generateId();
     const horaMap: Record<string, string> = {
@@ -37,18 +45,26 @@ export async function POST(req: NextRequest) {
     };
     const hora = horaMap[franja ?? "indistinto"] ?? "10:00";
     const fechaCita = fecha || fechaAlta;
-    const notasCita = `Reserva online${motivo ? ` · ${motivo}` : ""}`;
+    const notasCita = `Solicitud landing${motivo ? ` · ${motivo}` : ""}`;
 
     await db`
       INSERT INTO citas (id, paciente_id, fecha, hora, duracion, motivo, estado, notas, fecha_creacion)
       VALUES (${citaId}, ${pacienteId}, ${fechaCita}, ${hora}, 60, ${motivo ?? "Primera consulta"}, 'pendiente', ${notasCita}, NOW())
     `;
 
-    createLead({ nombre: nombre.trim(), telefono: telefono.trim(), email: email?.trim(), mensaje: motivo?.trim(), origen: "landing", pacienteId }).catch(() => {});
+    // Guardar como lead (tabla leads debe existir en Neon)
+    await createLead({
+      nombre: nombre.trim(),
+      telefono: telefono.trim(),
+      email: email?.trim(),
+      mensaje: motivo?.trim(),
+      origen: "landing",
+      pacienteId,
+    });
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (e) {
-    console.error(e);
+    console.error("[reservar]", e);
     return NextResponse.json({ error: "Error al procesar la solicitud" }, { status: 500 });
   }
 }

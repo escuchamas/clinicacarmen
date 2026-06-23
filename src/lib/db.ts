@@ -534,7 +534,9 @@ export async function createLead(data: { nombre: string; telefono: string; email
       INSERT INTO leads (nombre, telefono, email, mensaje, origen, paciente_id)
       VALUES (${data.nombre}, ${data.telefono}, ${data.email ?? ""}, ${data.mensaje ?? ""}, ${data.origen}, ${data.pacienteId ?? null})
     `;
-  } catch { /* tabla no creada todavía */ }
+  } catch (e) {
+    console.error("[createLead]", e);
+  }
 }
 
 export async function updateLeadEstado(id: string, estado: LeadEstado): Promise<void> {
