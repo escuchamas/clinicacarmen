@@ -27,7 +27,7 @@ export default async function HomePage() {
       <header style={{
         position: "sticky", top: 0, zIndex: 50,
         backgroundColor: "white",
-        borderBottom: "1px solid #e5e7eb",
+        borderBottom: "1px solid #4A3020",
         padding: "0 1.5rem",
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -307,13 +307,12 @@ export default async function HomePage() {
       {/* ── FOOTER ──────────────────────────────────────── */}
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <span style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 600, fontSize: "0.9375rem", color: "white", letterSpacing: "0.18em", textTransform: "uppercase" }}>
-              Carmen Gómez
-            </span>
-            <span style={{ fontFamily: '"Raleway", system-ui, sans-serif', fontSize: "0.625rem", color: "#a8977f", letterSpacing: "0.14em", textTransform: "uppercase" }}>
-              Clínica de Fisioterapia
-            </span>
+          <div style={{ backgroundColor: "#F5EFE9", padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
+            <img
+              src="/logo-fino.jpeg"
+              alt="Carmen Gómez · Clínica de Fisioterapia"
+              style={{ height: 30, width: "auto", display: "block" }}
+            />
           </div>
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
             <a href="#reservar" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Reservar cita</a>
