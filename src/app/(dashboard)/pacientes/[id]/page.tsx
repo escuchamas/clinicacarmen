@@ -191,9 +191,9 @@ export default function PacienteDetailPage() {
   }
 
   const CONSENT_DOCS = [
-    { id: "epi",             label: "EPI (Electrólisis Percutánea Intratisular)" },
-    { id: "neuromodulacion", label: "Neuromodulación Percutánea" },
-    { id: "puncion-seca",    label: "Punción Seca" },
+    { id: "epi",             label: "EPI (Electrólisis Percutánea Intratisular)", file: "epi.pdf" },
+    { id: "neuromodulacion", label: "Neuromodulación Percutánea",               file: "neuromodulacion.pdf" },
+    { id: "puncion-seca",    label: "Punción Seca",                             file: "puncion-seca.pdf" },
   ];
 
   async function enviarConsentimientosPdf() {
@@ -898,17 +898,31 @@ export default function PacienteDetailPage() {
             <p className="text-xs mb-4" style={{ color: "#6b7280" }}>Selecciona los documentos a enviar por correo a {paciente?.nombre}</p>
             <div className="space-y-2 mb-5">
               {CONSENT_DOCS.map(doc => (
-                <label key={doc.id} className="flex items-center gap-3 p-3 rounded-lg cursor-pointer" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
-                  <input
-                    type="checkbox"
-                    checked={consentSelected.includes(doc.id)}
-                    onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
-                    style={{ accentColor: "#0891B2", width: 16, height: 16 }}
-                  />
-                  <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.label}</span>
-                </label>
+                <div key={doc.id} className="flex items-center gap-2 p-3 rounded-lg" style={{ border: "1px solid", borderColor: consentSelected.includes(doc.id) ? "#0891B2" : "#e2ddd3", backgroundColor: consentSelected.includes(doc.id) ? "#f0f9ff" : "white" }}>
+                  <label className="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={consentSelected.includes(doc.id)}
+                      onChange={e => setConsentSelected(prev => e.target.checked ? [...prev, doc.id] : prev.filter(x => x !== doc.id))}
+                      style={{ accentColor: "#0891B2", width: 16, height: 16, flexShrink: 0 }}
+                    />
+                    <span className="text-sm" style={{ color: "#1a1a1a" }}>{doc.label}</span>
+                  </label>
+                  <a
+                    href={`/consentimientos/${doc.file}`}
+                    download={doc.label + ".pdf"}
+                    title="Descargar para imprimir"
+                    className="flex-shrink-0 text-xs px-2 py-1 rounded-md font-medium"
+                    style={{ color: "#6b7280", border: "1px solid #e2ddd3", textDecoration: "none", backgroundColor: "white" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#f3f4f6"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "white"; }}
+                  >
+                    ↓ PDF
+                  </a>
+                </div>
               ))}
             </div>
+            <p className="text-xs mb-4" style={{ color: "#9ca3af" }}>Descarga los PDF para imprimir y firma manual. La firma digital se añadirá próximamente.</p>
             <div className="flex gap-3">
               <button
                 onClick={enviarConsentimientosPdf}
@@ -916,7 +930,7 @@ export default function PacienteDetailPage() {
                 className="btn-primary flex-1 justify-center"
                 style={{ opacity: consentSelected.length === 0 ? 0.5 : 1 }}
               >
-                {sendingConsent ? "Enviando..." : `Enviar${consentSelected.length > 0 ? ` (${consentSelected.length})` : ""}`}
+                {sendingConsent ? "Enviando..." : `Enviar por email${consentSelected.length > 0 ? ` (${consentSelected.length})` : ""}`}
               </button>
               <button className="btn-secondary" onClick={() => setShowConsentModal(false)}>Cancelar</button>
             </div>
