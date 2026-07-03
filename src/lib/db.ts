@@ -583,6 +583,86 @@ export async function deleteConsentimiento(id: string): Promise<void> {
   await db`DELETE FROM consentimientos WHERE id = ${id}`;
 }
 
+// ─── Blog Posts ───────────────────────────────────────────────────────────────
+
+export interface BlogPost {
+  id: string;
+  titulo: string;
+  slug: string;
+  extracto: string;
+  contenido: string;
+  imagenUrl: string | null;
+  publicado: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getBlogPosts(soloPublicados = false): Promise<BlogPost[]> {
+  const db = sql();
+  try {
+    const rows = soloPublicados
+      ? await db`SELECT * FROM blog_posts WHERE publicado = true ORDER BY created_at DESC`
+      : await db`SELECT * FROM blog_posts ORDER BY created_at DESC`;
+    return rows.map(rowToBlogPost);
+  } catch { return []; }
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const db = sql();
+  const rows = await db`SELECT * FROM blog_posts WHERE slug = ${slug} AND publicado = true LIMIT 1`;
+  return rows.length > 0 ? rowToBlogPost(rows[0]) : null;
+}
+
+export async function getBlogPostById(id: string): Promise<BlogPost | null> {
+  const db = sql();
+  const rows = await db`SELECT * FROM blog_posts WHERE id = ${id} LIMIT 1`;
+  return rows.length > 0 ? rowToBlogPost(rows[0]) : null;
+}
+
+export async function createBlogPost(data: Omit<BlogPost, "id" | "createdAt" | "updatedAt">): Promise<BlogPost> {
+  const db = sql();
+  const rows = await db`
+    INSERT INTO blog_posts (titulo, slug, extracto, contenido, imagen_url, publicado)
+    VALUES (${data.titulo}, ${data.slug}, ${data.extracto || ""}, ${data.contenido}, ${data.imagenUrl ?? null}, ${data.publicado})
+    RETURNING *
+  `;
+  return rowToBlogPost(rows[0]);
+}
+
+export async function updateBlogPost(id: string, data: Omit<BlogPost, "id" | "createdAt" | "updatedAt">): Promise<void> {
+  const db = sql();
+  await db`
+    UPDATE blog_posts SET
+      titulo     = ${data.titulo},
+      slug       = ${data.slug},
+      extracto   = ${data.extracto || ""},
+      contenido  = ${data.contenido},
+      imagen_url = ${data.imagenUrl ?? null},
+      publicado  = ${data.publicado},
+      updated_at = NOW()
+    WHERE id = ${id}
+  `;
+}
+
+export async function deleteBlogPost(id: string): Promise<void> {
+  const db = sql();
+  await db`DELETE FROM blog_posts WHERE id = ${id}`;
+}
+
+function rowToBlogPost(r: Record<string, unknown>): BlogPost {
+  return {
+    id: String(r.id),
+    titulo: String(r.titulo ?? ""),
+    slug: String(r.slug ?? ""),
+    extracto: String(r.extracto ?? ""),
+    contenido: String(r.contenido ?? ""),
+    imagenUrl: r.imagen_url ? String(r.imagen_url) : null,
+    publicado: Boolean(r.publicado),
+    createdAt: toDateStr(r.created_at),
+    updatedAt: toDateStr(r.updated_at),
+  };
+}
+
 // ─── Mappers ──────────────────────────────────────────────────────────────────
 
 function rowToCoste(r: Record<string, unknown>): Coste {
