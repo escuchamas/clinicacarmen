@@ -1,5 +1,6 @@
 import { getBlogPostBySlug, getBlogPosts } from "@/lib/db";
 import Link from "next/link";
+import PublicHeader from "@/app/_components/PublicHeader";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -38,17 +39,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "white", color: DARK }}>
 
-      {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, backgroundColor: "#F2ECE6", borderBottom: "1px solid #DCC8B2", padding: "0 1.5rem" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link href="/">
-            <img src="/logo-fino.jpeg" alt="Carmen Gómez · Clínica de Fisioterapia" style={{ height: 40, width: "auto", display: "block" }} />
-          </Link>
-          <Link href="/#reservar" style={{ backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
-            Reservar cita →
-          </Link>
-        </div>
-      </header>
+      <PublicHeader activePath="/blog" />
 
       {/* Breadcrumb */}
       <div style={{ backgroundColor: "#F2ECE6", padding: "0.75rem 1.5rem", borderBottom: "1px solid #DCC8B2" }}>

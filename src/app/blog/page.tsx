@@ -1,5 +1,6 @@
 import { getBlogPosts } from "@/lib/db";
 import Link from "next/link";
+import PublicHeader from "@/app/_components/PublicHeader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,17 +17,7 @@ export default async function BlogPage() {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "white", color: DARK }}>
 
-      {/* Header reutilizado */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, backgroundColor: "#F2ECE6", borderBottom: "1px solid #DCC8B2", padding: "0 1.5rem" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link href="/">
-            <img src="/logo-fino.jpeg" alt="Carmen Gómez · Clínica de Fisioterapia" style={{ height: 40, width: "auto", display: "block" }} />
-          </Link>
-          <Link href="/#reservar" style={{ backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
-            Reservar cita →
-          </Link>
-        </div>
-      </header>
+      <PublicHeader activePath="/blog" />
 
       {/* Hero */}
       <section style={{ backgroundColor: "#F2ECE6", padding: "4rem 1.5rem 3rem", textAlign: "center" }}>

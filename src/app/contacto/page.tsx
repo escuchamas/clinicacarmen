@@ -1,5 +1,6 @@
 import ReservaForm from "@/app/_components/ReservaForm";
 import Link from "next/link";
+import PublicHeader from "@/app/_components/PublicHeader";
 import { MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -22,23 +23,7 @@ export default function ContactoPage() {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "white", color: DARK }}>
 
-      {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 50, backgroundColor: CREAM, borderBottom: "1px solid #DCC8B2", padding: "0 1.5rem" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-          <Link href="/">
-            <img src="/logo-fino.jpeg" alt="Carmen Gómez · Clínica de Fisioterapia" style={{ height: 40, width: "auto", display: "block" }} />
-          </Link>
-          <nav style={{ display: "flex", alignItems: "center", gap: "0.25rem" }} className="hidden sm:flex">
-            <a href="/#servicios" className="nav-link">Servicios</a>
-            <a href="/#pilates" className="nav-link">Pilates</a>
-            <Link href="/blog" className="nav-link">Blog</Link>
-            <Link href="/contacto" className="nav-link" style={{ color: BRAND, fontWeight: 700 }}>Contacto</Link>
-          </nav>
-          <Link href="/pedir-cita" style={{ flexShrink: 0, backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
-            Reservar cita →
-          </Link>
-        </div>
-      </header>
+      <PublicHeader activePath="/contacto" />
 
       {/* Hero */}
       <section style={{ backgroundColor: CREAM, padding: "3.5rem 1.5rem 3rem", textAlign: "center" }}>
