@@ -44,7 +44,7 @@ export default async function HomePage() {
             <a href="#servicios" className="nav-link">Servicios</a>
             <a href="#pilates" className="nav-link">Pilates</a>
             <Link href="/blog" className="nav-link">Blog</Link>
-            <a href="#reservar" className="nav-link">Contacto</a>
+            <Link href="/contacto" className="nav-link">Contacto</Link>
           </nav>
           <a href="#reservar" style={{
             flexShrink: 0, backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem",
