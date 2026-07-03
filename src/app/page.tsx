@@ -95,7 +95,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────── */}
-      <section style={{ backgroundColor: "white", padding: "2rem 1.5rem" }}>
+      <section id="servicios" style={{ backgroundColor: "white", padding: "2rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem" }}>
           {[
             { icon: <Zap size={22} color={BRAND} strokeWidth={2} />, title: "Resultados desde las primeras sesiones", desc: "La mayoría de pacientes nota mejoría en 2-3 sesiones." },
@@ -197,7 +197,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── PILATES ─────────────────────────────────────── */}
-      <section style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
+      <section id="pilates" style={{ backgroundColor: "white", padding: "4.5rem 1.5rem" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <span style={{
