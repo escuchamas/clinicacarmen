@@ -72,7 +72,7 @@ export default function NuevoPostPage() {
         const data = await res.json();
         throw new Error(data.error || "Error");
       }
-      router.push("/blog");
+      router.push("/entradas");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error al guardar");
     } finally {

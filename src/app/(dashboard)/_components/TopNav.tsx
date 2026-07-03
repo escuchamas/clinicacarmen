@@ -12,7 +12,7 @@ const TABS = [
   { href: "/pilates", label: "Pilates" },
   { href: "/finanzas", label: "Finanzas" },
   { href: "/leads", label: "Leads" },
-  { href: "/blog", label: "Blog" },
+  { href: "/entradas", label: "Blog" },
   { href: "/ajustes", label: "Ajustes" },
 ];
 

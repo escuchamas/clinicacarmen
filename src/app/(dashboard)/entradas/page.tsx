@@ -69,7 +69,7 @@ export default function BlogAdminPage() {
             {posts.length} artículo{posts.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/blog/nuevo" style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
+        <Link href="/entradas/nuevo" style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", backgroundColor: AQUA, color: "white", fontWeight: 700, fontSize: "0.9375rem", padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none" }}>
           + Nuevo artículo
         </Link>
       </div>
@@ -89,7 +89,7 @@ export default function BlogAdminPage() {
       {!loading && !error && posts.length === 0 && (
         <div className="card" style={{ textAlign: "center", padding: "3rem", color: "#9ca3af" }}>
           <p style={{ fontSize: "1.125rem", marginBottom: "1rem" }}>Todavía no hay artículos.</p>
-          <Link href="/blog/nuevo" style={{ color: AQUA, fontWeight: 600, textDecoration: "none" }}>Crea el primero →</Link>
+          <Link href="/entradas/nuevo" style={{ color: AQUA, fontWeight: 600, textDecoration: "none" }}>Crea el primero →</Link>
         </div>
       )}
 
@@ -131,7 +131,7 @@ export default function BlogAdminPage() {
                 >
                   {post.publicado ? "Ocultar" : "Publicar"}
                 </button>
-                <Link href={`/blog/${post.id}/editar`} style={{ fontSize: "0.75rem", fontWeight: 600, padding: "0.35rem 0.75rem", borderRadius: "0.375rem", border: `1px solid ${AQUA}`, color: AQUA, textDecoration: "none" }}>
+                <Link href={`/entradas/${post.id}/editar`} style={{ fontSize: "0.75rem", fontWeight: 600, padding: "0.35rem 0.75rem", borderRadius: "0.375rem", border: `1px solid ${AQUA}`, color: AQUA, textDecoration: "none" }}>
                   Editar
                 </Link>
                 <button
