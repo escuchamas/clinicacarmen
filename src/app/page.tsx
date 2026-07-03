@@ -33,14 +33,21 @@ export default async function HomePage() {
         borderBottom: "1px solid #DCC8B2",
         padding: "0 1.5rem",
       }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <img
             src="/logo-fino.jpeg"
             alt="Carmen Gómez · Clínica de Fisioterapia"
-            style={{ height: 40, width: "auto", display: "block" }}
+            style={{ height: 40, width: "auto", display: "block", flexShrink: 0 }}
           />
+          {/* Nav links — ocultas en móvil */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "0.25rem", flex: 1, justifyContent: "center" }} className="hidden sm:flex">
+            <a href="#servicios" className="nav-link">Servicios</a>
+            <a href="#pilates" className="nav-link">Pilates</a>
+            <Link href="/blog" className="nav-link">Blog</Link>
+            <a href="#reservar" className="nav-link">Contacto</a>
+          </nav>
           <a href="#reservar" style={{
-            backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem",
+            flexShrink: 0, backgroundColor: BRAND, color: "white", fontWeight: 700, fontSize: "0.9375rem",
             padding: "0.5rem 1.25rem", borderRadius: "0.5rem", textDecoration: "none",
           }}>
             Reservar cita →
