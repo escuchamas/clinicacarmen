@@ -136,7 +136,10 @@ export async function createHistoriaClinica(data: HistoriaClinica): Promise<void
 export async function updateHistoriaClinica(pacienteId: string, data: Partial<HistoriaClinica>): Promise<void> {
   const db = sql();
   const current = await getHistoriaClinica(pacienteId);
-  if (!current) throw new Error("Historia clínica no encontrada");
+  if (!current) {
+    await createHistoriaClinica({ pacienteId, ...data } as HistoriaClinica);
+    return;
+  }
   const merged = { ...current, ...data };
   await db`
     UPDATE historia_clinica SET

@@ -264,7 +264,11 @@ export default function PacienteDetailPage() {
       body: JSON.stringify({ seccion: "historia", datos: historiaForm }),
     });
     if (res.ok) {
-      setData(prev => prev ? { ...prev, historia: prev.historia ? { ...prev.historia, ...historiaForm } : prev.historia } : prev);
+      setData(prev => {
+        if (!prev) return prev;
+        const base = prev.historia ?? { pacienteId: id, fechaCreacion: new Date().toISOString().split("T")[0], pruebaImagenUrl: undefined, banderasRojas: [] } as unknown as HistoriaClinica;
+        return { ...prev, historia: { ...base, ...historiaForm } };
+      });
       setEditingHistoria(false);
     }
     setSavingHistoria(false);
@@ -752,7 +756,21 @@ export default function PacienteDetailPage() {
             )
           ) : (
             <div className="card p-10 text-center">
-              <p className="text-sm" style={{ color: "#6b7280" }}>No hay historia clínica registrada</p>
+              <p className="text-sm mb-4" style={{ color: "#6b7280" }}>No hay historia clínica registrada</p>
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  setHistoriaForm({
+                    profesion: "", alergias: "", ejercicioFisico: "", motivoConsulta: "",
+                    antecedentesPersonalesFamiliares: "", calidadSueno: "", patologias: "",
+                    tabaquismo: "", medicacion: "", implantesMetalicos: "", embarazoLactancia: "",
+                    semanasEmbarazo: "", banderasRojas: [], pruebaTipo: "", pruebaFecha: "", pruebaDiagnostico: "",
+                  });
+                  setEditingHistoria(true);
+                }}
+              >
+                + Crear historia clínica
+              </button>
             </div>
           )}
         </div>
