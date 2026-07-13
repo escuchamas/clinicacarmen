@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Carmen Gómez · Clínica de Fisioterapia",
-    short_name: "Carmen Gómez",
+    name: "ViaNova · Clínica de Fisioterapia",
+    short_name: "ViaNova",
     description: "Fisioterapia manual y Pilates terapéutico en Campillos, Málaga",
     start_url: "/",
     display: "standalone",

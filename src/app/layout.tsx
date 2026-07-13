@@ -17,8 +17,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Carmen Gómez · Clínica de Fisioterapia",
-  description: "Fisioterapia manual y Pilates terapéutico en Campillos, Málaga.",
+  title: "ViaNova · Clínica de Fisioterapia",
+  description: "Fisioterapia manual y Pilates terapéutico en Campillos, Málaga. Carmen Gómez.",
   icons: {
     icon: "/logo-isotipo.jpeg",
     apple: "/logo-isotipo.jpeg",

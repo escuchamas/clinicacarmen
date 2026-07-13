@@ -77,10 +77,10 @@ export default async function BlogPage() {
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2rem 1.5rem", textAlign: "center" }}>
         <Link href="/">
           <div style={{ display: "inline-block", backgroundColor: "#F2ECE6", padding: "0.4rem 0.75rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>
-            <img src="/logo-fino.jpeg" alt="Carmen Gómez" style={{ height: 28, display: "block" }} />
+            <img src="/logo-vianova.jpeg" alt="Carmen Gómez" style={{ height: 28, display: "block" }} />
           </div>
         </Link>
-        <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} Carmen Gómez · Clínica de Fisioterapia, Campillos</p>
+        <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} ViaNova · Clínica de Fisioterapia, Campillos</p>
       </footer>
     </div>
   );

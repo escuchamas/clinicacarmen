@@ -160,7 +160,7 @@ export default function ContactoPage() {
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
           <div style={{ backgroundColor: CREAM, padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
-            <img src="/logo-fino.jpeg" alt="Carmen Gómez · Clínica de Fisioterapia" style={{ height: 30, width: "auto", display: "block" }} />
+            <img src="/logo-vianova.jpeg" alt="ViaNova · Clínica de Fisioterapia" style={{ height: 30, width: "auto", display: "block" }} />
           </div>
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Inicio</Link>
@@ -169,7 +169,7 @@ export default function ContactoPage() {
             <a href="/login" style={{ color: "#4b5563", fontSize: "0.75rem", textDecoration: "none" }}>· acceso interno ·</a>
           </div>
           <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>
-            © {new Date().getFullYear()} Carmen Gómez · Clínica de Fisioterapia, Campillos
+            © {new Date().getFullYear()} ViaNova · Clínica de Fisioterapia, Campillos
           </p>
         </div>
       </footer>

@@ -35,8 +35,8 @@ export default async function HomePage() {
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <img
-            src="/logo-fino.jpeg"
-            alt="Carmen Gómez · Clínica de Fisioterapia"
+            src="/logo-vianova.jpeg"
+            alt="ViaNova · Clínica de Fisioterapia"
             style={{ height: 40, width: "auto", display: "block", flexShrink: 0 }}
           />
           {/* Nav links — ocultas en móvil */}
@@ -321,8 +321,8 @@ export default async function HomePage() {
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
           <div style={{ backgroundColor: "#F2ECE6", padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
             <img
-              src="/logo-fino.jpeg"
-              alt="Carmen Gómez · Clínica de Fisioterapia"
+              src="/logo-vianova.jpeg"
+              alt="ViaNova · Clínica de Fisioterapia"
               style={{ height: 30, width: "auto", display: "block" }}
             />
           </div>
@@ -331,7 +331,7 @@ export default async function HomePage() {
             <a href="/login" style={{ color: "#4b5563", fontSize: "0.75rem", textDecoration: "none" }}>· acceso interno ·</a>
           </div>
           <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>
-            © {new Date().getFullYear()} Carmen Gómez · Clínica de Fisioterapia, Campillos
+            © {new Date().getFullYear()} ViaNova · Clínica de Fisioterapia, Campillos
           </p>
         </div>
       </footer>
