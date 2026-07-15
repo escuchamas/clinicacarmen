@@ -129,8 +129,8 @@ export default function ClasesClient({ clases }: { clases: ClasePilates[] }) {
       <header style={{ backgroundColor: "white", borderBottom: "1px solid #e5e7eb", padding: "0 1.5rem", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.625rem", textDecoration: "none" }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800 }}>M</div>
-            <span style={{ fontWeight: 700, fontSize: "1rem", color: DARK }}>Millennialfisio</span>
+            <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: AQUA, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontWeight: 800 }}>V</div>
+            <span style={{ fontWeight: 700, fontSize: "1rem", color: DARK }}>ViaNova</span>
           </Link>
           <Link href="/mi-cuenta" style={{ color: PURPLE, fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
             Mis clases →
@@ -142,7 +142,7 @@ export default function ClasesClient({ clases }: { clases: ClasePilates[] }) {
       <section style={{ backgroundColor: "white", padding: "3rem 1.5rem 2.5rem" }}>
         <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
           <span style={{ display: "inline-block", backgroundColor: "#EDE9FE", color: PURPLE, fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.25rem" }}>
-            Clases de Pilates · Millennialfisio
+            Clases de Pilates · ViaNova
           </span>
           <h1 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 900, lineHeight: 1.2, marginBottom: "1rem", letterSpacing: "-0.02em" }}>
             Pilates con Carmen en Campillos
@@ -262,7 +262,7 @@ export default function ClasesClient({ clases }: { clases: ClasePilates[] }) {
 
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2rem 1.5rem", marginTop: "2rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-          <span style={{ fontWeight: 700 }}>Millennialfisio · Campillos, Málaga</span>
+          <span style={{ fontWeight: 700 }}>ViaNova · Campillos, Málaga</span>
           <div style={{ display: "flex", gap: "1.5rem" }}>
             <Link href="/" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Inicio</Link>
             <Link href="/mi-cuenta" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Mis clases</Link>

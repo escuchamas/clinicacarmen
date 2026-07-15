@@ -41,16 +41,16 @@ export default function LoginPage() {
             className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 text-white text-2xl font-bold"
             style={{ backgroundColor: "#9B7B68" }}
           >
-            C
+            V
           </div>
           <h1
             className="text-2xl font-bold tracking-tight"
             style={{ color: "#1a1a1a" }}
           >
-            Clínica Carmen
+            ViaNova
           </h1>
           <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
-            Fisioterapia · Millennialfisio
+            Fisioterapia · Campillos
           </p>
         </div>
 
