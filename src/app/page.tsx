@@ -66,7 +66,7 @@ export default async function HomePage() {
             fontSize: "0.8125rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
             padding: "0.35rem 1rem", borderRadius: 999, marginBottom: "1.5rem",
           }}>
-            Fisioterapia en Campillos · Comarca de Guadalteba
+            Fisioterapia en Campillos
           </span>
           <h1 style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, marginBottom: "1.25rem", letterSpacing: "-0.02em" }}>
             Deja de aguantar el dolor.<br />
