@@ -1,4 +1,4 @@
-import ReservaForm from "@/app/_components/ReservaForm";
+﻿import ReservaForm from "@/app/_components/ReservaForm";
 import Link from "next/link";
 import PublicHeader from "@/app/_components/PublicHeader";
 import { MessageCircle } from "lucide-react";
@@ -160,7 +160,7 @@ export default function ContactoPage() {
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2.5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
           <div style={{ backgroundColor: CREAM, padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
-            <img src="/logo-vianova.jpeg" alt="ViaNova · Clínica de Fisioterapia" style={{ height: 30, width: "auto", display: "block" }} />
+            <img src="/brand-logo.jpeg" alt="ViaNova · Clínica de Fisioterapia" style={{ height: 30, width: "auto", display: "block" }} />
           </div>
           <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "#9ca3af", fontSize: "0.875rem", textDecoration: "none" }}>Inicio</Link>

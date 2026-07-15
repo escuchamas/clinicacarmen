@@ -1,4 +1,4 @@
-import { getBlogPosts } from "@/lib/db";
+﻿import { getBlogPosts } from "@/lib/db";
 import Link from "next/link";
 import PublicHeader from "@/app/_components/PublicHeader";
 import type { Metadata } from "next";
@@ -77,7 +77,7 @@ export default async function BlogPage() {
       <footer style={{ backgroundColor: DARK, color: "white", padding: "2rem 1.5rem", textAlign: "center" }}>
         <Link href="/">
           <div style={{ display: "inline-block", backgroundColor: "#F2ECE6", padding: "0.4rem 0.75rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>
-            <img src="/logo-vianova.jpeg" alt="Carmen Gómez" style={{ height: 28, display: "block" }} />
+            <img src="/brand-logo.jpeg" alt="Carmen Gómez" style={{ height: 28, display: "block" }} />
           </div>
         </Link>
         <p style={{ color: "#6b7280", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} ViaNova · Clínica de Fisioterapia, Campillos</p>

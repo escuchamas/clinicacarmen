@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img
-              src="/logo-vianova.jpeg"
+              src="/brand-logo.jpeg"
               alt="ViaNova · Clínica de Fisioterapia"
               style={{ height: 36, width: "auto", display: "block", flexShrink: 0 }}
             />

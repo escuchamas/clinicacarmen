@@ -1,4 +1,4 @@
-import ReservaForm from "./_components/ReservaForm";
+﻿import ReservaForm from "./_components/ReservaForm";
 import QuizProblemas from "./_components/QuizProblemas";
 import WhatsAppButton from "./_components/WhatsAppButton";
 import Link from "next/link";
@@ -35,7 +35,7 @@ export default async function HomePage() {
       }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <img
-            src="/logo-vianova.jpeg"
+            src="/brand-logo.jpeg"
             alt="ViaNova · Clínica de Fisioterapia"
             style={{ height: 40, width: "auto", display: "block", flexShrink: 0 }}
           />
@@ -321,7 +321,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: 900, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
           <div style={{ backgroundColor: "#F2ECE6", padding: "0.5rem 0.875rem", borderRadius: "0.5rem" }}>
             <img
-              src="/logo-vianova.jpeg"
+              src="/brand-logo.jpeg"
               alt="ViaNova · Clínica de Fisioterapia"
               style={{ height: 30, width: "auto", display: "block" }}
             />

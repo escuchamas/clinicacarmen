@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 const BRAND = "#8E7D6B";
 
@@ -14,7 +14,7 @@ export default function PublicHeader({ activePath }: { activePath?: string }) {
     <header style={{ position: "sticky", top: 0, zIndex: 50, backgroundColor: "#F2ECE6", borderBottom: "1px solid #DCC8B2", padding: "0 1.5rem" }}>
       <div style={{ maxWidth: 1080, margin: "0 auto", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
         <Link href="/">
-          <img src="/logo-vianova.jpeg" alt="ViaNova · Clínica de Fisioterapia" style={{ height: 40, width: "auto", display: "block", flexShrink: 0 }} />
+          <img src="/brand-logo.jpeg" alt="ViaNova · Clínica de Fisioterapia" style={{ height: 40, width: "auto", display: "block", flexShrink: 0 }} />
         </Link>
 
         <nav style={{ display: "flex", alignItems: "center", gap: "0.25rem", flex: 1, justifyContent: "center" }} className="hidden sm:flex">
